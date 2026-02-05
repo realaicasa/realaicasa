@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RealAi EstateGuard</title>
+    <meta name="theme-color" content="#d4af37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom": "https://esm.sh/react-dom@^19.2.3",
+        "react-dom/client": "https://esm.sh/react-dom@^19.2.3/client",
+        "recharts": "https://esm.sh/recharts@^3.7.0",
+        "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/"
+      }
+    }
+    </script>
+    <style>
+        :root { 
+            --gold: #d4af37; 
+            --gold-dark: #b8860b; 
+            --brand-bg: #0f172a;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-tap-highlight-color: transparent;
+            background-color: #f8fafc;
+        }
+        .font-luxury { font-family: 'Playfair Display', serif; }
+        #root { min-height: 100vh; display: flex; flex-direction: column; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* PWA Install Button Custom Styles matching reference */
+        .pwa-install-pill {
+            background: #111827;
+            border-radius: 9999px;
+            padding: 6px 6px 6px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .pwa-install-pill:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        .pwa-install-pill:active { transform: scale(0.95); }
+        
+        .pwa-icon-box {
+            background: var(--gold);
+            width: 44px;
+            height: 44px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111827;
+            font-size: 1.2rem;
+        }
+
+        .gold-button {
+            background-color: var(--gold);
+            color: #111827;
+            transition: all 0.2s;
+        }
+        .gold-button:hover { background-color: var(--gold-dark); }
+        
+        @media (max-width: 768px) {
+            .main-content { padding-bottom: 90px; }
+        }
+    </style>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

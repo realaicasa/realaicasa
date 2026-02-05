@@ -1,0 +1,77 @@
+export enum PropertyTier {
+  STANDARD = 'Standard',
+  ESTATE_GUARD = 'Estate Guard'
+}
+
+export type PropertyCategory = 'Residential' | 'Commercial' | 'Land' | 'Rental';
+
+export interface PropertySchema {
+  property_id: string;
+  category: PropertyCategory;
+  status: 'Active' | 'Pending' | 'Sold' | 'Rented';
+  tier: PropertyTier;
+  visibility_protocol: {
+    public_fields: string[];
+    gated_fields: string[];
+  };
+  listing_details: {
+    address: string;
+    price: number;
+    video_tour_url?: string;
+    key_stats: {
+      bedrooms?: number;
+      bathrooms?: number;
+      sq_ft: number;
+      lot_size: string;
+      zoning?: string;
+    };
+    hero_narrative: string;
+  };
+  deep_data: {
+    private_appraisal?: { value: number; date: string; notes: string; };
+    hoa_details?: { fee_monthly: number; rent_policy: string; security: string; };
+    lease_terms?: { duration: string; deposit: number; utilities: string; };
+    mechanical_specs?: { hvac: string; smart_home: string; };
+  };
+  agent_notes: {
+    motivation: string;
+    showing_instructions: string;
+  };
+}
+
+export type LeadStatus = string;
+
+export interface Lead {
+  id: string;
+  name: string;
+  phone: string;
+  financing_status: 'Cash' | 'Lender' | 'Unverified';
+  property_id: string;
+  property_address: string;
+  status: LeadStatus;
+  timestamp: string;
+  due_date?: string;
+  notes: string[];
+}
+
+export interface AgentSettings {
+  businessName: string;
+  logoUrl?: string;
+  primaryColor: string;
+  apiKey: string;
+  highSecurityMode: boolean; 
+  subscriptionTier: string;
+  monthlyPrice: number;
+  businessAddress: string;
+  contactEmail: string;
+  contactPhone: string;
+  specialties: string[];
+  agentCount: number;
+  conciergeIntro: string;
+  language: string;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'model';
+  text: string;
+}
