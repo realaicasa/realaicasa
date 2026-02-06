@@ -23,21 +23,25 @@ ALTER TABLE properties ENABLE ROW LEVEL SECURITY;
 
 -- 4. Create Policies for Leads
 -- Allow users to insert their own leads (or leads assigned to them)
+DROP POLICY IF EXISTS "Users can insert their own leads" ON leads;
 CREATE POLICY "Users can insert their own leads" ON leads
 FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
 -- Allow users to view only their own leads
+DROP POLICY IF EXISTS "Users can view their own leads" ON leads;
 CREATE POLICY "Users can view their own leads" ON leads
 FOR SELECT
 USING (auth.uid() = user_id);
 
 -- Allow users to update only their own leads
+DROP POLICY IF EXISTS "Users can update their own leads" ON leads;
 CREATE POLICY "Users can update their own leads" ON leads
 FOR UPDATE
 USING (auth.uid() = user_id);
 
 -- 5. Create Policies for Properties
+DROP POLICY IF EXISTS "Users can CRUD their own properties" ON properties;
 CREATE POLICY "Users can CRUD their own properties" ON properties
 FOR ALL
 USING (auth.uid() = user_id);
@@ -51,7 +55,10 @@ CREATE TABLE IF NOT EXISTS profiles (
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
 CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
 
 -- Function to handle new user signup
@@ -88,18 +95,22 @@ CREATE TABLE IF NOT EXISTS app_config (
 ALTER TABLE app_config ENABLE ROW LEVEL SECURITY;
 
 -- 9. Create Policies for app_config
+DROP POLICY IF EXISTS "Users can view own app_config" ON app_config;
 CREATE POLICY "Users can view own app_config" ON app_config
 FOR SELECT
 USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can insert own app_config" ON app_config;
 CREATE POLICY "Users can insert own app_config" ON app_config
 FOR INSERT
 WITH CHECK (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own app_config" ON app_config;
 CREATE POLICY "Users can update own app_config" ON app_config
 FOR UPDATE
 USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can delete own app_config" ON app_config;
 CREATE POLICY "Users can delete own app_config" ON app_config
 FOR DELETE
 USING (auth.uid() = id);
