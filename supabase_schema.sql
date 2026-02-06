@@ -61,20 +61,7 @@ CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.ui
 DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
 
--- Function to handle new user signup
-create function public.handle_new_user()
-returns trigger as $$
-begin
-  insert into public.profiles (id, business_name)
-  values (new.id, new.raw_user_meta_data->>'business_name');
-  return new;
-end;
-$$ language plpgsql security definer;
 
--- Trigger to call the function
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
 
 -- 7. Create app_config table for AgentSettings
 CREATE TABLE IF NOT EXISTS app_config (
@@ -116,6 +103,7 @@ FOR DELETE
 USING (auth.uid() = id);
 
 -- 10. Update handle_new_user trigger to also initialize app_config
+-- 10. Update handle_new_user trigger to also initialize app_config
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -130,4 +118,10 @@ BEGIN
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 11. Re-create trigger
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
