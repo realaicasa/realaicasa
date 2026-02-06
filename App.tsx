@@ -9,6 +9,7 @@ import Modal from './components/Modal';
 import Kanban from './components/Kanban';
 import Settings from './components/Settings';
 import PropertyDetails from './components/PropertyDetails';
+import { supabase } from './services/supabaseClient';
 import { PropertySchema, Lead, PropertyTier, AgentSettings, LeadStatus } from './types';
 
 const INITIAL_SETTINGS: AgentSettings = {
@@ -85,6 +86,43 @@ const App: React.FC = () => {
         i18n.default.changeLanguage(settings.language === 'English' ? 'en' : settings.language === 'Spanish' ? 'es' : 'fr');
     });
   }, [settings.language]);
+
+  // Fetch settings from Supabase on mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data, error } = await supabase
+            .from('app_config')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+          if (data) {
+            setSettings({
+              businessName: data.business_name,
+              primaryColor: data.primary_color,
+              apiKey: INITIAL_SETTINGS.apiKey, // Keep local or fetch if stored securely (not recommended in DB)
+              highSecurityMode: data.high_security_mode,
+              subscriptionTier: INITIAL_SETTINGS.subscriptionTier,
+              monthlyPrice: data.monthly_price,
+              businessAddress: INITIAL_SETTINGS.businessAddress,
+              contactEmail: data.contact_email,
+              contactPhone: data.contact_phone,
+              specialties: data.specialties,
+              agentCount: INITIAL_SETTINGS.agentCount,
+              conciergeIntro: INITIAL_SETTINGS.conciergeIntro, // Add to DB if needed
+              language: data.language
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   // Derive selected property from state to ensure updates reflect immediately in the modal
   const selectedProperty = properties.find(p => p.property_id === selectedPropertyId) || null;

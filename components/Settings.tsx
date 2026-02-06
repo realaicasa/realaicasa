@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { AgentSettings } from '../types';
 
+import { supabase } from '../services/supabaseClient';
+
 interface SettingsProps {
   settings: AgentSettings;
   onUpdate: (s: AgentSettings) => void;
@@ -10,14 +12,39 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
-    // Simulate API persistence
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("No authenticated user found");
+      }
+
+      const { error } = await supabase
+        .from('app_config')
+        .upsert({
+          id: user.id,
+          business_name: settings.businessName,
+          primary_color: settings.primaryColor,
+          high_security_mode: settings.highSecurityMode,
+          monthly_price: settings.monthlyPrice,
+          contact_email: settings.contactEmail,
+          contact_phone: settings.contactPhone,
+          specialties: settings.specialties,
+          language: settings.language,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-    }, 1000);
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert('Failed to save settings. Check console for details.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
