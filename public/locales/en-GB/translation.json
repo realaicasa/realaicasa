@@ -1,0 +1,17 @@
+{
+  "sidebar": {
+    "dashboard": "Command Center",
+    "properties": "Properties",
+    "leads": "Leads",
+    "ingestion": "Ingestion Portal",
+    "chat": "Guard Testing",
+    "agent_role": "Elite Tier Agent"
+  },
+  "leads": {
+    "email": "Email",
+    "phone": "Phone",
+    "notes": "Notes",
+    "copy": "Copy",
+    "details_title": "Lead Intelligence"
+  }
+}

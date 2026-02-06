@@ -87,9 +87,10 @@ COMMAND:
     if (!data.category) data.category = 'Residential';
     
     return data;
-  } catch (e) {
-    console.error("Scraper Error:", response.text);
-    throw new Error("Synchronization interrupted. The source data was non-standard.");
+  } catch (e: any) {
+    console.error("Scraper Error:", e);
+    // Bubble up the actual error message (e.g. Quota Exceeded, API Key Invalid)
+    throw new Error(`Sync failed: ${e.message || "Unknown error"}`);
   }
 };
 
@@ -98,7 +99,7 @@ export const chatWithGuard = async (
   propertyContext: PropertySchema,
   settings: AgentSettings
 ) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: settings.apiKey || process.env.API_KEY || '' });
   const chat = ai.chats.create({
     model: 'gemini-3-flash-preview',
     config: {

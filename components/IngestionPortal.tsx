@@ -26,7 +26,7 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
       // Beautiful success alert replacement logic could go here, for now alert is fine
     } catch (error) {
       console.error(error);
-      alert("Intelligence sync failed. Please verify the source data and try again.");
+      alert(error instanceof Error ? error.message : "Intelligence sync failed. Please verify the source data and try again.");
     } finally {
       setLoading(false);
     }

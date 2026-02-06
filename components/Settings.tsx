@@ -71,13 +71,11 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
                 <select 
                   value={settings.language}
                   onChange={(e) => onUpdate({...settings, language: e.target.value})}
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold outline-none transition-all font-medium text-sm text-slate-700 cursor-pointer appearance-none"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold outline-none transition-all font-medium text-sm text-slate-700 cursor-pointer"
                 >
-                  <option value="English">English</option>
-                  <option value="Spanish">Spanish</option>
-                  <option value="French">French</option>
-                  <option value="German">German</option>
-                  <option value="Chinese">Chinese</option>
+                  <option value="en">English</option>
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
                 </select>
                 <p className="text-[10px] text-slate-400">Select the primary language for your agent interface.</p>
              </div>

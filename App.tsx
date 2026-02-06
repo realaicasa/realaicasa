@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import './i18n'; // Import i18n configuration
 import Navigation from './components/Navigation';
 import DashboardStats from './components/DashboardStats';
 import PropertyCard from './components/PropertyCard';
@@ -77,6 +78,13 @@ const App: React.FC = () => {
   const [modalContent, setModalContent] = useState<{title: string, content: React.ReactNode} | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [notifications, setNotifications] = useState(0);
+
+  // Sync language with settings
+  useEffect(() => {
+    import('i18next').then(i18n => {
+        i18n.default.changeLanguage(settings.language === 'English' ? 'en' : settings.language === 'Spanish' ? 'es' : 'fr');
+    });
+  }, [settings.language]);
 
   // Derive selected property from state to ensure updates reflect immediately in the modal
   const selectedProperty = properties.find(p => p.property_id === selectedPropertyId) || null;

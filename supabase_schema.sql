@@ -68,3 +68,55 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- 7. Create app_config table for AgentSettings
+CREATE TABLE IF NOT EXISTS app_config (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  business_name TEXT,
+  primary_color TEXT DEFAULT '#000000',
+  high_security_mode BOOLEAN DEFAULT false,
+  monthly_price NUMERIC,
+  contact_email TEXT,
+  contact_phone TEXT,
+  specialties TEXT[],
+  language TEXT DEFAULT 'en',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 8. Enable RLS on app_config
+ALTER TABLE app_config ENABLE ROW LEVEL SECURITY;
+
+-- 9. Create Policies for app_config
+CREATE POLICY "Users can view own app_config" ON app_config
+FOR SELECT
+USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert own app_config" ON app_config
+FOR INSERT
+WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update own app_config" ON app_config
+FOR UPDATE
+USING (auth.uid() = id);
+
+CREATE POLICY "Users can delete own app_config" ON app_config
+FOR DELETE
+USING (auth.uid() = id);
+
+-- 10. Update handle_new_user trigger to also initialize app_config
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Insert into profiles
+  INSERT INTO public.profiles (id, business_name)
+  VALUES (new.id, new.raw_user_meta_data->>'business_name');
+
+  -- Insert into app_config with defaults
+  INSERT INTO public.app_config (id, business_name)
+  VALUES (new.id, new.raw_user_meta_data->>'business_name');
+
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+

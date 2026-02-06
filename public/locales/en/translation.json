@@ -1,0 +1,231 @@
+{
+  "sidebar": {
+    "dashboard": "Command Center",
+    "properties": "Properties",
+    "leads": "Leads",
+    "ingestion": "Ingestion Portal",
+    "chat": "Concierge",
+    "agent_role": "Elite Agent",
+    "manual": "Manual",
+    "settings": "Identity"
+  },
+  "leads": {
+    "email": "Email",
+    "phone": "Phone",
+    "notes": "Notes",
+    "copy": "Copy",
+    "details_title": "Lead Intelligence"
+  },
+  "app": {
+    "headers": {
+      "dashboard": "Market Command",
+      "properties": "Portfolio Control",
+      "leads": "Pipeline Management",
+      "settings": "Identity & Branding",
+      "chat": "Concierge Deployment",
+      "ingestion": "Asset Onboarding",
+      "manual": "Operating Manual"
+    },
+    "modals": {
+      "manual_title": "Agent Operating Manual",
+      "privacy_title": "Privacy & Sovereignty",
+      "terms_title": "Terms of Engagement",
+      "legal_title": "Legal Disclaimer",
+      "pipeline_update": "Pipeline Update",
+      "lead_captured": "Lead Captured!",
+      "view_pipeline": "View Pipeline",
+      "install_shield": "Elite Agent Dashboard Installation",
+      "mobile_access": "Mobile Access Setup",
+      "native_perf": "Native Agent Performance",
+      "manual_content": {
+        "ingest_title": "1. Property Ingestion",
+        "ingest_desc": "Use the <b_0>Ingest</b_0> tab to onboard new assets. Structure residential, commercial, or land listings instantly via Gemini AI.",
+        "concierge_title": "2. Concierge Deployment",
+        "concierge_desc": "Navigate to the <b_0>Concierge</b_0> tab to find your unique website embed code. This places the AI chatbot on your agency site.",
+        "rules_title": "3. The Two-Strike Rule",
+        "rules_desc": "The bot is programmed to answer two specific questions about any property. Upon the third, it will pivot to secure lead capture."
+      },
+      "privacy_content": {
+        "intro": "EstateGuard utilizes <b_0>Zero-Trust</b_0> architecture. Your property data and lead transcripts are your agency's private assets.",
+        "encryption": "<b_0>Encryption:</b_0> AES-256 standard at rest.",
+        "sovereignty": "<b_0>Model Sovereignty:</b_0> Your data is NOT used to train global models."
+      },
+      "terms_content": {
+        "text": "Usage of the EstateGuard AI platform requires compliance with local property disclosure regulations and maintenance of a valid personal Gemini API Key."
+      },
+      "legal_content": {
+        "disclaimer": "RealAi EstateGuard is an AI-driven facilitation tool. All outputs must be verified by a licensed professional."
+      },
+      "pwa_content": {
+        "ios_title": "iOS (iPhone / iPad)",
+        "ios_step1": "1. Open this page in <b_0>Safari</b_0>.",
+        "ios_step2": "2. Tap the <b_0>'Share'</b_0> button (square with arrow).",
+        "ios_step3": "3. Scroll down and tap <b_0>'Add to Home Screen'</b_0>.",
+        "ios_step4": "4. Open the <b_0>EstateGuard</b_0> app icon from your home screen.",
+        "android_title": "Android (Chrome)",
+        "android_step1": "1. Tap the <b_0>'Menu'</b_0> icon (3 dots) top right.",
+        "android_step2": "2. Select <b_0>'Install App'</b_0> or <b_0>'Add to Home Screen'</b_0>.",
+        "android_step3": "3. Confirm the installation and find it in your drawer.",
+        "desktop_title": "Desktop (Chrome / Edge)",
+        "desktop_text": "Click the <b_0>Install</b_0> icon in your address bar, OR open the <b_1>Browser Menu</b_1> and select <b_2>\"Install App\"</b_2>.",
+        "pill_title": "COMMAND CENTER"
+      }
+    },
+    "footer": {
+      "tagline": "EstateGuard AI — Synchronized Intelligence",
+      "manual": "Operating Manual",
+      "privacy": "Privacy Cloud",
+      "terms": "Terms",
+      "legal": "Legal Sovereignty"
+    },
+    "search_placeholder": "Search portfolio by address, price, or status..."
+  },
+  "dashboard": {
+    "metrics": {
+      "portfolio_volume": "Portfolio Volume",
+      "assets": "Assets",
+      "active_listings": "Active listings",
+      "total_leads": "Total Leads",
+      "all_time": "All Time",
+      "gated_estates": "Gated Estates",
+      "high_security": "High-security protection",
+      "conversion_rate": "Conversion Rate",
+      "closed_deals": "Closed Deals"
+    },
+    "heatmap_title": "Lead Acquisition Heatmap (Last 7 Days)",
+    "pipeline_title": "Lead Pipeline Status"
+  },
+  "ingestion": {
+    "sync_title": "Synchronizing Asset Intelligence",
+    "sync_subtitle": "Gemini 3 Flash Pro is structuring your listing data...",
+    "orchestration": "Asset Orchestration",
+    "onboard_title": "Onboard Your Elite Portfolio",
+    "onboard_desc": "Transform scattered data into high-fidelity, secure property schemas with zero manual entry.",
+    "modes": {
+      "url": "Web Scraper",
+      "text": "Direct Entry",
+      "voice": "Agent Voice Note"
+    },
+    "labels": {
+      "url_source": "Listing URL Source",
+      "manifest": "Property Manifest",
+      "voice_sync": "Voice-to-Schema Sync",
+      "listening": "Listening for listing details...",
+      "describe": "Describe your new asset"
+    },
+    "placeholders": {
+      "url": "https://exclusive-estates.com/listing/3409",
+      "text": "Paste MLS data, internal briefs, or market reports here..."
+    },
+    "buttons": {
+      "secure_sync": "SECURE SYNC TO PORTFOLIO"
+    }
+  },
+  "concierge": {
+    "intro_default": "Ask our happy assistant about any of our properties 24/7",
+    "guard_title": "Guard Intelligence",
+    "strikes": "STRIKES",
+    "sandbox_preview": "Sandbox Preview",
+    "testing_deployment": "Testing {{business}}'s deployment behavior for {{address}}",
+    "priority_access": "Priority Viewing Access",
+    "secure_verification": "Secure verification required",
+    "placeholders": {
+      "name": "Your Name",
+      "phone": "Mobile Number",
+      "security_active": "Security gating active...",
+      "ask_specs": "Ask about specs, price, or private notes..."
+    },
+    "buttons": {
+      "request_access": "Request specialist access"
+    }
+  },
+  "settings": {
+    "title": "Agency HQ",
+    "subtitle": "Whitelabel the concierge and PWA experience.",
+    "tier_badge": "Professional Tier",
+    "whitelabel_title": "Whitelabeling",
+    "ai_provision_title": "AI Core Provisioning",
+    "knowledge_base_title": "Business Knowledge Base",
+    "knowledge_base_desc": "Train your AI agent on your specific business details. Fill in as many as possible.",
+    "labels": {
+      "agency_name": "Agency Display Name",
+      "brand_color": "Brand Primary Color",
+      "intro": "Concierge Welcome Intro",
+      "api_key": "Gemini API Key",
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Policy",
+      "nda": "NDA / Confidentiality",
+      "location": "Location & Opening Hours",
+      "areas": "Service Areas",
+      "commission": "Commission Rates",
+      "marketing": "Marketing Strategy",
+      "team": "Team Members",
+      "awards": "Awards & Recognition",
+      "legal": "Legal Disclaimer"
+    },
+    "hints": {
+      "color": "Picks highlight colors",
+      "intro": "This text appears above the chatbot bubble on your website.",
+      "api": "Your dedicated API key powers your specific agent's intelligence. No data is shared across agencies."
+    },
+    "buttons": {
+      "save": "Save All Changes",
+      "saving": "Synchronizing...",
+      "saved": "Changes synchronized"
+    }
+  },
+  "manual": {
+    "title": "Agent Operating Manual",
+    "subtitle": "Master the EstateGuard platform. Learn to deploy AI, train your portfolio, and secure your pipeline.",
+    "features": {
+      "search": {
+        "title": "Portfolio Search",
+        "desc": "Use the search bar in the Portfolio Control tab to instantly filter your assets."
+      },
+      "training": {
+        "title": "Training Field Intelligence",
+        "desc": "Select any property and click Edit Details. Scroll to the AI Training Data section to add personalized local knowledge."
+      },
+      "knowledge": {
+        "title": "Business Knowledge Base",
+        "desc": "Navigate to Identity & Branding. Complete your agency profile including Terms, Privacy Policy, and Service Areas."
+      },
+      "mobile": {
+        "title": "Mobile Command Center",
+        "desc": "Install EstateGuard to your home screen. On mobile, check the Pipeline Management tab to see prioritized leads."
+      }
+    },
+    "support": {
+      "title": "Need further assistance?",
+      "subtitle": "Our support team is available for Enterprise clients."
+    }
+  },
+  "kanban": {
+    "columns": {
+      "new": "New",
+      "discovery": "Discovery",
+      "qualified": "Qualified",
+      "showing": "Showing",
+      "negotiation": "Negotiation",
+      "closed": "Closed"
+    },
+    "add_lead": "Add Manual Lead",
+    "drop_here": "Drop here"
+  },
+  "add_lead": {
+    "title": "Add Manual Lead",
+    "labels": {
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "property": "Property Interest",
+      "status": "Initial Status",
+      "note": "Initial Note"
+    },
+    "placeholders": {
+      "general": "-- General Inquiry --",
+      "details": "Enter details..."
+    },
+    "submit": "Creating Lead Record"
+  }
+}

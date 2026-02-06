@@ -1,0 +1,231 @@
+{
+  "sidebar": {
+    "dashboard": "Centre de Commandement",
+    "properties": "Propriétés",
+    "leads": "Pistes",
+    "ingestion": "Portail d'Ingestion",
+    "chat": "Concierge",
+    "agent_role": "Agent d'Élite",
+    "manual": "Manuel",
+    "settings": "Identité"
+  },
+  "leads": {
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "notes": "Notes",
+    "copy": "Copier",
+    "details_title": "Intelligence Client"
+  },
+  "app": {
+    "headers": {
+      "dashboard": "Commandement du Marché",
+      "properties": "Contrôle du Portefeuille",
+      "leads": "Gestion du Pipeline",
+      "settings": "Identité et Marque",
+      "chat": "Déploiement Concierge",
+      "ingestion": "Intégration des Actifs",
+      "manual": "Manuel Opérationnel"
+    },
+    "modals": {
+      "manual_title": "Manuel Opérationnel de l'Agent",
+      "privacy_title": "Confidentialité et Souveraineté",
+      "terms_title": "Termes d'Engagement",
+      "legal_title": "Avis Juridique",
+      "pipeline_update": "Mise à Jour du Pipeline",
+      "lead_captured": "Piste Capturée !",
+      "view_pipeline": "Voir le Pipeline",
+      "install_shield": "Installation du Tableau de Bord Agent Élite",
+      "mobile_access": "Configuration d'Accès Mobile",
+      "native_perf": "Performance d'Agent Natif",
+      "manual_content": {
+        "ingest_title": "1. Ingestion de Propriété",
+        "ingest_desc": "Utilisez l'onglet <b_0>Ingestion</b_0> pour intégrer de nouveaux actifs. Structurez instantanément des listes résidentielles, commerciales ou foncières via Gemini AI.",
+        "concierge_title": "2. Déploiement de Concierge",
+        "concierge_desc": "Accédez à l'onglet <b_0>Concierge</b_0> pour trouver votre code d'intégration web unique. Cela place le chatbot IA sur le site de votre agence.",
+        "rules_title": "3. La Règle des Deux Strikes",
+        "rules_desc": "Le bot est programmé pour répondre à deux questions spécifiques sur n'importe quelle propriété. À la troisième, il pivotera vers la capture sécurisée de prospects."
+      },
+      "privacy_content": {
+        "intro": "EstateGuard utilise une architecture <b_0>Zero-Trust</b_0>. Vos données de propriété et transcriptions sont des actifs privés de votre agence.",
+        "encryption": "<b_0>Chiffrement:</b_0> Standard AES-256 au repos.",
+        "sovereignty": "<b_0>Souveraineté du Modèle:</b_0> Vos données ne sont PAS utilisées pour entraîner des modèles globaux."
+      },
+      "terms_content": {
+        "text": "L'utilisation de la plateforme EstateGuard AI nécessite le respect des réglementations locales sur la divulgation des propriétés et le maintien d'une clé API Gemini personnelle valide."
+      },
+      "legal_content": {
+        "disclaimer": "RealAi EstateGuard est un outil de facilitation piloté par l'IA. Tous les résultats doivent être vérifiés par un professionnel agréé."
+      },
+      "pwa_content": {
+        "ios_title": "iOS (iPhone / iPad)",
+        "ios_step1": "1. Ouvrez cette page dans <b_0>Safari</b_0>.",
+        "ios_step2": "2. Appuyez sur le bouton <b_0>'Partager'</b_0> (carré avec flèche).",
+        "ios_step3": "3. Faites défiler et appuyez sur <b_0>'Sur l'écran d'accueil'</b_0>.",
+        "ios_step4": "4. Ouvrez l'icône de l'application <b_0>EstateGuard</b_0> depuis votre écran d'accueil.",
+        "android_title": "Android (Chrome)",
+        "android_step1": "1. Appuyez sur l'icône <b_0>'Menu'</b_0> (3 points) en haut à droite.",
+        "android_step2": "2. Sélectionnez <b_0>'Installer l'app'</b_0> ou <b_0>'Ajouter à l'écran d'accueil'</b_0>.",
+        "android_step3": "3. Confirmez l'installation et trouvez-la dans votre tiroir.",
+        "desktop_title": "Bureau (Chrome / Edge)",
+        "desktop_text": "Cliquez sur l'icône <b_0>Installer</b_0> dans votre barre d'adresse, OU ouvrez le <b_1>Menu du Navigateur</b_1> et sélectionnez <b_2>\"Installer l'app\"</b_2>.",
+        "pill_title": "CENTRE DE COMMANDE"
+      }
+    },
+    "footer": {
+      "tagline": "EstateGuard AI — Intelligence Synchronisée",
+      "manual": "Manuel Opérationnel",
+      "privacy": "Nuage de Confidentialité",
+      "terms": "Termes",
+      "legal": "Souveraineté Juridique"
+    },
+    "search_placeholder": "Rechercher par adresse, prix ou statut..."
+  },
+  "dashboard": {
+    "metrics": {
+      "portfolio_volume": "Volume du Portefeuille",
+      "assets": "Actifs",
+      "active_listings": "Listes actives",
+      "total_leads": "Total Pistes",
+      "all_time": "Tout le Temps",
+      "gated_estates": "Domaines Protégés",
+      "high_security": "Protection haute sécurité",
+      "conversion_rate": "Taux de Conversion",
+      "closed_deals": "Contrats Clôturés"
+    },
+    "heatmap_title": "Carte Thermique d'Acquisition (7 Derniers Jours)",
+    "pipeline_title": "Statut du Pipeline des Pistes"
+  },
+  "ingestion": {
+    "sync_title": "Synchronisation de l'Intelligence des Actifs",
+    "sync_subtitle": "Gemini 3 Flash Pro structure vos données d'annonce...",
+    "orchestration": "Orchestration des Actifs",
+    "onboard_title": "Intégrez Votre Portefeuille Élite",
+    "onboard_desc": "Transformez des données dispersées en schémas de propriété sécurisés et haute fidélité sans saisie manuelle.",
+    "modes": {
+      "url": "Web Scraper",
+      "text": "Saisie Directe",
+      "voice": "Note Vocale Agent"
+    },
+    "labels": {
+      "url_source": "Source URL de l'Annonce",
+      "manifest": "Manifeste de Propriété",
+      "voice_sync": "Synchro Voix-Vers-Schéma",
+      "listening": "Écoute des détails de l'annonce...",
+      "describe": "Décrivez votre nouvel actif"
+    },
+    "placeholders": {
+      "url": "https://exclusive-estates.com/listing/3409",
+      "text": "Collez ici les données MLS, les notes internes ou les rapports de marché..."
+    },
+    "buttons": {
+      "secure_sync": "SYNCHRO SÉCURISÉE VERS PORTEFEUILLE"
+    }
+  },
+  "concierge": {
+    "intro_default": "Posez des questions à notre assistant sur l'une de vos propriétés 24/7",
+    "guard_title": "Intelligence de Garde",
+    "strikes": "AVERTISSEMENTS",
+    "sandbox_preview": "Aperçu Sandbox",
+    "testing_deployment": "Test du comportement de déploiement de {{business}} pour {{address}}",
+    "priority_access": "Accès Prioritaire",
+    "secure_verification": "Vérification sécurisée requise",
+    "placeholders": {
+      "name": "Votre Nom",
+      "phone": "Numéro Mobile",
+      "security_active": "Sécurité active...",
+      "ask_specs": "Demandez des spécifications, prix ou notes privées..."
+    },
+    "buttons": {
+      "request_access": "Demander accès spécialiste"
+    }
+  },
+  "settings": {
+    "title": "QG de l'Agence",
+    "subtitle": "Marque blanche pour l'expérience concierge et PWA.",
+    "tier_badge": "Niveau Professionnel",
+    "whitelabel_title": "Marque Blanche",
+    "ai_provision_title": "Approvisionnement IA Core",
+    "knowledge_base_title": "Base de Connaissances",
+    "knowledge_base_desc": "Formez votre agent IA sur les détails spécifiques de votre entreprise.",
+    "labels": {
+      "agency_name": "Nom de l'Agence",
+      "brand_color": "Couleur Primaire",
+      "intro": "Intro de Bienvenue Concierge",
+      "api_key": "Clé API Gemini",
+      "terms": "Termes et Conditions",
+      "privacy": "Politique de Confidentialité",
+      "nda": "NDA / Confidentialité",
+      "location": "Lieu et Horaires",
+      "areas": "Zones de Service",
+      "commission": "Taux de Commission",
+      "marketing": "Stratégie Marketing",
+      "team": "Membres de l'Équipe",
+      "awards": "Prix et Reconnaissance",
+      "legal": "Avis Juridique"
+    },
+    "hints": {
+      "color": "Choisit les couleurs de surbrillance",
+      "intro": "Ce texte apparaît au-dessus de la bulle du chatbot sur votre site web.",
+      "api": "Votre clé API dédiée alimente l'intelligence de votre agent spécifique."
+    },
+    "buttons": {
+      "save": "Sauvegarder",
+      "saving": "Synchronisation...",
+      "saved": "Changements synchronisés"
+    }
+  },
+  "manual": {
+    "title": "Manuel Opérationnel de l'Agent",
+    "subtitle": "Maîtrisez la plateforme EstateGuard. Apprenez à déployer l'IA, former votre portefeuille et sécuriser votre pipeline.",
+    "features": {
+      "search": {
+        "title": "Recherche de Portefeuille",
+        "desc": "Utilisez la barre de recherche dans l'onglet Contrôle de Portefeuille pour filtrer instantanément vos actifs."
+      },
+      "training": {
+        "title": "Entraînement Intelligence Terrain",
+        "desc": "Sélectionnez une propriété et cliquez sur Modifier les Détails. Faites défiler jusqu'à la section Données d'Entraînement IA."
+      },
+      "knowledge": {
+        "title": "Base de Connaissances Entreprise",
+        "desc": "Accédez à Identité et Marque. Complétez votre profil d'agence, y compris les Termes et la Politique de Confidentialité."
+      },
+      "mobile": {
+        "title": "Centre de Commandement Mobile",
+        "desc": "Installez EstateGuard sur votre écran d'accueil. Sur mobile, consultez l'onglet Gestion du Pipeline."
+      }
+    },
+    "support": {
+      "title": "Besoin d'aide ?",
+      "subtitle": "Notre équipe de support est disponible pour les clients Entreprise."
+    }
+  },
+  "kanban": {
+    "columns": {
+      "new": "Nouveau",
+      "discovery": "Découverte",
+      "qualified": "Qualifié",
+      "showing": "Visite",
+      "negotiation": "Négociation",
+      "closed": "Fermé"
+    },
+    "add_lead": "Ajouter Piste Manuelle",
+    "drop_here": "Déposer ici"
+  },
+  "add_lead": {
+    "title": "Ajouter Piste Manuelle",
+    "labels": {
+      "name": "Nom",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "property": "Intérêt Propriété",
+      "status": "Statut Initial",
+      "note": "Note Initiale"
+    },
+    "placeholders": {
+      "general": "-- Enquête Générale --",
+      "details": "Entrez les détails..."
+    },
+    "submit": "Création Dossier Piste"
+  }
+}
