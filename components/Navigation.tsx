@@ -1,4 +1,5 @@
 import React from 'react';
+import { supabase } from '../services/supabaseClient';
 
 interface NavigationProps {
   activeTab: string;
@@ -11,48 +12,60 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
     { id: 'dashboard', icon: 'fa-chart-line', label: 'Command' },
     { id: 'properties', icon: 'fa-building', label: 'Portfolio' },
     { id: 'leads', icon: 'fa-layer-group', label: 'Leads' },
-    { id: 'ingestion', icon: 'fa-plus-circle', label: 'Ingest' },
-    { id: 'chat', icon: 'fa-robot', label: 'Concierge' },
-    { id: 'settings', icon: 'fa-cog', label: 'Identity' },
+    { id: 'chat', icon: 'fa-comments', label: 'Concierge' },
+    { id: 'settings', icon: 'fa-id-card', label: 'Identity' },
   ];
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <>
-      <div className="hidden md:flex w-64 bg-slate-950 text-white min-h-screen p-6 flex-col shadow-2xl flex-shrink-0">
-        <div className="flex items-center gap-3 mb-10">
-          <div className="p-2 rounded-lg" style={{ backgroundColor: brandColor }}>
+      <div className="hidden md:flex flex-col w-72 bg-slate-950 text-white h-screen border-r border-slate-900 shadow-2xl z-20">
+        <div className="p-8 flex items-center gap-4 mb-8">
+          <div className="w-12 h-12 bg-gold rounded-2xl flex items-center justify-center shadow-lg shadow-gold/20">
             <i className="fa-solid fa-shield-halved text-slate-950 text-xl"></i>
           </div>
           <h1 className="text-xl font-luxury font-bold tracking-tight">RealAi</h1>
         </div>
 
-        <nav className="flex-1 space-y-1.5">
+        <div className="flex-1 px-4 space-y-2">
           {menuItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ${
+              className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group ${
                 activeTab === item.id 
-                  ? 'text-white shadow-lg' 
-                  : 'text-slate-500 hover:bg-slate-900 hover:text-slate-300'
+                  ? 'bg-gold text-slate-950 shadow-xl shadow-gold/20 font-bold scale-[1.02]' 
+                  : 'text-slate-500 hover:bg-slate-900/50 hover:text-slate-300'
               }`}
-              style={activeTab === item.id ? { backgroundColor: brandColor, color: '#000' } : {}}
             >
-              <i className={`fa-solid ${item.icon} w-5 text-center`}></i>
-              <span className="font-bold text-sm tracking-wide">{item.label}</span>
+              <i className={`fa-solid ${item.icon} ${activeTab === item.id ? 'text-slate-950' : 'group-hover:text-gold transition-colors'}`}></i>
+              <span className="text-xs uppercase tracking-[0.2em]">{item.label}</span>
             </button>
           ))}
-        </nav>
+        </div>
 
-        <div className="mt-auto pt-6 border-t border-slate-900">
-          <div className="flex items-center gap-3 px-2">
-            <div className="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center bg-slate-900">
-                <i className="fa-solid fa-user-tie text-gold"></i>
-            </div>
-            <div className="overflow-hidden">
-              <p className="text-sm font-bold truncate">EstateGuard Hub</p>
-              <p className="text-[10px] text-gold uppercase font-bold tracking-tighter">Enterprise Access</p>
-            </div>
+        <div className="p-4 border-t border-slate-900">
+          <button 
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-500 hover:bg-red-500/10 hover:text-red-400 transition-all duration-300"
+          >
+            <i className="fa-solid fa-power-off"></i>
+            <span className="text-xs uppercase tracking-[0.2em]">Sign Out</span>
+          </button>
+        </div>
+
+        <div className="mt-auto p-8 border-t border-slate-900">
+          <div className="flex items-center gap-3">
+             <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/10 overflow-hidden">
+                <i className="fa-solid fa-user text-slate-500 text-xs"></i>
+             </div>
+             <div>
+                <p className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Agent Access</p>
+                <p className="text-[10px] text-gold font-bold">Synchronized</p>
+             </div>
           </div>
         </div>
       </div>
