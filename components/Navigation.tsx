@@ -12,6 +12,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
     { id: 'dashboard', icon: 'fa-chart-line', label: 'Command' },
     { id: 'properties', icon: 'fa-building', label: 'Portfolio' },
     { id: 'leads', icon: 'fa-layer-group', label: 'Leads' },
+    { id: 'ingestion', icon: 'fa-plus-circle', label: 'Ingest' },
     { id: 'chat', icon: 'fa-comments', label: 'Concierge' },
     { id: 'settings', icon: 'fa-id-card', label: 'Identity' },
   ];

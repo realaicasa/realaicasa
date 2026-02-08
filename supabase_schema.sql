@@ -1,10 +1,21 @@
--- 1. Enable Row Level Security (RLS) on tables
+-- 1. Create the leads table (Main Prospect Vault)
+CREATE TABLE IF NOT EXISTS leads (
+  id TEXT PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  name TEXT NOT NULL,
+  phone TEXT,
+  email TEXT,
+  financing_status TEXT DEFAULT 'Unverified',
+  property_id TEXT,
+  property_address TEXT,
+  status TEXT DEFAULT 'New',
+  notes TEXT[] DEFAULT '{}',
+  due_date TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE properties ENABLE ROW LEVEL SECURITY;
-
--- 2. Add user_id column to leads if it doesn't exist
-ALTER TABLE leads 
-ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
 
 -- 3. Add user_id column to properties if it doesn't exist
 -- Note: You might need to create the properties table first if it's currently just mock data in the code.
