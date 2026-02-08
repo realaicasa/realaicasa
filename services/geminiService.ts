@@ -43,7 +43,7 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
   }
 
   const result = await client.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-1.5-flash-latest', 
     contents: [{ 
       role: 'user', 
       parts: [{ 
@@ -138,7 +138,11 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
     return data;
   } catch (e: any) {
     console.error("Scraper Error:", e);
-    throw new Error(`Sync failed: ${e.message || "Unknown error"}`);
+    const msg = e.message || "Unknown error";
+    if (msg.includes("404") || msg.includes("not found")) {
+      throw new Error(`API CONFIG ERROR: Gemini model not found. Please ensure your API key has access to 'gemini-1.5-flash-latest'.`);
+    }
+    throw new Error(`Sync failed: ${msg}`);
   }
 };
 
@@ -151,7 +155,7 @@ export const chatWithGuard = async (
   const client = new GoogleGenAI({ apiKey });
 
   const response = await client.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-1.5-flash-latest',
     contents: history,
     config: {
       systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
@@ -166,7 +170,7 @@ export const transcribeAudio = async (base64Audio: string, manualKey?: string): 
   const client = new GoogleGenAI({ apiKey });
   
   const response = await client.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-1.5-flash-latest',
     contents: [
       {
         role: 'user',

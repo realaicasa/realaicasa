@@ -25,7 +25,10 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
     <>
       <div className="hidden md:flex flex-col w-72 bg-slate-950 text-white h-screen border-r border-slate-900 shadow-2xl z-20">
         <div className="p-8 flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 bg-gold rounded-2xl flex items-center justify-center shadow-lg shadow-gold/20">
+          <div 
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"
+            style={{ backgroundColor: brandColor }}
+          >
             <i className="fa-solid fa-shield-halved text-slate-950 text-xl"></i>
           </div>
           <h1 className="text-xl font-luxury font-bold tracking-tight">RealAi</h1>
@@ -38,11 +41,19 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group ${
                 activeTab === item.id 
-                  ? 'bg-gold/10 text-gold shadow-xl shadow-gold/5 font-bold scale-[1.02] border border-gold/20' 
+                  ? 'shadow-xl font-bold scale-[1.02] border' 
                   : 'text-slate-500 hover:bg-slate-900/50 hover:text-slate-300'
               }`}
+              style={activeTab === item.id ? { 
+                backgroundColor: `${brandColor}15`, 
+                borderColor: `${brandColor}30`,
+                color: brandColor
+              } : {}}
             >
-              <i className={`fa-solid ${item.icon} ${activeTab === item.id ? 'text-gold' : 'group-hover:text-gold transition-colors'}`}></i>
+              <i 
+                className={`fa-solid ${item.icon} transition-colors`}
+                style={activeTab === item.id ? { color: brandColor } : {}}
+              ></i>
               <span className="text-xs uppercase tracking-[0.2em]">{item.label}</span>
             </button>
           ))}
@@ -76,11 +87,12 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex flex-col items-center gap-1 transition-all duration-200 ${
-              activeTab === item.id ? 'text-gold scale-110' : 'text-slate-500'
-            }`}
+            className="flex flex-col items-center gap-1 transition-all duration-200"
+            style={{ color: activeTab === item.id ? brandColor : '#64748b' }}
           >
-            <i className={`fa-solid ${item.icon} text-xl`}></i>
+            <i 
+              className={`fa-solid ${item.icon} text-xl transition-transform ${activeTab === item.id ? 'scale-110' : ''}`}
+            ></i>
             <span className="text-[8px] font-black uppercase tracking-widest">{item.label}</span>
           </button>
         ))}
