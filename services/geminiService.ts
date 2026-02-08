@@ -2,29 +2,56 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { SCRAPER_SYSTEM_INSTRUCTION, ESTATE_GUARD_SYSTEM_INSTRUCTION } from "../constants";
 import { PropertySchema, AgentSettings } from "../types";
 
+// --- SYSTEM INSTRUCTION HYDRATION ---
 const hydrateInstruction = (settings: AgentSettings) => {
   return ESTATE_GUARD_SYSTEM_INSTRUCTION
     .replace(/{BUSINESS_NAME}/g, settings.businessName || "our agency")
     .replace(/{BUSINESS_ADDRESS}/g, settings.businessAddress || "our hq")
-    .replace(/{SPECIALTIES}/g, settings.specialties?.join(", ") || "Luxury Real Estate");
+    .replace(/{SPECIALTIES}/g, settings.specialties?.join(", ") || "Luxury Real Estate")
+    .replace(/{AWARDS}/g, settings.awards || "Top Rated Agency")
+    .replace(/{MARKETING_STRATEGY}/g, settings.marketingStrategy || "Client-first approach")
+    .replace(/{TEAM_MEMBERS}/g, settings.teamMembers || "Our elite team of specialists");
 };
 
-export const parsePropertyData = async (input: string, apiKey: string): Promise<PropertySchema> => {
-  const ai = new GoogleGenAI({ apiKey });
-  const isUrl = input.trim().startsWith('http');
-  
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `DATA SOURCE: "${input}"
+// --- SECURE API KEY RESOLVER ---
+const getApiKey = (manualKey?: string) => {
+  // Use a fallback to process.env or similar if import.meta.env is problematic in lint
+  return manualKey || (import.meta as any).env?.VITE_GEMINI_API_KEY || "";
+};
 
-COMMAND:
-1. Extract ALL available property details.
-2. If this is a URL, visit the page and find: Address, Full Price, Bedroom count, Bathroom count, Square Footage, and a 2-3 sentence descriptive summary.
-3. ADHERE TO THE GROUNDING PROTOCOL: If any field (like Price or Sq Ft) is not explicitly found, set it to 0. If Bed/Bath is missing, set to null.
-4. DO NOT HALLUCINATE OR GUESS.`,
+// --- PROPERTY DATA SCRAPER ---
+export const parsePropertyData = async (input: string, manualKey?: string): Promise<PropertySchema> => {
+  const apiKey = getApiKey(manualKey);
+  const client = new GoogleGenAI({ apiKey });
+  
+  const isUrl = input.trim().startsWith('http');
+  let processedInput = input;
+  let processingNote = "";
+
+  if (isUrl) {
+    try {
+        const proxyUrl = `/api/proxy?url=${encodeURIComponent(input.trim())}`;
+        const response = await fetch(proxyUrl);
+        if (response.ok) {
+            const scrapedText = await response.text();
+            processedInput = scrapedText.slice(0, 50000); 
+            processingNote = `(Analysis based on content scraped from URL: ${input})`;
+        }
+    } catch (e) {
+        console.warn("[Ingestion] Proxy failed, falling back to URL-only analysis.");
+    }
+  }
+
+  const result = await client.models.generateContent({
+    model: 'gemini-1.5-pro',
+    contents: [{ 
+      role: 'user', 
+      parts: [{ 
+        text: `DATA SOURCE: "${processedInput}"\n\n${processingNote}\n\nCOMMAND:\n1. Extract ALL available property details.\n2. LOOK HARDER FOR SPECS: Bed, Bath, Sq Ft, Price.\n3. TRANSACTION TYPE: Detect if 'Rent', 'Lease' or 'Sale'.\n4. ADHERE TO THE GROUNDING PROTOCOL.\n5. DO NOT HALLUCINATE.` 
+      }] 
+    }],
     config: {
       systemInstruction: SCRAPER_SYSTEM_INSTRUCTION,
-      tools: isUrl ? [{ googleSearch: {} }] : undefined,
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -33,6 +60,7 @@ COMMAND:
           status: { type: Type.STRING },
           tier: { type: Type.STRING },
           category: { type: Type.STRING },
+          transaction_type: { type: Type.STRING },
           visibility_protocol: {
             type: Type.OBJECT,
             properties: {
@@ -45,6 +73,7 @@ COMMAND:
             properties: {
               address: { type: Type.STRING },
               price: { type: Type.NUMBER },
+              image_url: { type: Type.STRING },
               video_tour_url: { type: Type.STRING },
               key_stats: {
                 type: Type.OBJECT,
@@ -58,7 +87,13 @@ COMMAND:
               hero_narrative: { type: Type.STRING }
             }
           },
-          deep_data: { type: Type.OBJECT, properties: {} },
+          deep_data: { 
+            type: Type.OBJECT, 
+            properties: {
+                appraisal: { type: Type.STRING },
+                notes: { type: Type.STRING }
+            } 
+          },
           agent_notes: {
             type: Type.OBJECT,
             properties: {
@@ -73,23 +108,16 @@ COMMAND:
   });
 
   try {
-    const text = response.text || '{}';
-    const cleanedJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    const data = JSON.parse(cleanedJson) as PropertySchema;
-    
-    // Ensure property_id exists
-    if (!data.property_id) {
-      data.property_id = `EG-${Math.floor(Math.random() * 1000)}`;
-    }
-    // Set default status if missing
+    // In @google/genai v2, if json requested, the parsed object is in result.value
+    // Fallback to manual parse if value is missing
+    const data = (result as any).value || JSON.parse(result.text || '{}');
+    if (!data.property_id) data.property_id = `EG-${Math.floor(Math.random() * 1000)}`;
     if (!data.status) data.status = 'Active';
-    // Set default category
     if (!data.category) data.category = 'Residential';
-    
+    if (!data.transaction_type) data.transaction_type = 'Sale';
     return data;
   } catch (e: any) {
     console.error("Scraper Error:", e);
-    // Bubble up the actual error message (e.g. Quota Exceeded, API Key Invalid)
     throw new Error(`Sync failed: ${e.message || "Unknown error"}`);
   }
 };
@@ -99,29 +127,36 @@ export const chatWithGuard = async (
   propertyContext: PropertySchema,
   settings: AgentSettings
 ) => {
-  const ai = new GoogleGenAI({ apiKey: settings.apiKey || process.env.API_KEY || '' });
-  const chat = ai.chats.create({
-    model: 'gemini-3-flash-preview',
+  const apiKey = getApiKey(settings.apiKey);
+  const client = new GoogleGenAI({ apiKey });
+
+  const response = await client.models.generateContent({
+    model: 'gemini-1.5-flash',
+    contents: history,
     config: {
-      systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE (ONLY USE THIS DATA):\n${JSON.stringify(propertyContext, null, 2)}`,
+      systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
     }
   });
 
-  const lastUserMsg = history[history.length - 1].parts[0].text;
-  const response = await chat.sendMessage({ message: lastUserMsg });
   return response.text;
 };
 
-export const transcribeAudio = async (base64Audio: string, apiKey: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey });
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: {
-      parts: [
-        { inlineData: { mimeType: 'audio/pcm;rate=16000', data: base64Audio } },
-        { text: "STRICT TRANSCRIPTION: Convert this voice note to text without additions." }
-      ]
-    }
+export const transcribeAudio = async (base64Audio: string, manualKey?: string): Promise<string> => {
+  const apiKey = getApiKey(manualKey);
+  const client = new GoogleGenAI({ apiKey });
+  
+  const response = await client.models.generateContent({
+    model: 'gemini-1.5-flash',
+    contents: [
+      {
+        role: 'user',
+        parts: [
+          { inlineData: { mimeType: 'audio/mp3', data: base64Audio } },
+          { text: "STRICT TRANSCRIPTION: Convert this voice note to text without additions." }
+        ]
+      }
+    ]
   });
+  
   return response.text || "";
 };

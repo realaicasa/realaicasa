@@ -4,10 +4,13 @@ export enum PropertyTier {
 }
 
 export type PropertyCategory = 'Residential' | 'Commercial' | 'Land' | 'Rental';
+export type TransactionType = 'Sale' | 'Rent' | 'Lease';
 
 export interface PropertySchema {
   property_id: string;
+  user_id?: string;
   category: PropertyCategory;
+  transaction_type: TransactionType;
   status: 'Active' | 'Pending' | 'Sold' | 'Rented';
   tier: PropertyTier;
   visibility_protocol: {
@@ -17,6 +20,7 @@ export interface PropertySchema {
   listing_details: {
     address: string;
     price: number;
+    image_url?: string;
     video_tour_url?: string;
     key_stats: {
       bedrooms?: number;
@@ -37,6 +41,13 @@ export interface PropertySchema {
     motivation: string;
     showing_instructions: string;
   };
+  ai_training?: {
+    proximityWaterfront?: string;
+    commuteTime?: string;
+    schools?: string;
+    hospitals?: string;
+    supermarkets?: string;
+  };
 }
 
 export type LeadStatus = string;
@@ -45,11 +56,13 @@ export interface Lead {
   id: string;
   name: string;
   phone: string;
+  email?: string;
   financing_status: 'Cash' | 'Lender' | 'Unverified';
   property_id: string;
   property_address: string;
   status: LeadStatus;
   timestamp: string;
+  created_at?: string;
   due_date?: string;
   notes: string[];
 }
@@ -69,6 +82,17 @@ export interface AgentSettings {
   agentCount: number;
   conciergeIntro: string;
   language: string;
+  // Business Knowledge Base
+  termsAndConditions?: string;
+  privacyPolicy?: string;
+  nda?: string;
+  locationHours?: string;
+  serviceAreas?: string;
+  commissionRates?: string;
+  marketingStrategy?: string;
+  teamMembers?: string;
+  awards?: string;
+  legalDisclaimer?: string;
 }
 
 export interface ChatMessage {

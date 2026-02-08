@@ -10,7 +10,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
   const menuItems = [
     { id: 'dashboard', icon: 'fa-chart-line', label: 'Command' },
     { id: 'properties', icon: 'fa-building', label: 'Portfolio' },
-    { id: 'leads', icon: 'fa-layer-group', label: 'Qualified' },
+    { id: 'leads', icon: 'fa-layer-group', label: 'Leads' },
     { id: 'ingestion', icon: 'fa-plus-circle', label: 'Ingest' },
     { id: 'chat', icon: 'fa-robot', label: 'Concierge' },
     { id: 'settings', icon: 'fa-cog', label: 'Identity' },
@@ -63,7 +63,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
             key={item.id}
             onClick={() => setActiveTab(item.id)}
             className={`flex flex-col items-center gap-1 transition-all duration-200 ${
-              activeTab === item.id ? 'text-gold' : 'text-slate-600'
+              activeTab === item.id ? 'text-gold' : 'text-white'
             }`}
           >
             <i className={`fa-solid ${item.icon} text-lg`}></i>

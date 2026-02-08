@@ -43,9 +43,9 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
 
   if (isEditing) {
     return (
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300 max-h-[70vh] overflow-y-auto pr-4 custom-scrollbar">
         <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-200">
-          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Asset Specification Adjustment</h4>
+          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-200 pb-2">Asset Core Specification</h4>
           <div className="space-y-5">
             <div>
               <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Location Address</label>
@@ -58,6 +58,34 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
                 })}
               />
             </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Transaction Type</label>
+                <select 
+                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all cursor-pointer bg-white"
+                  value={editedProperty.transaction_type}
+                  onChange={e => setEditedProperty({ ...editedProperty, transaction_type: e.target.value as any })}
+                >
+                  <option value="Sale">For Sale</option>
+                  <option value="Rent">For Rent</option>
+                  <option value="Lease">For Lease</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Asset Category</label>
+                <select 
+                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all cursor-pointer bg-white"
+                  value={editedProperty.category}
+                  onChange={e => setEditedProperty({ ...editedProperty, category: e.target.value as any })}
+                >
+                  <option value="Residential">Residential</option>
+                  <option value="Commercial">Commercial</option>
+                  <option value="Land">Land</option>
+                </select>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Valuation ($)</label>
@@ -72,25 +100,53 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
                 />
               </div>
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Scale (Sq Ft)</label>
-                <input 
-                  type="number"
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all"
-                  value={editedProperty.listing_details.key_stats.sq_ft}
-                  onChange={e => setEditedProperty({
-                    ...editedProperty, 
-                    listing_details: { 
-                      ...editedProperty.listing_details, 
-                      key_stats: { ...editedProperty.listing_details.key_stats, sq_ft: Number(e.target.value) } 
-                    }
-                  })}
-                />
+                <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Asset Status</label>
+                <select 
+                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all cursor-pointer bg-white"
+                  value={editedProperty.status}
+                  onChange={e => setEditedProperty({ ...editedProperty, status: e.target.value as any })}
+                >
+                  <option value="Active">Active Listing</option>
+                  <option value="Pending">Under Contract</option>
+                  <option value="Sold">Sold / Closed</option>
+                  <option value="Rented">Rented</option>
+                </select>
               </div>
             </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Asset Image URL</label>
+              <input 
+                className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all"
+                value={editedProperty.listing_details.image_url || ''}
+                placeholder="https://images.unsplash.com/..."
+                onChange={e => setEditedProperty({
+                  ...editedProperty, 
+                  listing_details: { ...editedProperty.listing_details, image_url: e.target.value }
+                })}
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Scale (Sq Ft)</label>
+              <input 
+                type="number"
+                className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all"
+                value={editedProperty.listing_details.key_stats.sq_ft}
+                onChange={e => setEditedProperty({
+                  ...editedProperty, 
+                  listing_details: { 
+                    ...editedProperty.listing_details, 
+                    key_stats: { ...editedProperty.listing_details.key_stats, sq_ft: Number(e.target.value) } 
+                  }
+                })}
+              />
+            </div>
+
             <div>
               <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Market Narrative</label>
               <textarea 
-                rows={4}
+                rows={3}
                 className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium resize-none focus:ring-2 focus:ring-gold outline-none transition-all"
                 value={editedProperty.listing_details.hero_narrative}
                 onChange={e => setEditedProperty({
@@ -100,13 +156,45 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
               />
             </div>
           </div>
+
+          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-10 mb-6 border-b border-slate-200 pb-2 flex items-center gap-2">
+             <i className="fa-solid fa-brain text-gold"></i> AI Precision Training
+          </h4>
+          <div className="space-y-4">
+             {[
+               { label: 'Proximity to Waterfront', field: 'proximityWaterfront', icon: 'fa-water' },
+               { label: 'Commute & Transport', field: 'commuteTime', icon: 'fa-car' },
+               { label: 'Educational Facilities', field: 'schools', icon: 'fa-school' },
+               { label: 'Healthcare & Hospitals', field: 'hospitals', icon: 'fa-hospital' },
+               { label: 'Markets & Essentials', field: 'supermarkets', icon: 'fa-cart-shopping' }
+             ].map((item) => (
+               <div key={item.field}>
+                 <div className="flex items-center gap-2 mb-1 ml-1">
+                    <i className={`fa-solid ${item.icon} text-gold/60 text-[10px]`}></i>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">{item.label}</label>
+                 </div>
+                 <input 
+                   className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-gold outline-none transition-all"
+                   value={(editedProperty.ai_training as any)?.[item.field] || ''}
+                   onChange={e => setEditedProperty({
+                     ...editedProperty,
+                     ai_training: {
+                       ...editedProperty.ai_training,
+                       [item.field]: e.target.value
+                     }
+                   })}
+                   placeholder={`Specify ${item.label.toLowerCase()} details...`}
+                 />
+               </div>
+             ))}
+          </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 sticky bottom-0 bg-white pt-4 border-t border-slate-100 mt-4">
           <button 
             onClick={handleSave}
             className="flex-1 bg-slate-950 text-gold py-5 rounded-2xl font-bold text-sm shadow-xl active:scale-95 transition-transform"
           >
-            Update Synchronized Data
+            Sychronize Asset Cloud
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); setIsEditing(false); }}
@@ -124,23 +212,32 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="aspect-video rounded-[2rem] overflow-hidden shadow-2xl border border-slate-100 bg-slate-200 relative group">
           <img 
-            src={`https://picsum.photos/seed/${property.property_id}/800/600`} 
+            src={property.listing_details.image_url || `https://picsum.photos/seed/${property.property_id}/800/600`} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
             alt="Property Hero" 
             onError={(e) => (e.currentTarget.src = 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80')}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div className="absolute top-4 right-4 bg-slate-950/80 backdrop-blur-md text-gold px-4 py-1 rounded-full text-[10px] font-bold shadow-lg border border-gold/20">
+             {property.transaction_type}
+          </div>
         </div>
         <div className="space-y-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 mb-1">
               <span className="text-[10px] font-black text-gold uppercase tracking-[0.2em]">{property.category}</span>
               <span className={`px-2 py-0.5 rounded text-[8px] font-bold ${property.tier === PropertyTier.ESTATE_GUARD ? 'bg-slate-900 text-gold shadow-lg shadow-gold/10' : 'bg-slate-100 text-slate-500'}`}>
                 {property.tier}
               </span>
+              <span className={`px-2 py-0.5 rounded text-[8px] font-bold ${
+                property.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 
+                property.status === 'Pending' ? 'bg-amber-100 text-amber-700' : 
+                'bg-slate-100 text-slate-500'
+              }`}>
+                {property.status}
+              </span>
             </div>
             <h3 className="text-3xl font-luxury font-bold text-slate-900 leading-tight">{property.listing_details.address || 'Address Unspecified'}</h3>
-            <p className="text-slate-500 text-sm mt-2 flex items-center gap-2">
+            <p className="text-slate-500 text-sm flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
               Secure Asset Cloud • {property.property_id}
             </p>
@@ -170,7 +267,36 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {property.ai_training && Object.values(property.ai_training).some(v => !!v) && (
+          <div>
+            <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+               <i className="fa-solid fa-brain text-gold"></i> AI Precision Insights
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               {[
+                 { label: 'Waterfront', field: 'proximityWaterfront', icon: 'fa-water' },
+                 { label: 'Commute', field: 'commuteTime', icon: 'fa-car' },
+                 { label: 'Education', field: 'schools', icon: 'fa-school' },
+                 { label: 'Medical', field: 'hospitals', icon: 'fa-hospital' },
+                 { label: 'Essentials', field: 'supermarkets', icon: 'fa-cart-shopping' }
+               ].map(item => {
+                 const val = (property.ai_training as any)?.[item.field];
+                 if (!val) return null;
+                 return (
+                   <div key={item.field} className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-start gap-3">
+                      <i className={`fa-solid ${item.icon} text-gold mt-1`}></i>
+                      <div>
+                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">{item.label}</p>
+                        <p className="text-[11px] font-medium text-slate-700 leading-tight">{val}</p>
+                      </div>
+                   </div>
+                 );
+               })}
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-slate-200 pt-8">
            <div>
              <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                <i className="fa-solid fa-lock text-gold"></i> Gated Protocols

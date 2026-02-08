@@ -23,7 +23,7 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
       const parsed = await parsePropertyData(inputValue, settings.apiKey);
       onPropertyAdded(parsed);
       setInputValue('');
-      // Beautiful success alert replacement logic could go here, for now alert is fine
+      alert("SUCCESS: Property successfully synchronized and vaulted in the Asset Cloud.");
     } catch (error) {
       console.error(error);
       alert(error instanceof Error ? error.message : "Intelligence sync failed. Please verify the source data and try again.");
@@ -71,14 +71,14 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
   return (
     <div className="bg-white rounded-[3rem] shadow-sm border border-slate-100 p-12 max-w-5xl mx-auto overflow-hidden relative">
       {loading && (
-        <div className="absolute inset-0 z-50 bg-white/90 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300">
+        <div className="absolute inset-0 z-50 bg-white/90 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300 rounded-[3rem]">
            <div className="w-24 h-24 mb-6 relative">
               <div className="absolute inset-0 border-4 border-gold/20 rounded-full"></div>
               <div className="absolute inset-0 border-4 border-gold rounded-full border-t-transparent animate-spin"></div>
               <i className="fa-solid fa-wand-magic-sparkles absolute inset-0 flex items-center justify-center text-gold text-2xl"></i>
            </div>
            <h3 className="text-xl font-luxury font-bold text-slate-900">Synchronizing Asset Intelligence</h3>
-           <p className="text-slate-500 text-sm mt-2 animate-pulse">Gemini 3 Flash Pro is structuring your listing data...</p>
+           <p className="text-slate-500 text-sm mt-2 animate-pulse font-medium uppercase tracking-widest text-[10px]">Elite Precision Protocol Active...</p>
         </div>
       )}
 

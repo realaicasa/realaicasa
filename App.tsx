@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './i18n'; // Import i18n configuration
+import i18n from './i18n'; // Import i18n configuration
 import Navigation from './components/Navigation';
 import DashboardStats from './components/DashboardStats';
 import PropertyCard from './components/PropertyCard';
@@ -15,7 +15,7 @@ import { PropertySchema, Lead, PropertyTier, AgentSettings, LeadStatus } from '.
 const INITIAL_SETTINGS: AgentSettings = {
   businessName: 'EstateGuard AI',
   primaryColor: '#d4af37',
-  apiKey: process.env.API_KEY || '',
+  apiKey: '',
   highSecurityMode: true,
   subscriptionTier: 'Enterprise',
   monthlyPrice: 0,
@@ -25,55 +25,25 @@ const INITIAL_SETTINGS: AgentSettings = {
   specialties: ['Luxury Waterfront', 'Commercial High-Rise', 'Exclusive Land'],
   agentCount: 12,
   conciergeIntro: 'Ask our happy assistant about any of our properties 24/7',
-  language: 'English'
+  language: 'en',
+  termsAndConditions: '',
+  privacyPolicy: '',
+  nda: '',
+  locationHours: '',
+  serviceAreas: '',
+  commissionRates: '',
+  marketingStrategy: '',
+  teamMembers: '',
+  awards: '',
+  legalDisclaimer: ''
 };
 
-const MOCK_PROPERTIES: PropertySchema[] = [
-  {
-    property_id: "EG-770",
-    category: 'Residential',
-    status: "Active",
-    tier: PropertyTier.ESTATE_GUARD,
-    visibility_protocol: {
-      public_fields: ["address", "hero_narrative", "key_stats"],
-      gated_fields: ["private_appraisal", "seller_concessions"]
-    },
-    listing_details: {
-      address: "The Glass House, Aspen Peaks",
-      price: 18500000, 
-      video_tour_url: "https://www.w3schools.com/html/mov_bbb.mp4",
-      key_stats: {
-        bedrooms: 7,
-        bathrooms: 9,
-        sq_ft: 18200,
-        lot_size: "12 Acres"
-      },
-      hero_narrative: "A seamless fusion of glass and stone, this peak-side masterpiece offers unparalleled alpine luxury."
-    },
-    deep_data: {},
-    agent_notes: { motivation: "Private", showing_instructions: "Proof of Funds required" }
-  },
-  {
-    property_id: "EG-212",
-    category: 'Commercial',
-    status: "Active",
-    tier: PropertyTier.STANDARD,
-    visibility_protocol: { public_fields: ["address"], gated_fields: ["mechanical_specs"] },
-    listing_details: {
-      address: "Tech Plaza Tower, Austin TX",
-      price: 4200000,
-      key_stats: { sq_ft: 120000, lot_size: "2.5 Acres", zoning: "Commercial-A" },
-      hero_narrative: "Premium class-A office space with LEED Platinum certification."
-    },
-    deep_data: {},
-    agent_notes: { motivation: "Downsizing portfolio", showing_instructions: "Appt only" }
-  }
-];
+
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [settings, setSettings] = useState<AgentSettings>(INITIAL_SETTINGS);
-  const [properties, setProperties] = useState<PropertySchema[]>(MOCK_PROPERTIES);
+  const [properties, setProperties] = useState<PropertySchema[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [modalContent, setModalContent] = useState<{title: string, content: React.ReactNode} | null>(null);
@@ -82,53 +52,174 @@ const App: React.FC = () => {
 
   // Sync language with settings
   useEffect(() => {
-    import('i18next').then(i18n => {
-        i18n.default.changeLanguage(settings.language === 'English' ? 'en' : settings.language === 'Spanish' ? 'es' : 'fr');
-    });
+    i18n.changeLanguage(settings.language === 'en' ? 'en' : settings.language === 'es' ? 'es' : 'fr');
   }, [settings.language]);
 
-  // Fetch settings from Supabase on mount
+  // Fetch all data from Supabase on mount
   useEffect(() => {
-    const fetchSettings = async () => {
+    const fetchData = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const { data, error } = await supabase
+          // 1. Fetch Settings
+          const { data: configData } = await supabase
             .from('app_config')
             .select('*')
             .eq('id', user.id)
             .single();
 
-          if (data) {
+          if (configData) {
             setSettings({
-              businessName: data.business_name,
-              primaryColor: data.primary_color,
-              apiKey: INITIAL_SETTINGS.apiKey, // Keep local or fetch if stored securely (not recommended in DB)
-              highSecurityMode: data.high_security_mode,
-              subscriptionTier: INITIAL_SETTINGS.subscriptionTier,
-              monthlyPrice: data.monthly_price,
-              businessAddress: INITIAL_SETTINGS.businessAddress,
-              contactEmail: data.contact_email,
-              contactPhone: data.contact_phone,
-              specialties: data.specialties,
-              agentCount: INITIAL_SETTINGS.agentCount,
-              conciergeIntro: INITIAL_SETTINGS.conciergeIntro, // Add to DB if needed
-              language: data.language
+              ...INITIAL_SETTINGS,
+              businessName: configData.business_name || INITIAL_SETTINGS.businessName,
+              primaryColor: configData.primary_color || INITIAL_SETTINGS.primaryColor,
+              highSecurityMode: configData.high_security_mode ?? INITIAL_SETTINGS.highSecurityMode,
+              contactEmail: configData.contact_email || INITIAL_SETTINGS.contactEmail,
+              contactPhone: configData.contact_phone || INITIAL_SETTINGS.contactPhone,
+              specialties: configData.specialties || INITIAL_SETTINGS.specialties,
+              language: configData.language || INITIAL_SETTINGS.language,
+              termsAndConditions: configData.terms_and_conditions,
+              privacyPolicy: configData.privacy_policy,
+              nda: configData.nda,
+              locationHours: configData.location_hours,
+              serviceAreas: configData.service_areas,
+              commissionRates: configData.commission_rates,
+              marketingStrategy: configData.marketing_strategy,
+              teamMembers: configData.team_members,
+              awards: configData.awards,
+              legalDisclaimer: configData.legal_disclaimer
             });
+          }
+
+          // 2. Fetch Properties
+          const { data: propData } = await supabase
+            .from('properties')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          if (propData) {
+            setProperties(propData.map((p: any) => ({
+                property_id: p.property_id,
+                category: p.category,
+                transaction_type: p.transaction_type || 'Sale',
+                status: p.status,
+                tier: p.tier,
+                visibility_protocol: p.visibility_protocol || { public_fields: ['address'], gated_fields: [] },
+                listing_details: p.listing_details,
+                deep_data: p.deep_data || {},
+                agent_notes: p.agent_notes || { motivation: '', showing_instructions: '' },
+                ai_training: p.ai_training
+            })));
+          }
+
+          // 3. Fetch Leads
+          const { data: leadData } = await supabase
+            .from('leads')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+
+          if (leadData) {
+            setLeads(leadData.map((l: any) => ({
+                id: l.id,
+                name: l.name,
+                phone: l.phone,
+                email: l.email,
+                financing_status: l.financing_status || 'Unverified',
+                property_id: l.property_id,
+                property_address: l.property_address,
+                status: l.status,
+                timestamp: l.created_at,
+                notes: l.notes || []
+            })));
           }
         }
       } catch (error) {
-        console.error('Error fetching settings:', error);
+        console.error('Core Sync Error:', error);
       }
     };
-    fetchSettings();
+    fetchData();
   }, []);
 
   // Derive selected property from state to ensure updates reflect immediately in the modal
   const selectedProperty = properties.find(p => p.property_id === selectedPropertyId) || null;
 
-  const handleStatusChange = (id: string, newStatus: LeadStatus) => {
-    setLeads(prev => prev.map(l => l.id === id ? {...l, status: newStatus} : l));
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    // Optimistic Update
+    setLeads(prev => prev.map(l => l.id === id ? { ...l, status: newStatus } : l));
+    
+    try {
+        const { error } = await supabase
+            .from('leads')
+            .update({ status: newStatus })
+            .eq('id', id);
+        if (error) throw error;
+    } catch (e) {
+        console.error("Failed to update lead status:", e);
+    }
+  };
+
+  const handleUpdateLead = async (updated: Lead) => {
+    // Optimistic Update
+    setLeads(prev => prev.map(l => l.id === updated.id ? updated : l));
+    
+    try {
+        const { error } = await supabase
+            .from('leads')
+            .update({ 
+                due_date: updated.due_date,
+                notes: updated.notes
+            })
+            .eq('id', updated.id);
+        if (error) throw error;
+    } catch (e) {
+        console.error("Failed to update lead:", e);
+    }
+  };
+
+  const handleUpdateProperty = async (p: PropertySchema) => {
+    // Optimistic Update
+    setProperties(prev => prev.map(item => item.property_id === p.property_id ? p : item));
+    
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { error } = await supabase
+            .from('properties')
+            .upsert({
+                property_id: p.property_id,
+                user_id: user.id,
+                category: p.category,
+                transaction_type: p.transaction_type,
+                status: p.status,
+                tier: p.tier,
+                visibility_protocol: p.visibility_protocol,
+                listing_details: p.listing_details,
+                deep_data: p.deep_data,
+                agent_notes: p.agent_notes,
+                ai_training: p.ai_training,
+                updated_at: new Date().toISOString()
+            });
+        if (error) throw error;
+    } catch (e) {
+        console.error("Failed to update property:", e);
+    }
+  };
+
+  const handleDeleteProperty = async (propertyId: string) => {
+    setProperties(prev => prev.filter(p => p.property_id !== propertyId));
+    setIsDetailsOpen(false);
+
+    try {
+        const { error } = await supabase
+            .from('properties')
+            .delete()
+            .eq('property_id', propertyId);
+        if (error) throw error;
+    } catch (e) {
+        console.error("Failed to delete property:", e);
+    }
   };
 
   const handleCaptureLead = (leadPart: Partial<Lead>) => {
@@ -310,7 +401,7 @@ const App: React.FC = () => {
                     ))}
                 </div>
             )}
-            {activeTab === 'leads' && <Kanban leads={leads} onStatusChange={handleStatusChange} onUpdateLead={(updated) => setLeads(prev => prev.map(l => l.id === updated.id ? updated : l))} />}
+            {activeTab === 'leads' && <Kanban leads={leads} onStatusChange={handleStatusChange} onUpdateLead={handleUpdateLead} />}
             {activeTab === 'ingestion' && <IngestionPortal settings={settings} onPropertyAdded={(p) => { setProperties([p, ...properties]); setActiveTab('properties'); }} />}
             {activeTab === 'settings' && <Settings settings={settings} onUpdate={setSettings} />}
             {activeTab === 'chat' && (
@@ -410,12 +501,8 @@ const App: React.FC = () => {
         {selectedProperty && (
           <PropertyDetails 
             property={selectedProperty} 
-            onUpdate={updateProperty}
-            onDelete={() => {
-              setProperties(properties.filter(p => p.property_id !== selectedProperty.property_id));
-              setIsDetailsOpen(false);
-              setSelectedPropertyId(null);
-            }}
+            onUpdate={handleUpdateProperty}
+            onDelete={() => handleDeleteProperty(selectedProperty.property_id)}
             onTest={() => {
               setIsDetailsOpen(false);
               setActiveTab('chat');

@@ -32,6 +32,16 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
           contact_phone: settings.contactPhone,
           specialties: settings.specialties,
           language: settings.language,
+          terms_and_conditions: settings.termsAndConditions,
+          privacy_policy: settings.privacyPolicy,
+          nda: settings.nda,
+          location_hours: settings.locationHours,
+          service_areas: settings.serviceAreas,
+          commission_rates: settings.commissionRates,
+          marketing_strategy: settings.marketingStrategy,
+          team_members: settings.teamMembers,
+          awards: settings.awards,
+          legal_disclaimer: settings.legalDisclaimer,
           updated_at: new Date().toISOString()
         });
 
@@ -142,6 +152,46 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
                         className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold outline-none text-sm font-mono"
                     />
                 </div>
+            </div>
+          </section>
+
+          {/* Business Knowledge Base Training (The 10 Boxes) */}
+          <section>
+            <h3 className="font-bold text-slate-800 mb-8 flex items-center gap-4 text-lg">
+              <i className="fa-solid fa-brain text-gold"></i> 
+              Knowledge Base Training
+            </h3>
+            <p className="text-sm text-slate-500 mb-8 max-w-2xl leading-relaxed">
+              Define your agency's proprietary intelligence. The AI concierge uses this data to answer complex visitor questions about your business operations and legal standards.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {[
+                { label: 'Terms & Conditions', field: 'termsAndConditions', icon: 'fa-file-signature' },
+                { label: 'Privacy Policy', field: 'privacyPolicy', icon: 'fa-user-lock' },
+                { label: 'NDA Requirements', field: 'nda', icon: 'fa-handshake-slash' },
+                { label: 'Location & Hours', field: 'locationHours', icon: 'fa-clock' },
+                { label: 'Service Areas', field: 'serviceAreas', icon: 'fa-map-location-dot' },
+                { label: 'Commission Rates', field: 'commissionRates', icon: 'fa-percent' },
+                { label: 'Marketing Strategy', field: 'marketingStrategy', icon: 'fa-bullhorn' },
+                { label: 'Team Members', field: 'teamMembers', icon: 'fa-users' },
+                { label: 'Awards & Accolades', field: 'awards', icon: 'fa-trophy' },
+                { label: 'Legal Disclaimer', field: 'legalDisclaimer', icon: 'fa-gavel' }
+              ].map((item) => (
+                <div key={item.field} className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <i className={`fa-solid ${item.icon} text-gold/60 text-xs`}></i>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.label}</label>
+                  </div>
+                  <textarea 
+                    rows={3}
+                    value={(settings as any)[item.field] || ''}
+                    onChange={(e) => onUpdate({...settings, [item.field]: e.target.value})}
+                    placeholder={`Define your ${item.label.toLowerCase()}...`}
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold outline-none transition-all font-medium text-xs leading-relaxed"
+                  />
+                </div>
+              ))}
             </div>
           </section>
 
