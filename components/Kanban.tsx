@@ -117,25 +117,25 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                   )}
                 </div>
                 
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="bg-white/50 text-slate-600 px-2 py-0.5 rounded-md text-[10px] font-bold">
-                    {leads.filter(l => l.status === col).length}
-                  </span>
-                  {leads.filter(l => l.status === col).length === 0 && (
-                     <button onClick={() => handleDeleteColumn(col)} className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-red-500">
-                       <i className="fa-solid fa-xmark text-xs"></i>
-                    </button>
-                  )}
-                  {idx === 0 && !isAddingLead && (
-                    <button 
-                      onClick={() => setIsAddingLead(true)}
-                      className="w-6 h-6 bg-gold text-slate-950 rounded-md flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
-                      title="Add Manual Lead"
-                    >
-                      <i className="fa-solid fa-plus text-[10px]"></i>
-                    </button>
-                  )}
-                </div>
+                  <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                    <span className="bg-white/50 text-slate-600 px-2 py-0.5 rounded-md text-[10px] font-bold">
+                      {leads.filter(l => l.status === col).length}
+                    </span>
+                    {leads.filter(l => l.status === col).length === 0 && (
+                      <button onClick={() => handleDeleteColumn(col)} className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-red-500">
+                        <i className="fa-solid fa-xmark text-xs"></i>
+                      </button>
+                    )}
+                    {idx === 0 && !isAddingLead && (
+                      <button 
+                        onClick={() => setIsAddingLead(true)}
+                        className="w-6 h-6 bg-[#d4af37] text-slate-950 rounded-md flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
+                        title="Add Manual Lead"
+                      >
+                        <i className="fa-solid fa-plus text-[10px]"></i>
+                      </button>
+                    )}
+                  </div>
               </div>
 
               {/* Add Lead Inline Form */}

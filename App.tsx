@@ -10,6 +10,7 @@ import Kanban from './components/Kanban';
 import Settings from './components/Settings';
 import PropertyDetails from './components/PropertyDetails';
 import PropertyExhibit from './components/PropertyExhibit';
+import Auth from './components/Auth';
 import { supabase } from './services/supabaseClient';
 import { PropertySchema, Lead, PropertyTier, AgentSettings, LeadStatus } from './types';
 
@@ -50,98 +51,119 @@ const App: React.FC = () => {
   const [modalContent, setModalContent] = useState<{title: string, content: React.ReactNode} | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [notifications, setNotifications] = useState(0);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   // Sync language with settings
   useEffect(() => {
     i18n.changeLanguage(settings.language === 'en' ? 'en' : settings.language === 'es' ? 'es' : 'fr');
   }, [settings.language]);
 
-  // Fetch all data from Supabase on mount
+  // Listen for Auth Changes
   useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Fetch all data from Supabase whenever user changes
+  useEffect(() => {
+    if (!user) {
+      // Clear data if logged out
+      setProperties([]);
+      setLeads([]);
+      setSettings(INITIAL_SETTINGS);
+      return;
+    }
+
     const fetchData = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          // 1. Fetch Settings
-          const { data: configData } = await supabase
-            .from('app_config')
-            .select('*')
-            .eq('id', user.id)
-            .single();
+        // 1. Fetch Settings
+        const { data: configData } = await supabase
+          .from('app_config')
+          .select('*')
+          .eq('id', user.id)
+          .single();
 
-          if (configData) {
-            setSettings({
-              ...INITIAL_SETTINGS,
-              businessName: configData.business_name || INITIAL_SETTINGS.businessName,
-              primaryColor: configData.primary_color || INITIAL_SETTINGS.primaryColor,
-              apiKey: configData.api_key || INITIAL_SETTINGS.apiKey,
-              highSecurityMode: configData.high_security_mode ?? INITIAL_SETTINGS.highSecurityMode,
-              contactEmail: configData.contact_email || INITIAL_SETTINGS.contactEmail,
-              contactPhone: configData.contact_phone || INITIAL_SETTINGS.contactPhone,
-              specialties: configData.specialties || INITIAL_SETTINGS.specialties,
-              language: configData.language || INITIAL_SETTINGS.language,
-              termsAndConditions: configData.terms_and_conditions,
-              privacyPolicy: configData.privacy_policy,
-              nda: configData.nda,
-              locationHours: configData.location_hours,
-              serviceAreas: configData.service_areas,
-              commissionRates: configData.commission_rates,
-              marketingStrategy: configData.marketing_strategy,
-              teamMembers: configData.team_members,
-              awards: configData.awards,
-              legalDisclaimer: configData.legal_disclaimer
-            });
-          }
+        if (configData) {
+          setSettings({
+            ...INITIAL_SETTINGS,
+            businessName: configData.business_name || INITIAL_SETTINGS.businessName,
+            primaryColor: configData.primary_color || INITIAL_SETTINGS.primaryColor,
+            apiKey: configData.api_key || INITIAL_SETTINGS.apiKey,
+            highSecurityMode: configData.high_security_mode ?? INITIAL_SETTINGS.highSecurityMode,
+            contactEmail: configData.contact_email || INITIAL_SETTINGS.contactEmail,
+            contactPhone: configData.contact_phone || INITIAL_SETTINGS.contactPhone,
+            specialties: configData.specialties || INITIAL_SETTINGS.specialties,
+            language: configData.language || INITIAL_SETTINGS.language,
+            termsAndConditions: configData.terms_and_conditions,
+            privacyPolicy: configData.privacy_policy,
+            nda: configData.nda,
+            locationHours: configData.location_hours,
+            serviceAreas: configData.service_areas,
+            commissionRates: configData.commission_rates,
+            marketingStrategy: configData.marketing_strategy,
+            teamMembers: configData.team_members,
+            awards: configData.awards,
+            legalDisclaimer: configData.legal_disclaimer
+          });
+        }
 
-          // 2. Fetch Properties
-          const { data: propData } = await supabase
-            .from('properties')
-            .select('*')
-            .eq('user_id', user.id);
-          
-          if (propData) {
-            setProperties(propData.map((p: any) => ({
-                property_id: p.property_id,
-                category: p.category,
-                transaction_type: p.transaction_type || 'Sale',
-                status: p.status,
-                tier: p.tier,
-                visibility_protocol: p.visibility_protocol || { public_fields: ['address'], gated_fields: [] },
-                listing_details: p.listing_details,
-                deep_data: p.deep_data || {},
-                agent_notes: p.agent_notes || { motivation: '', showing_instructions: '' },
-                ai_training: p.ai_training
-            })));
-          }
+        // 2. Fetch Properties
+        const { data: propData } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('user_id', user.id);
+        
+        if (propData) {
+          setProperties(propData.map((p: any) => ({
+              property_id: p.property_id,
+              category: p.category,
+              transaction_type: p.transaction_type || 'Sale',
+              status: p.status,
+              tier: p.tier,
+              visibility_protocol: p.visibility_protocol || { public_fields: ['address'], gated_fields: [] },
+              listing_details: p.listing_details,
+              deep_data: p.deep_data || {},
+              agent_notes: p.agent_notes || { motivation: '', showing_instructions: '' },
+              ai_training: p.ai_training
+          })));
+        }
 
-          // 3. Fetch Leads
-          const { data: leadData } = await supabase
-            .from('leads')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false });
+        // 3. Fetch Leads
+        const { data: leadData } = await supabase
+          .from('leads')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
 
-          if (leadData) {
-            setLeads(leadData.map((l: any) => ({
-                id: l.id,
-                name: l.name,
-                phone: l.phone,
-                email: l.email,
-                financing_status: l.financing_status || 'Unverified',
-                property_id: l.property_id,
-                property_address: l.property_address,
-                status: l.status,
-                timestamp: l.created_at,
-                notes: l.notes || []
-            })));
-          }
+        if (leadData) {
+          setLeads(leadData.map((l: any) => ({
+              id: l.id,
+              name: l.name,
+              phone: l.phone,
+              email: l.email,
+              financing_status: l.financing_status || 'Unverified',
+              property_id: l.property_id,
+              property_address: l.property_address,
+              status: l.status,
+              timestamp: l.created_at,
+              notes: l.notes || []
+          })));
         }
       } catch (error) {
         console.error('Core Sync Error:', error);
       }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
   // Derive selected property from state to ensure updates reflect immediately in the modal
   const selectedProperty = properties.find(p => p.property_id === selectedPropertyId) || null;
@@ -354,6 +376,21 @@ const App: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-gold flex flex-col items-center gap-4">
+          <i className="fa-solid fa-shield-halved text-4xl animate-pulse"></i>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em]">Authenticating Secure Vault...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Auth />;
   }
 
   return (
