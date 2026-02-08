@@ -38,11 +38,11 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group ${
                 activeTab === item.id 
-                  ? 'bg-gold text-slate-950 shadow-xl shadow-gold/20 font-bold scale-[1.02]' 
+                  ? 'bg-gold/10 text-gold shadow-xl shadow-gold/5 font-bold scale-[1.02] border border-gold/20' 
                   : 'text-slate-500 hover:bg-slate-900/50 hover:text-slate-300'
               }`}
             >
-              <i className={`fa-solid ${item.icon} ${activeTab === item.id ? 'text-slate-950' : 'group-hover:text-gold transition-colors'}`}></i>
+              <i className={`fa-solid ${item.icon} ${activeTab === item.id ? 'text-gold' : 'group-hover:text-gold transition-colors'}`}></i>
               <span className="text-xs uppercase tracking-[0.2em]">{item.label}</span>
             </button>
           ))}
@@ -77,7 +77,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
             key={item.id}
             onClick={() => setActiveTab(item.id)}
             className={`flex flex-col items-center gap-1 transition-all duration-200 ${
-              activeTab === item.id ? 'text-[#d4af37] scale-110' : 'text-slate-500'
+              activeTab === item.id ? 'text-gold scale-110' : 'text-slate-500'
             }`}
           >
             <i className={`fa-solid ${item.icon} text-xl`}></i>

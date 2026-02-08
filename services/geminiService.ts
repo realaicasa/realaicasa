@@ -43,7 +43,7 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
   }
 
   const result = await client.models.generateContent({
-    model: 'gemini-1.5-pro',
+    model: 'gemini-1.5-flash',
     contents: [{ 
       role: 'user', 
       parts: [{ 

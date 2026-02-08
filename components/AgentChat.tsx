@@ -65,8 +65,8 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
         onLeadCaptured({
           name: "Direct Sandbox Lead",
           phone: phoneMatch[0],
-          property_id: property.property_id,
-          property_address: property.listing_details.address,
+          property_id: property?.property_id || "General",
+          property_address: property?.listing_details?.address || "N/A",
         });
       }
     } catch (e) {
@@ -80,8 +80,8 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
     onLeadCaptured({
       name: leadFormData.name,
       phone: leadFormData.phone,
-      property_id: property.property_id,
-      property_address: property.listing_details.address,
+      property_id: property?.property_id || "General",
+      property_address: property?.listing_details?.address || "N/A",
       notes: [`Prefers ${leadFormData.comm} at ${leadFormData.time}`]
     });
     setIsGated(false);
@@ -123,7 +123,11 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
               <div>
                   <p className="text-xl font-luxury text-slate-800 font-bold tracking-tight">Sandbox Preview</p>
                   <p className="text-sm max-w-xs mx-auto text-slate-500 leading-relaxed mt-2">
-                     Testing {settings.businessName}'s deployment behavior for <b>{property.listing_details.address}</b> ({property.tier}).
+                     Testing {settings.businessName}'s deployment behavior {property ? (
+                       <>for <b>{property?.listing_details?.address}</b> ({property?.tier})</>
+                     ) : (
+                       <>in general mode (No properties ingested yet)</>
+                     )}.
                   </p>
               </div>
             </div>
