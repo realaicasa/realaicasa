@@ -48,6 +48,20 @@ export interface PropertySchema {
     hospitals?: string;
     supermarkets?: string;
   };
+  amenities?: {
+    pool?: boolean;
+    garage?: boolean;
+    wifi?: boolean;
+    laundry?: boolean;
+    pets_allowed?: boolean;
+    gym?: boolean;
+    security?: boolean;
+  };
+  seo?: {
+    meta_title?: string;
+    meta_description?: string;
+    keywords?: string[];
+  };
 }
 
 export type LeadStatus = string;

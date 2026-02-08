@@ -15,9 +15,10 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("No authenticated user found");
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        alert("AUTHENTICATION REQUIRED: Please sign in to your EstateGuard account to synchronize your agency identity.");
+        return;
       }
 
       const { error } = await supabase
@@ -51,7 +52,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Failed to save settings. Check console for details.');
+      alert('Sychronization failed. Verify your connection or re-authenticate.');
     } finally {
       setIsSaving(false);
     }

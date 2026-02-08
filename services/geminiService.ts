@@ -100,6 +100,26 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
               motivation: { type: Type.STRING },
               showing_instructions: { type: Type.STRING }
             }
+          },
+          amenities: {
+            type: Type.OBJECT,
+            properties: {
+              pool: { type: Type.BOOLEAN },
+              garage: { type: Type.BOOLEAN },
+              wifi: { type: Type.BOOLEAN },
+              laundry: { type: Type.BOOLEAN },
+              pets_allowed: { type: Type.BOOLEAN },
+              gym: { type: Type.BOOLEAN },
+              security: { type: Type.BOOLEAN }
+            }
+          },
+          seo: {
+            type: Type.OBJECT,
+            properties: {
+              meta_title: { type: Type.STRING },
+              meta_description: { type: Type.STRING },
+              keywords: { type: Type.ARRAY, items: { type: Type.STRING } }
+            }
           }
         },
         required: ["property_id", "listing_details"]

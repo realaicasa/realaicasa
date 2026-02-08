@@ -5,6 +5,7 @@ interface KanbanProps {
   leads: Lead[];
   onStatusChange: (id: string, newStatus: string) => void;
   onUpdateLead?: (lead: Lead) => void;
+  onAddLead?: (lead: Partial<Lead>) => void;
 }
 
 const PASTEL_COLORS = [
@@ -16,12 +17,14 @@ const PASTEL_COLORS = [
   { name: 'Soft Cyan', bg: 'bg-cyan-50/80', border: 'border-cyan-100', dot: 'bg-cyan-400', text: 'text-cyan-900' },
 ];
 
-const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead }) => {
+const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, onAddLead }) => {
   const [columns, setColumns] = useState<string[]>(['New', 'Discovery', 'Leads', 'Showing', 'Negotiation', 'Closed']); // Fixed 'Leads' name here too
   const [newColumnName, setNewColumnName] = useState('');
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [editingColumn, setEditingColumn] = useState<string | null>(null);
   const [tempColumnName, setTempColumnName] = useState('');
+  const [isAddingLead, setIsAddingLead] = useState(false);
+  const [newLeadData, setNewLeadData] = useState({ name: '', phone: '', email: '', property_address: '' });
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -121,10 +124,63 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead }) 
                   {leads.filter(l => l.status === col).length === 0 && (
                      <button onClick={() => handleDeleteColumn(col)} className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-red-500">
                        <i className="fa-solid fa-xmark text-xs"></i>
-                     </button>
+                    </button>
+                  )}
+                  {idx === 0 && !isAddingLead && (
+                    <button 
+                      onClick={() => setIsAddingLead(true)}
+                      className="w-6 h-6 bg-gold text-slate-950 rounded-md flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
+                      title="Add Manual Lead"
+                    >
+                      <i className="fa-solid fa-plus text-[10px]"></i>
+                    </button>
                   )}
                 </div>
               </div>
+
+              {/* Add Lead Inline Form */}
+              {idx === 0 && isAddingLead && (
+                <div className="mb-4 bg-white p-4 rounded-2xl border-2 border-gold shadow-xl animate-in fade-in slide-in-from-top-2">
+                   <div className="flex justify-between items-center mb-3">
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Manual Ingestion</p>
+                      <button onClick={() => setIsAddingLead(false)} className="text-slate-400 hover:text-slate-600">
+                        <i className="fa-solid fa-xmark text-xs"></i>
+                      </button>
+                   </div>
+                   <div className="space-y-3">
+                      <input 
+                        className="w-full px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold outline-none focus:border-gold"
+                        placeholder="Lead Name"
+                        value={newLeadData.name}
+                        onChange={e => setNewLeadData({...newLeadData, name: e.target.value})}
+                      />
+                      <input 
+                        className="w-full px-3 py-2 rounded-lg border border-slate-100 text-xs font-medium outline-none focus:border-gold"
+                        placeholder="Phone / Email"
+                        value={newLeadData.phone}
+                        onChange={e => setNewLeadData({...newLeadData, phone: e.target.value})}
+                      />
+                      <input 
+                        className="w-full px-3 py-2 rounded-lg border border-slate-100 text-xs font-medium outline-none focus:border-gold"
+                        placeholder="Property Address (Ref)"
+                        value={newLeadData.property_address}
+                        onChange={e => setNewLeadData({...newLeadData, property_address: e.target.value})}
+                      />
+                      <button 
+                         onClick={() => {
+                           if (newLeadData.name && onAddLead) {
+                             onAddLead(newLeadData);
+                             setIsAddingLead(false);
+                             setNewLeadData({ name: '', phone: '', email: '', property_address: '' });
+                           }
+                         }}
+                         className="w-full bg-gold text-slate-900 py-2 rounded-lg text-xs font-bold shadow-md active:scale-95 transition-transform"
+                      >
+                         Secure Prospect
+                      </button>
+                   </div>
+                </div>
+              )}
               
               {/* Column Body */}
               <div className={`${style.bg} p-2 rounded-2xl min-h-[500px] space-y-3 border ${style.border} bg-opacity-30 backdrop-blur-sm`}>

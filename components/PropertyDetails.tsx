@@ -158,6 +158,77 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
           </div>
 
           <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-10 mb-6 border-b border-slate-200 pb-2 flex items-center gap-2">
+             <i className="fa-solid fa-list-check text-gold"></i> Premium Amenities
+          </h4>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+             {[
+               { label: 'Swimming Pool', field: 'pool', icon: 'fa-water' },
+               { label: 'Garage / Parking', field: 'garage', icon: 'fa-car' },
+               { label: 'High-speed WiFi', field: 'wifi', icon: 'fa-wifi' },
+               { label: 'Laundry Unit', field: 'laundry', icon: 'fa-soap' },
+               { label: 'Pets Allowed', field: 'pets_allowed', icon: 'fa-dog' },
+               { label: 'Fitness Center', field: 'gym', icon: 'fa-dumbbell' },
+               { label: '24/7 Security', field: 'security', icon: 'fa-shield-halved' }
+             ].map((item) => (
+               <label key={item.field} className="flex items-center gap-3 cursor-pointer group">
+                  <div className="relative">
+                    <input 
+                      type="checkbox"
+                      className="peer sr-only"
+                      checked={!!(editedProperty.amenities as any)?.[item.field]}
+                      onChange={e => setEditedProperty({
+                        ...editedProperty,
+                        amenities: {
+                          ...editedProperty.amenities,
+                          [item.field]: e.target.checked
+                        }
+                      })}
+                    />
+                    <div className="w-6 h-6 border-2 border-slate-200 rounded-lg group-hover:border-gold transition-colors peer-checked:bg-gold peer-checked:border-gold flex items-center justify-center">
+                      <i className="fa-solid fa-check text-white text-[10px] scale-0 peer-checked:scale-100 transition-transform"></i>
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight group-hover:text-slate-800 transition-colors">{item.label}</span>
+                    <i className={`fa-solid ${item.icon} text-slate-300 text-xs mt-0.5 group-hover:text-gold transition-colors`}></i>
+                  </div>
+               </label>
+             ))}
+          </div>
+
+          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-10 mb-6 border-b border-slate-200 pb-2 flex items-center gap-2">
+             <i className="fa-solid fa-search text-gold"></i> SEO Automation
+          </h4>
+          <div className="space-y-5">
+             <div>
+               <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Meta Title</label>
+               <input 
+                 className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all"
+                 value={editedProperty.seo?.meta_title || ''}
+                 placeholder="Luxury Apartment in Downtown..."
+                 onChange={e => setEditedProperty({
+                   ...editedProperty, 
+                   seo: { ...editedProperty.seo, meta_title: e.target.value }
+                 })}
+               />
+               <p className="text-[9px] text-slate-400 mt-1 ml-1">Recommended: Under 60 characters for peak search ranking.</p>
+             </div>
+             <div>
+               <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Meta Description</label>
+               <textarea 
+                 rows={2}
+                 className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium resize-none focus:ring-2 focus:ring-gold outline-none transition-all underline-none"
+                 value={editedProperty.seo?.meta_description || ''}
+                 placeholder="Discover the ultimate in modern living..."
+                 onChange={e => setEditedProperty({
+                   ...editedProperty, 
+                   seo: { ...editedProperty.seo, meta_description: e.target.value }
+                 })}
+               />
+             </div>
+          </div>
+
+          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-10 mb-6 border-b border-slate-200 pb-2 flex items-center gap-2">
              <i className="fa-solid fa-brain text-gold"></i> AI Precision Training
           </h4>
           <div className="space-y-4">
@@ -266,6 +337,34 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
             "{property.listing_details.hero_narrative || 'Market briefing currently in production.'}"
           </p>
         </div>
+
+        {property.amenities && Object.values(property.amenities).some(v => !!v) && (
+          <div>
+            <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+               <i className="fa-solid fa-gem text-gold"></i> Exclusive Amenities
+            </h4>
+            <div className="flex flex-wrap gap-3">
+               {[
+                 { label: 'Pool', field: 'pool', icon: 'fa-water' },
+                 { label: 'Garage', field: 'garage', icon: 'fa-car' },
+                 { label: 'WiFi', field: 'wifi', icon: 'fa-wifi' },
+                 { label: 'Laundry', field: 'laundry', icon: 'fa-soap' },
+                 { label: 'Pets', field: 'pets_allowed', icon: 'fa-dog' },
+                 { label: 'Gym', field: 'gym', icon: 'fa-dumbbell' },
+                 { label: 'Security', field: 'security', icon: 'fa-shield-halved' }
+               ].map(item => {
+                 const val = (property.amenities as any)?.[item.field];
+                 if (!val) return null;
+                 return (
+                   <div key={item.field} className="bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-sm flex items-center gap-2">
+                      <i className={`fa-solid ${item.icon} text-gold text-xs`}></i>
+                      <span className="text-[10px] font-bold text-slate-700 uppercase tracking-tight">{item.label}</span>
+                   </div>
+                 );
+               })}
+            </div>
+          </div>
+        )}
 
         {property.ai_training && Object.values(property.ai_training).some(v => !!v) && (
           <div>

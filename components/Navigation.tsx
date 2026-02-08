@@ -63,11 +63,11 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
             key={item.id}
             onClick={() => setActiveTab(item.id)}
             className={`flex flex-col items-center gap-1 transition-all duration-200 ${
-              activeTab === item.id ? 'text-gold' : 'text-white'
+              activeTab === item.id ? 'text-gold scale-110' : 'text-slate-500'
             }`}
           >
-            <i className={`fa-solid ${item.icon} text-lg`}></i>
-            <span className="text-[8px] font-bold uppercase tracking-widest">{item.label}</span>
+            <i className={`fa-solid ${item.icon} text-xl`}></i>
+            <span className="text-[8px] font-black uppercase tracking-widest">{item.label}</span>
           </button>
         ))}
       </div>

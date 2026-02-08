@@ -9,6 +9,7 @@ import Modal from './components/Modal';
 import Kanban from './components/Kanban';
 import Settings from './components/Settings';
 import PropertyDetails from './components/PropertyDetails';
+import PropertyExhibit from './components/PropertyExhibit';
 import { supabase } from './services/supabaseClient';
 import { PropertySchema, Lead, PropertyTier, AgentSettings, LeadStatus } from './types';
 
@@ -222,20 +223,50 @@ const App: React.FC = () => {
     }
   };
 
-  const handleCaptureLead = (leadPart: Partial<Lead>) => {
-    const newLead: Lead = {
-      id: `L-${Date.now()}`,
-      name: leadPart.name || "New Prospect",
-      phone: leadPart.phone || "N/A",
-      financing_status: leadPart.financing_status || 'Unverified',
-      property_id: leadPart.property_id || "General",
-      property_address: leadPart.property_address || "N/A",
-      status: 'New',
-      timestamp: new Date().toISOString(),
-      notes: leadPart.notes || []
-    };
-    setLeads(prev => [newLead, ...prev]);
-    setNotifications(prev => prev + 1);
+  const handleCaptureLead = async (leadPart: Partial<Lead>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const newLead: Lead = {
+        id: `L-${Date.now()}`,
+        name: leadPart.name || "New Prospect",
+        phone: leadPart.phone || "N/A",
+        email: leadPart.email || "",
+        financing_status: leadPart.financing_status || 'Unverified',
+        property_id: leadPart.property_id || "General",
+        property_address: leadPart.property_address || "N/A",
+        status: 'New',
+        timestamp: new Date().toISOString(),
+        notes: leadPart.notes || []
+      };
+
+      // Optimistic Update
+      setLeads(prev => [newLead, ...prev]);
+      setNotifications(prev => prev + 1);
+
+      // Persist to Supabase
+      const { error } = await supabase
+        .from('leads')
+        .insert({
+          id: newLead.id,
+          user_id: user.id,
+          name: newLead.name,
+          phone: newLead.phone,
+          email: newLead.email,
+          financing_status: newLead.financing_status,
+          property_id: newLead.property_id,
+          property_address: newLead.property_address,
+          status: newLead.status,
+          created_at: newLead.timestamp,
+          notes: newLead.notes
+        });
+
+      if (error) throw error;
+    } catch (e) {
+      console.error("Failed to capture lead:", e);
+      alert("CRITICAL: Lead capture synchronization failed. Check local vaults.");
+    }
   };
 
   const updateProperty = (updated: PropertySchema) => {
@@ -305,6 +336,24 @@ const App: React.FC = () => {
 
   const agencySlug = settings.businessName.toLowerCase().replace(/\s+/g, '-');
   const embedCode = `<script \n  src="https://app.estateguard.ai/widget.js" \n  data-agent-id="${agencySlug}" \n  data-theme="gold" \n  async>\n</script>`;
+
+  const isWidgetView = new URLSearchParams(window.location.search).get('view') === 'widget';
+
+  if (isWidgetView) {
+    return (
+      <div className="bg-transparent p-6 min-h-screen">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {properties.map(p => (
+            <PropertyExhibit 
+              key={p.property_id} 
+              property={p} 
+              onSelect={() => window.open(`${window.location.origin}/?property=${p.property_id}`, '_blank')}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden flex-col md:flex-row">
@@ -401,7 +450,7 @@ const App: React.FC = () => {
                     ))}
                 </div>
             )}
-            {activeTab === 'leads' && <Kanban leads={leads} onStatusChange={handleStatusChange} onUpdateLead={handleUpdateLead} />}
+            {activeTab === 'leads' && <Kanban leads={leads} onStatusChange={handleStatusChange} onUpdateLead={handleUpdateLead} onAddLead={handleCaptureLead} />}
             {activeTab === 'ingestion' && <IngestionPortal settings={settings} onPropertyAdded={(p) => { setProperties([p, ...properties]); setActiveTab('properties'); }} />}
             {activeTab === 'settings' && <Settings settings={settings} onUpdate={setSettings} />}
             {activeTab === 'chat' && (
@@ -429,6 +478,32 @@ const App: React.FC = () => {
                                 <i className="fa-solid fa-copy mr-2"></i> Copy Snippet
                             </button>
                         </div>
+                        
+                        <div className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-sm relative overflow-hidden group">
+                             <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">
+                               <i className="fa-solid fa-rectangle-list text-[10rem]"></i>
+                             </div>
+                             <h3 className="text-2xl font-luxury font-bold mb-6 flex items-center gap-3">
+                                <i className="fa-solid fa-layer-group text-gold"></i>
+                                Portfolio Exhibit
+                            </h3>
+                            <p className="text-sm text-slate-500 mb-8 leading-relaxed max-w-lg font-medium">
+                                Embed your live property portfolio. This widget automatically synchronizes with your PWA data and includes built-in SEO optimization.
+                            </p>
+                            <div className="bg-slate-50 p-8 rounded-[1.5rem] font-mono text-xs text-slate-600 border border-slate-200 break-all select-all mb-8 shadow-inner">
+                                {`<iframe src="${window.location.origin}/?view=widget" width="100%" height="800px" frameborder="0"></iframe>`}
+                            </div>
+                            <button 
+                                onClick={() => { 
+                                  navigator.clipboard.writeText(`<iframe src="${window.location.origin}/?view=widget" width="100%" height="800px" frameborder="0"></iframe>`); 
+                                  alert("Widget snippet copied to secure clipboard."); 
+                                }}
+                                className="bg-slate-900 text-white px-12 py-5 rounded-2xl font-bold text-sm shadow-2xl transition-transform active:scale-95"
+                            >
+                                <i className="fa-solid fa-code mr-2"></i> Copy Widget Code
+                            </button>
+                        </div>
+
                         <div className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-sm">
                              <h3 className="text-2xl font-luxury font-bold mb-10 flex items-center gap-4">
                                 <i className="fa-solid fa-shield-halved text-gold"></i>
