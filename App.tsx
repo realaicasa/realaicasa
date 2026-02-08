@@ -74,6 +74,7 @@ const App: React.FC = () => {
               ...INITIAL_SETTINGS,
               businessName: configData.business_name || INITIAL_SETTINGS.businessName,
               primaryColor: configData.primary_color || INITIAL_SETTINGS.primaryColor,
+              apiKey: configData.api_key || INITIAL_SETTINGS.apiKey,
               highSecurityMode: configData.high_security_mode ?? INITIAL_SETTINGS.highSecurityMode,
               contactEmail: configData.contact_email || INITIAL_SETTINGS.contactEmail,
               contactPhone: configData.contact_phone || INITIAL_SETTINGS.contactPhone,

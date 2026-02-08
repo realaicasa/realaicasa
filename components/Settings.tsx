@@ -27,6 +27,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
           id: user.id,
           business_name: settings.businessName,
           primary_color: settings.primaryColor,
+          api_key: settings.apiKey,
           high_security_mode: settings.highSecurityMode,
           monthly_price: settings.monthlyPrice,
           contact_email: settings.contactEmail,
