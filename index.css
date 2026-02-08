@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+/* --- Restore Luxury Brand Identity --- */
+:root { 
+    --gold: #d4af37; 
+    --gold-dark: #b8860b; 
+    --brand-bg: #0f172a;
+}
+
+body { 
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; 
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #f8fafc;
+}
+
+/* Luxury font class for headings */
+.font-luxury { font-family: 'Playfair Display', serif; }
+
+/* Custom PWA Pill Styles */
+.pwa-install-pill {
+    background: #111827;
+    border-radius: 9999px;
+    padding: 6px 6px 6px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.pwa-icon-box {
+    background: var(--gold);
+    width: 44px;
+    height: 44px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #111827;
+    font-size: 1.2rem;
+}
+
+.gold-button {
+    background-color: var(--gold);
+    color: #111827;
+    transition: all 0.2s;
+}
+
+.gold-button:hover { background-color: var(--gold-dark); }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
