@@ -2,23 +2,38 @@ import React, { useState } from 'react';
 import { supabase } from '../services/supabaseClient';
 
 const Auth: React.FC = () => {
-    const [isLogin, setIsLogin] = useState(true);
+    const [view, setView] = useState<'login' | 'signup' | 'forgot'>('login');
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [businessName, setBusinessName] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<string | null>(null);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setMessage(null);
 
         try {
-            if (isLogin) {
+            if (view === 'login') {
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-            } else {
+            } else if (view === 'signup') {
+                // 1. Cross-reference Stripe Subscriptions
+                const { data: subData, error: subError } = await supabase
+                    .from('stripe_subscriptions')
+                    .select('*')
+                    .eq('email', email.toLowerCase())
+                    .eq('status', 'active')
+                    .single();
+
+                if (subError || !subData) {
+                    throw new Error("SUBSCRIPTION REQUIRED: This email is not associated with an active EstateGuard subscription. Please complete your purchase at estateguard.ai first.");
+                }
+
+                // 2. Clear to signup
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
@@ -29,7 +44,13 @@ const Auth: React.FC = () => {
                     }
                 });
                 if (error) throw error;
-                alert('Verification email sent! Please check your inbox.');
+                setMessage('Verification email sent! Please check your inbox.');
+            } else if (view === 'forgot') {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: `${window.location.origin}/reset-password`,
+                });
+                if (error) throw error;
+                setMessage('Password reset link sent to your email.');
             }
         } catch (err: any) {
             setError(err.message);
@@ -51,12 +72,14 @@ const Auth: React.FC = () => {
                             <i className="fa-solid fa-shield-halved text-slate-950 text-3xl"></i>
                         </div>
                         <h1 className="text-3xl font-luxury font-bold text-white tracking-tight mb-2">EstateGuard</h1>
-                        <p className="text-[10px] text-gold uppercase font-black tracking-[0.3em]">Secure Agency Intelligence</p>
+                        <p className="text-[10px] text-gold uppercase font-black tracking-[0.3em]">
+                            {view === 'forgot' ? 'Identity Recovery' : 'Secure Agency Intelligence'}
+                        </p>
                     </div>
 
                     <form onSubmit={handleAuth} className="space-y-6">
-                        {!isLogin && (
-                            <div className="space-y-2">
+                        {view === 'signup' && (
+                            <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Agency Name</label>
                                 <div className="relative">
                                     <i className="fa-solid fa-briefcase absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
@@ -87,20 +110,33 @@ const Auth: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Identity Password</label>
-                            <div className="relative">
-                                <i className="fa-solid fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-                                <input 
-                                    required
-                                    type="password"
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                    placeholder="••••••••"
-                                    className="w-full bg-slate-950 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white text-sm focus:border-gold outline-none transition-all placeholder:text-slate-700"
-                                />
+                        {view !== 'forgot' && (
+                            <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                                <div className="flex justify-between items-center ml-1">
+                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Identity Password</label>
+                                    {view === 'login' && (
+                                        <button 
+                                            type="button"
+                                            onClick={() => setView('forgot')}
+                                            className="text-[9px] font-bold text-gold/60 uppercase hover:text-gold transition-colors"
+                                        >
+                                            Forgot?
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="relative">
+                                    <i className="fa-solid fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                                    <input 
+                                        required
+                                        type="password"
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                        className="w-full bg-slate-950 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white text-sm focus:border-gold outline-none transition-all placeholder:text-slate-700"
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {error && (
                             <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
@@ -109,23 +145,41 @@ const Auth: React.FC = () => {
                             </div>
                         )}
 
+                        {message && (
+                            <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+                                <i className="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                                <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-tight">{message}</p>
+                            </div>
+                        )}
+
                         <button 
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gold text-slate-950 py-5 rounded-2xl font-bold text-sm shadow-xl shadow-gold/10 hover:shadow-gold/20 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 mt-4"
+                            className="w-full bg-yellow-400 text-slate-950 py-5 rounded-2xl font-black text-sm shadow-xl shadow-yellow-400/20 hover:bg-yellow-300 hover:shadow-yellow-400/40 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 mt-4 uppercase tracking-widest"
                         >
-                            {loading ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className={`fa-solid ${isLogin ? 'fa-right-to-bracket' : 'fa-user-plus'}`}></i>}
-                            {isLogin ? 'Grant Access' : 'Create Agency Account'}
+                            {loading ? <i className="fa-solid fa-circle-notch animate-spin"></i> : (
+                                <i className={`fa-solid ${view === 'login' ? 'fa-right-to-bracket' : view === 'signup' ? 'fa-user-plus' : 'fa-paper-plane'}`}></i>
+                            )}
+                            {view === 'login' ? 'Grant Access' : view === 'signup' ? 'Verify & Provision' : 'Send Reset Link'}
                         </button>
                     </form>
 
-                    <div className="text-center mt-10">
-                        <button 
-                            onClick={() => setIsLogin(!isLogin)}
-                            className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] hover:text-gold transition-colors"
-                        >
-                            {isLogin ? "New Agency? Provision Account" : "Existing Member? Return to HQ"}
-                        </button>
+                    <div className="text-center mt-10 space-y-4">
+                        {view !== 'login' ? (
+                            <button 
+                                onClick={() => { setView('login'); setError(null); setMessage(null); }}
+                                className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] hover:text-gold transition-colors"
+                            >
+                                Return to Secure HQ
+                            </button>
+                        ) : (
+                            <button 
+                                onClick={() => { setView('signup'); setError(null); setMessage(null); }}
+                                className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] hover:text-gold transition-colors"
+                            >
+                                New Agency? Provision Account
+                            </button>
+                        )}
                     </div>
                 </div>
 

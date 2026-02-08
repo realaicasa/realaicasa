@@ -136,3 +136,22 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
+-- 12. Create stripe_subscriptions table for pre-signup verification
+CREATE TABLE IF NOT EXISTS stripe_subscriptions (
+  email TEXT PRIMARY KEY,
+  status TEXT DEFAULT 'active', -- active, trialing, past_due, canceled
+  customer_id TEXT, -- Stripe Customer ID
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS on stripe_subscriptions
+ALTER TABLE stripe_subscriptions ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access to stripe_subscriptions for pre-signup verification
+-- (Note: In a production environment, you might want to use an Edge Function or restricted view)
+DROP POLICY IF EXISTS "Public can view active subscriptions" ON stripe_subscriptions;
+CREATE POLICY "Public can view active subscriptions" ON stripe_subscriptions
+FOR SELECT
+USING (true);
+
