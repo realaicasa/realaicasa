@@ -30,16 +30,20 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
 
   if (isUrl) {
     try {
+        console.log("[EstateGuard-v1.1] Ingestion active. Target: URL");
         const proxyUrl = `/api/proxy?url=${encodeURIComponent(input.trim())}`;
         const response = await fetch(proxyUrl);
         if (response.ok) {
             const scrapedText = await response.text();
-            processedInput = scrapedText.slice(0, 50000); 
+            console.log(`[EstateGuard-v1.1] URL scraped. Raw length: ${scrapedText.length}`);
+            processedInput = scrapedText.slice(0, 30000); 
             processingNote = `(Analysis based on content scraped from URL: ${input})`;
         }
     } catch (e) {
-        console.warn("[Ingestion] Proxy failed, falling back to URL-only analysis.");
+        console.warn("[EstateGuard-v1.1] Proxy failed, falling back to URL-only analysis.");
     }
+  } else {
+    console.log("[EstateGuard-v1.1] Ingestion active. Target: Text");
   }
 
   const result = await client.models.generateContent({
@@ -140,7 +144,7 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
     console.error("Scraper Error:", e);
     const msg = e.message || "Unknown error";
     if (msg.includes("404") || msg.includes("not found")) {
-      throw new Error(`API CONFIG ERROR: Gemini model not found. Please ensure your API key has access to 'gemini-1.5-flash-latest'.`);
+      throw new Error(`API CONFIG ERROR: Gemini model not found. Please ensure your API key has access to 'gemini-1.5-flash'.`);
     }
     throw new Error(`Sync failed: ${msg}`);
   }
