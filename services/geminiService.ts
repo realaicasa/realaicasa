@@ -20,9 +20,14 @@ const getApiKey = (manualKey?: string) => {
 };
 
 // --- PROPERTY DATA SCRAPER ---
-export const parsePropertyData = async (input: string, manualKey?: string): Promise<PropertySchema> => {
+const getClient = (manualKey?: string, version: 'v1' | 'v1beta' = 'v1') => {
   const apiKey = getApiKey(manualKey);
-  const client = new GoogleGenAI({ apiKey });
+  return new GoogleGenAI({ apiKey, apiVersion: version });
+};
+
+// --- PROPERTY DATA SCRAPER ---
+export const parsePropertyData = async (input: string, manualKey?: string): Promise<PropertySchema> => {
+  let client = getClient(manualKey, 'v1');
   
   const isUrl = input.trim().startsWith('http');
   let processedInput = input;
@@ -46,9 +51,10 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
     console.log("[EstateGuard-v1.1] Ingestion active. Target: Text");
   }
 
-  const tryGenerate = async (modelName: string) => {
+  const tryGenerate = async (modelName: string, apiVer: 'v1' | 'v1beta' = 'v1') => {
     try {
-      return await client.models.generateContent({
+      const activeClient = getClient(manualKey, apiVer);
+      return await activeClient.models.generateContent({
         model: modelName, 
         contents: [{ 
           role: 'user', 
@@ -99,22 +105,27 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
         }
       });
     } catch (e: any) {
-      if (e.message?.includes("404")) throw e; // Let 404 bubble up for fallback
+      console.warn(`[EstateGuard-v1.1.5] Failed: ${modelName} on ${apiVer}. Error: ${e.message}`);
       throw e;
     }
   };
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.3] Attempting gemini-1.5-flash-latest...");
-    result = await tryGenerate('gemini-1.5-flash-latest');
+    console.log("[EstateGuard-v1.1.5] Stage 1: Trying v1/gemini-1.5-flash...");
+    result = await tryGenerate('gemini-1.5-flash', 'v1');
   } catch (e: any) {
-    console.warn("[EstateGuard-v1.1.3] Fallback to gemini-1.5-flash...");
     try {
-        result = await tryGenerate('gemini-1.5-flash');
+        console.log("[EstateGuard-v1.1.5] Stage 2: Trying v1beta/gemini-1.5-flash...");
+        result = await tryGenerate('gemini-1.5-flash', 'v1beta');
     } catch (e2: any) {
-        console.warn("[EstateGuard-v1.1.3] Final fallback to gemini-1.5-flash-002...");
-        result = await tryGenerate('gemini-1.5-flash-002');
+        try {
+            console.log("[EstateGuard-v1.1.5] Stage 3: Trying v1beta/gemini-1.5-flash-latest...");
+            result = await tryGenerate('gemini-1.5-flash-latest', 'v1beta');
+        } catch (e3: any) {
+            console.error("[EstateGuard-v1.1.5] ALL STAGES FAILED.");
+            throw e3;
+        }
     }
   }
 
@@ -142,35 +153,20 @@ export const chatWithGuard = async (
   propertyContext: PropertySchema,
   settings: AgentSettings
 ) => {
-  const apiKey = getApiKey(settings.apiKey);
-  const client = new GoogleGenAI({ apiKey });
-
-  let response;
-  try {
-    response = await client.models.generateContent({
-        model: 'gemini-1.5-flash-latest',
-        contents: history,
-        config: {
-        systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
-        }
-    });
-  } catch (e) {
-    response = await client.models.generateContent({
-        model: 'gemini-1.5-flash',
-        contents: history,
-        config: {
-        systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
-        }
-    });
-  }
+  const client = getClient(settings.apiKey, 'v1');
+  const response = await client.models.generateContent({
+    model: 'gemini-1.5-flash',
+    contents: history,
+    config: {
+      systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
+    }
+  });
 
   return response.text;
 };
 
 export const transcribeAudio = async (base64Audio: string, manualKey?: string): Promise<string> => {
-  const apiKey = getApiKey(manualKey);
-  const client = new GoogleGenAI({ apiKey });
-  
+  const client = getClient(manualKey, 'v1');
   const response = await client.models.generateContent({
     model: 'gemini-1.5-flash',
     contents: [
