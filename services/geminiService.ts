@@ -63,9 +63,9 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
           }] 
         }],
         config: {
-          systemInstruction: SCRAPER_SYSTEM_INSTRUCTION,
-          responseMimeType: "application/json",
-          responseSchema: {
+          system_instruction: SCRAPER_SYSTEM_INSTRUCTION,
+          response_mime_type: "application/json",
+          response_schema: {
             type: Type.OBJECT,
             properties: {
               property_id: { type: Type.STRING },
@@ -102,28 +102,28 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
             },
             required: ["property_id", "listing_details"]
           }
-        }
+        } as any // Cast to any to bypass potential SDK type strictness while forcing snake_case
       });
     } catch (e: any) {
-      console.warn(`[EstateGuard-v1.1.5] Failed: ${modelName} on ${apiVer}. Error: ${e.message}`);
+      console.warn(`[EstateGuard-v1.1.6] Failed: ${modelName} on ${apiVer}. Error: ${e.message}`);
       throw e;
     }
   };
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.5] Stage 1: Trying v1/gemini-1.5-flash...");
-    result = await tryGenerate('gemini-1.5-flash', 'v1');
+    console.log("[EstateGuard-v1.1.6] Stage 1: Trying v1/gemini-2.5-flash...");
+    result = await tryGenerate('gemini-2.5-flash', 'v1');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.5] Stage 2: Trying v1beta/gemini-1.5-flash...");
-        result = await tryGenerate('gemini-1.5-flash', 'v1beta');
+        console.log("[EstateGuard-v1.1.6] Stage 2: Trying v1beta/gemini-2.5-flash...");
+        result = await tryGenerate('gemini-2.5-flash', 'v1beta');
     } catch (e2: any) {
         try {
-            console.log("[EstateGuard-v1.1.5] Stage 3: Trying v1beta/gemini-1.5-flash-latest...");
-            result = await tryGenerate('gemini-1.5-flash-latest', 'v1beta');
+            console.log("[EstateGuard-v1.1.6] Stage 3: Trying v1beta/gemini-flash-latest...");
+            result = await tryGenerate('gemini-flash-latest', 'v1beta');
         } catch (e3: any) {
-            console.error("[EstateGuard-v1.1.5] ALL STAGES FAILED.");
+            console.error("[EstateGuard-v1.1.6] ALL STAGES FAILED.");
             throw e3;
         }
     }
@@ -155,11 +155,11 @@ export const chatWithGuard = async (
 ) => {
   const client = getClient(settings.apiKey, 'v1');
   const response = await client.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
     contents: history,
     config: {
-      systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
-    }
+      system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
+    } as any
   });
 
   return response.text;
@@ -168,7 +168,7 @@ export const chatWithGuard = async (
 export const transcribeAudio = async (base64Audio: string, manualKey?: string): Promise<string> => {
   const client = getClient(manualKey, 'v1');
   const response = await client.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
     contents: [
       {
         role: 'user',

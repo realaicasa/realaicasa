@@ -1,4 +1,4 @@
-console.log("[EstateGuard-v1.1.5] Bootstrapping...");
+console.log("[EstateGuard-v1.1.6] Bootstrapping...");
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
