@@ -46,90 +46,77 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
     console.log("[EstateGuard-v1.1] Ingestion active. Target: Text");
   }
 
-  const result = await client.models.generateContent({
-    model: 'gemini-1.5-flash', 
-    contents: [{ 
-      role: 'user', 
-      parts: [{ 
-        text: `DATA SOURCE: "${processedInput}"\n\n${processingNote}\n\nCOMMAND:\n1. Extract ALL available property details.\n2. LOOK HARDER FOR SPECS: Bed, Bath, Sq Ft, Price.\n3. TRANSACTION TYPE: Detect if 'Rent', 'Lease' or 'Sale'.\n4. ADHERE TO THE GROUNDING PROTOCOL.\n5. DO NOT HALLUCINATE.` 
-      }] 
-    }],
-    config: {
-      systemInstruction: SCRAPER_SYSTEM_INSTRUCTION,
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          property_id: { type: Type.STRING },
-          status: { type: Type.STRING },
-          tier: { type: Type.STRING },
-          category: { type: Type.STRING },
-          transaction_type: { type: Type.STRING },
-          visibility_protocol: {
+  const tryGenerate = async (modelName: string) => {
+    try {
+      return await client.models.generateContent({
+        model: modelName, 
+        contents: [{ 
+          role: 'user', 
+          parts: [{ 
+            text: `DATA SOURCE: "${processedInput}"\n\n${processingNote}\n\nCOMMAND:\n1. Extract ALL available property details.\n2. LOOK HARDER FOR SPECS: Bed, Bath, Sq Ft, Price.\n3. TRANSACTION TYPE: Detect if 'Rent', 'Lease' or 'Sale'.\n4. ADHERE TO THE GROUNDING PROTOCOL.\n5. DO NOT HALLUCINATE.` 
+          }] 
+        }],
+        config: {
+          systemInstruction: SCRAPER_SYSTEM_INSTRUCTION,
+          responseMimeType: "application/json",
+          responseSchema: {
             type: Type.OBJECT,
             properties: {
-              public_fields: { type: Type.ARRAY, items: { type: Type.STRING } },
-              gated_fields: { type: Type.ARRAY, items: { type: Type.STRING } }
-            }
-          },
-          listing_details: {
-            type: Type.OBJECT,
-            properties: {
-              address: { type: Type.STRING },
-              price: { type: Type.NUMBER },
-              image_url: { type: Type.STRING },
-              video_tour_url: { type: Type.STRING },
-              key_stats: {
+              property_id: { type: Type.STRING },
+              status: { type: Type.STRING },
+              tier: { type: Type.STRING },
+              category: { type: Type.STRING },
+              transaction_type: { type: Type.STRING },
+              visibility_protocol: {
                 type: Type.OBJECT,
                 properties: {
-                  bedrooms: { type: Type.NUMBER },
-                  bathrooms: { type: Type.NUMBER },
-                  sq_ft: { type: Type.NUMBER },
-                  lot_size: { type: Type.STRING }
+                  public_fields: { type: Type.ARRAY, items: { type: Type.STRING } },
+                  gated_fields: { type: Type.ARRAY, items: { type: Type.STRING } }
                 }
               },
-              hero_narrative: { type: Type.STRING }
-            }
-          },
-          deep_data: { 
-            type: Type.OBJECT, 
-            properties: {
-                appraisal: { type: Type.STRING },
-                notes: { type: Type.STRING }
-            } 
-          },
-          agent_notes: {
-            type: Type.OBJECT,
-            properties: {
-              motivation: { type: Type.STRING },
-              showing_instructions: { type: Type.STRING }
-            }
-          },
-          amenities: {
-            type: Type.OBJECT,
-            properties: {
-              pool: { type: Type.BOOLEAN },
-              garage: { type: Type.BOOLEAN },
-              wifi: { type: Type.BOOLEAN },
-              laundry: { type: Type.BOOLEAN },
-              pets_allowed: { type: Type.BOOLEAN },
-              gym: { type: Type.BOOLEAN },
-              security: { type: Type.BOOLEAN }
-            }
-          },
-          seo: {
-            type: Type.OBJECT,
-            properties: {
-              meta_title: { type: Type.STRING },
-              meta_description: { type: Type.STRING },
-              keywords: { type: Type.ARRAY, items: { type: Type.STRING } }
-            }
+              listing_details: {
+                type: Type.OBJECT,
+                properties: {
+                  address: { type: Type.STRING },
+                  price: { type: Type.NUMBER },
+                  image_url: { type: Type.STRING },
+                  video_tour_url: { type: Type.STRING },
+                  key_stats: {
+                    type: Type.OBJECT,
+                    properties: {
+                      bedrooms: { type: Type.NUMBER },
+                      bathrooms: { type: Type.NUMBER },
+                      sq_ft: { type: Type.NUMBER },
+                      lot_size: { type: Type.STRING }
+                    }
+                  },
+                  hero_narrative: { type: Type.STRING }
+                }
+              }
+            },
+            required: ["property_id", "listing_details"]
           }
-        },
-        required: ["property_id", "listing_details"]
-      }
+        }
+      });
+    } catch (e: any) {
+      if (e.message?.includes("404")) throw e; // Let 404 bubble up for fallback
+      throw e;
     }
-  });
+  };
+
+  let result;
+  try {
+    console.log("[EstateGuard-v1.1.3] Attempting gemini-1.5-flash-latest...");
+    result = await tryGenerate('gemini-1.5-flash-latest');
+  } catch (e: any) {
+    console.warn("[EstateGuard-v1.1.3] Fallback to gemini-1.5-flash...");
+    try {
+        result = await tryGenerate('gemini-1.5-flash');
+    } catch (e2: any) {
+        console.warn("[EstateGuard-v1.1.3] Final fallback to gemini-1.5-flash-002...");
+        result = await tryGenerate('gemini-1.5-flash-002');
+    }
+  }
 
   try {
     // In @google/genai v2, if json requested, the parsed object is in result.value
@@ -158,13 +145,24 @@ export const chatWithGuard = async (
   const apiKey = getApiKey(settings.apiKey);
   const client = new GoogleGenAI({ apiKey });
 
-  const response = await client.models.generateContent({
-    model: 'gemini-1.5-flash',
-    contents: history,
-    config: {
-      systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
-    }
-  });
+  let response;
+  try {
+    response = await client.models.generateContent({
+        model: 'gemini-1.5-flash-latest',
+        contents: history,
+        config: {
+        systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
+        }
+    });
+  } catch (e) {
+    response = await client.models.generateContent({
+        model: 'gemini-1.5-flash',
+        contents: history,
+        config: {
+        systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
+        }
+    });
+  }
 
   return response.text;
 };
