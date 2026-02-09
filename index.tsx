@@ -1,3 +1,4 @@
+console.log("[EstateGuard-v1.1.2] Bootstrapping...");
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
