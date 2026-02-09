@@ -288,8 +288,12 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
             alt="Property Hero" 
             onError={(e) => (e.currentTarget.src = 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80')}
           />
-          <div className="absolute top-4 right-4 bg-slate-950/80 backdrop-blur-md text-gold px-4 py-1 rounded-full text-[10px] font-bold shadow-lg border border-gold/20">
-             {property.transaction_type}
+          <div className={`absolute top-4 right-4 backdrop-blur-md px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl border ${
+            property.transaction_type === 'Rent' || property.transaction_type === 'Lease'
+              ? 'bg-emerald-600/90 text-white border-emerald-400/30'
+              : 'bg-gold/90 text-slate-950 border-white/20'
+          }`}>
+             {property.transaction_type === 'Rent' || property.transaction_type === 'Lease' ? 'Rental Asset' : 'Sale Listing'}
           </div>
         </div>
         <div className="space-y-6">

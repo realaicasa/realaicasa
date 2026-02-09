@@ -24,9 +24,16 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
       onPropertyAdded(parsed);
       setInputValue('');
       alert("SUCCESS: Property successfully synchronized and vaulted in the Asset Cloud.");
-    } catch (error) {
-      console.error(error);
-      alert(error instanceof Error ? error.message : "Intelligence sync failed. Please verify the source data and try again.");
+    } catch (error: any) {
+      console.error("Ingestion Hub Error:", error);
+      const msg = error.message || "Unknown error";
+      const isAuthError = msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('401') || msg.toLowerCase().includes('403');
+      
+      if (isAuthError) {
+        alert(`AUTHENTICATION FAILURE: Your Gemini API Key is missing or invalid. Please update your Identity Settings to enable intelligence protocols.`);
+      } else {
+        alert(`INTELLIGENCE SYNC FAILED: ${msg}. Please verify the source data or URL and try again.`);
+      }
     } finally {
       setLoading(false);
     }

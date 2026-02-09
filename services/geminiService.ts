@@ -43,7 +43,7 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
   }
 
   const result = await client.models.generateContent({
-    model: 'gemini-1.5-flash-latest', 
+    model: 'gemini-1.5-flash', 
     contents: [{ 
       role: 'user', 
       parts: [{ 
@@ -155,7 +155,7 @@ export const chatWithGuard = async (
   const client = new GoogleGenAI({ apiKey });
 
   const response = await client.models.generateContent({
-    model: 'gemini-1.5-flash-latest',
+    model: 'gemini-1.5-flash',
     contents: history,
     config: {
       systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
@@ -170,7 +170,7 @@ export const transcribeAudio = async (base64Audio: string, manualKey?: string): 
   const client = new GoogleGenAI({ apiKey });
   
   const response = await client.models.generateContent({
-    model: 'gemini-1.5-flash-latest',
+    model: 'gemini-1.5-flash',
     contents: [
       {
         role: 'user',

@@ -191,8 +191,11 @@ const App: React.FC = () => {
         const { error } = await supabase
             .from('leads')
             .update({ 
-                due_date: updated.due_date,
-                notes: updated.notes
+                due_date: updated.due_date || null,
+                notes: updated.notes,
+                agent_notes: updated.agent_notes,
+                status: updated.status,
+                conversation_history: updated.conversation_history
             })
             .eq('id', updated.id);
         if (error) throw error;
@@ -246,6 +249,76 @@ const App: React.FC = () => {
     }
   };
 
+  const handleInjectPortfolio = async () => {
+    const { STARTER_PORTFOLIO } = await import('./src/starterPortfolio');
+    
+    // Check if user is logged in
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert("Authentication required to inject portfolio.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      const propertiesWithUserId = STARTER_PORTFOLIO.map(p => ({
+        ...p,
+        user_id: user.id,
+        updated_at: new Date().toISOString()
+      }));
+
+      for (const p of propertiesWithUserId) {
+        const { error } = await supabase
+          .from('properties')
+          .upsert({
+            property_id: p.property_id,
+            user_id: p.user_id,
+            category: p.category,
+            transaction_type: p.transaction_type,
+            status: p.status,
+            tier: p.tier,
+            visibility_protocol: p.visibility_protocol,
+            listing_details: p.listing_details,
+            deep_data: p.deep_data,
+            agent_notes: p.agent_notes,
+            ai_training: p.ai_training,
+            updated_at: p.updated_at
+          });
+        if (error) throw error;
+      }
+
+      // Refresh properties list
+      const { data: propData } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (propData) {
+        setProperties(propData.map((p: any) => ({
+            property_id: p.property_id,
+            category: p.category,
+            transaction_type: p.transaction_type || 'Sale',
+            status: p.status,
+            tier: p.tier,
+            visibility_protocol: p.visibility_protocol || { public_fields: ['address'], gated_fields: [] },
+            listing_details: p.listing_details,
+            deep_data: p.deep_data || {},
+            agent_notes: p.agent_notes || { motivation: '', showing_instructions: '' },
+            ai_training: p.ai_training
+        })));
+      }
+
+      alert("SUCCESS: Starter Portfolio injected successfully! Your secure asset cloud is now populated with elite sample data.");
+    } catch (e: any) {
+      console.error("Failed to inject portfolio:", e);
+      const errorMsg = e.message || "Unknown error";
+      alert(`CRITICAL ERROR: Portfolio injection failed. [Reason: ${errorMsg}]. Please ensure your database connection is active.`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCaptureLead = async (leadPart: Partial<Lead>) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -261,7 +334,9 @@ const App: React.FC = () => {
         property_address: leadPart.property_address || "N/A",
         status: 'New',
         timestamp: new Date().toISOString(),
-        notes: leadPart.notes || []
+        notes: leadPart.notes || [],
+        conversation_history: leadPart.conversation_history || [],
+        agent_notes: leadPart.agent_notes || ""
       };
 
       // Optimistic Update
@@ -282,13 +357,18 @@ const App: React.FC = () => {
           property_address: newLead.property_address,
           status: newLead.status,
           created_at: newLead.timestamp,
-          notes: newLead.notes
+          notes: newLead.notes,
+          conversation_history: newLead.conversation_history,
+          agent_notes: newLead.agent_notes
         });
 
       if (error) throw error;
-    } catch (e) {
+      
+      console.log("Lead captured and synced to cloud hub.");
+    } catch (e: any) {
       console.error("Failed to capture lead:", e);
-      alert("CRITICAL: Lead capture synchronization failed. Check local vaults.");
+      const errorMsg = e.message || "Unknown error";
+      alert(`SECURITY ALERT: Lead capture synchronization failed. [Reason: ${errorMsg}]. The prospect data is currently unvaulted. Please verify your internet connection or Supabase service status.`);
     }
   };
 
@@ -490,7 +570,7 @@ const App: React.FC = () => {
             )}
             {activeTab === 'leads' && <Kanban leads={leads} onStatusChange={handleStatusChange} onUpdateLead={handleUpdateLead} onAddLead={handleCaptureLead} />}
             {activeTab === 'ingestion' && <IngestionPortal settings={settings} onPropertyAdded={(p) => { setProperties([p, ...properties]); setActiveTab('properties'); }} />}
-            {activeTab === 'settings' && <Settings settings={settings} onUpdate={setSettings} />}
+            {activeTab === 'settings' && <Settings settings={settings} onUpdate={setSettings} onInjectPortfolio={handleInjectPortfolio} />}
             {activeTab === 'chat' && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     <div className="lg:col-span-7 space-y-12">

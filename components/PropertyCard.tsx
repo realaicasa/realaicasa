@@ -23,19 +23,21 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
         />
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           <div className="flex gap-2">
-            <span className={`px-4 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${
-              property.status === 'Active' ? 'bg-emerald-500 text-white' : 'bg-gold text-slate-900'
+            <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] shadow-xl backdrop-blur-md ${
+              property.transaction_type === 'Rent' || property.transaction_type === 'Lease' 
+                ? 'bg-emerald-600/90 text-white border border-emerald-400/30' 
+                : 'bg-gold/90 text-slate-950 border border-white/20'
             }`}>
-              {property.status}
+              {property.transaction_type === 'Rent' || property.transaction_type === 'Lease' ? 'RENTAL ASSET' : 'FOR SALE'}
             </span>
             {isEstateGuard && (
-              <span className="bg-slate-950/90 backdrop-blur-md text-gold px-4 py-1 rounded-full text-[9px] font-bold flex items-center gap-1 border border-gold/30">
+              <span className="bg-slate-950/95 backdrop-blur-md text-gold px-4 py-1 rounded-full text-[9px] font-bold flex items-center gap-1 border border-gold/40 shadow-xl">
                 <i className="fa-solid fa-shield-halved"></i> ESTATE GUARD
               </span>
             )}
           </div>
           {hasVideo && (
-            <span className="bg-white/95 text-slate-900 px-3 py-1 rounded-lg text-[9px] font-bold self-start shadow-sm border border-slate-200">
+            <span className="bg-white/95 text-slate-900 px-3 py-1 rounded-lg text-[9px] font-bold self-start shadow-sm border border-slate-200 backdrop-blur-sm">
               <i className="fa-solid fa-circle-play mr-1 text-gold"></i> VIDEO TOUR
             </span>
           )}
@@ -44,7 +46,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
       
       <div className="p-6">
         <div className="mb-4">
-            <span className="text-[9px] font-bold text-gold uppercase tracking-[0.2em]">{property.category}</span>
+            <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${
+              property.transaction_type === 'Rent' || property.transaction_type === 'Lease' ? 'text-emerald-500' : 'text-gold'
+            }`}>{property.category}</span>
             <h4 className="font-luxury font-bold text-slate-900 text-lg line-clamp-1 mt-1">{property.listing_details.address}</h4>
         </div>
         

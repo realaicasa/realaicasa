@@ -79,6 +79,8 @@ export interface Lead {
   created_at?: string;
   due_date?: string;
   notes: string[];
+  conversation_history?: { role: string; content: string; timestamp: string; }[];
+  agent_notes?: string;
 }
 
 export interface AgentSettings {

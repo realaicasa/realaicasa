@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS leads (
   property_address TEXT,
   status TEXT DEFAULT 'New',
   notes TEXT[] DEFAULT '{}',
+  conversation_history JSONB DEFAULT '[]',
+  agent_notes TEXT,
   due_date TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

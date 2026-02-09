@@ -6,9 +6,10 @@ import { supabase } from '../services/supabaseClient';
 interface SettingsProps {
   settings: AgentSettings;
   onUpdate: (s: AgentSettings) => void;
+  onInjectPortfolio?: () => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
+const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfolio }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
