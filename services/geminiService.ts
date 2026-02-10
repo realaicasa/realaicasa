@@ -14,6 +14,24 @@ const hydrateInstruction = (settings: AgentSettings) => {
 };
 
 // --- SECURE API KEY RESOLVER ---
+const cleanJsonResponse = (text: string): any => {
+  try {
+    // 1. Direct parse attempt
+    return JSON.parse(text);
+  } catch (e) {
+    // 2. Extract block between first { and last }
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) {
+      try {
+        return JSON.parse(match[0]);
+      } catch (e2) {
+        console.warn("[EstateGuard] Nested JSON parse failed:", e2);
+      }
+    }
+    throw new Error(`JSON_PARSE_FAILURE: The response was not valid JSON. Raw: ${text.slice(0, 100)}...`);
+  }
+};
+
 const getApiKey = (manualKey?: string) => {
   // Use a fallback to process.env or similar if import.meta.env is problematic in lint
   return manualKey || (import.meta as any).env?.VITE_GEMINI_API_KEY || "";
@@ -91,7 +109,7 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
   const tryGenerate = async (modelName: string, apiVer: 'v1' | 'v1beta' = 'v1') => {
     try {
       const activeClient = getClient(manualKey, apiVer);
-      return await activeClient.models.generateContent({
+      const response = await activeClient.models.generateContent({
         model: modelName, 
         contents: [{ 
           role: 'user', 
@@ -184,8 +202,9 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
             },
             required: ["property_id", "listing_details"]
           }
-        } as any // Cast to any to bypass potential SDK type strictness while forcing snake_case
+        } as any 
       });
+      return response;
     } catch (e: any) {
       console.warn(`[EstateGuard-v1.1.8] Failed: ${modelName} on ${apiVer}. Error: ${e.message}`);
       throw e;
@@ -194,55 +213,58 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.8] Stage 1: Trying v1/gemini-2.5-flash...");
-    result = await tryGenerate('gemini-2.5-flash', 'v1');
+    console.log("[EstateGuard-v1.1.8] Stage 1: Trying v1/gemini-2.0-flash...");
+    result = await tryGenerate('gemini-2.0-flash', 'v1');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.8] Stage 2: Trying v1beta/gemini-2.5-flash...");
-        result = await tryGenerate('gemini-2.5-flash', 'v1beta');
+        console.log("[EstateGuard-v1.1.8] Stage 2: Trying v1/gemini-2.5-flash...");
+        result = await tryGenerate('gemini-2.5-flash', 'v1');
     } catch (e2: any) {
         try {
             console.log("[EstateGuard-v1.1.8] Stage 3: Trying v1beta/gemini-1.5-flash...");
             result = await tryGenerate('gemini-1.5-flash', 'v1beta');
         } catch (e3: any) {
             console.error("[EstateGuard-v1.1.8] ALL STAGES FAILED.");
-            
-            // RESILIENT FALLBACK: If URL scrape was successful, return minimal data
             if (isUrl && lastScrapedHtml) {
                 console.warn("[EstateGuard-v1.1.8] Falling back to basic metadata extraction due to AI failure.");
                 return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
             }
-            
             throw e3;
         }
     }
   }
 
   try {
-    // In @google/genai v2, if json requested, the parsed object is in result.value
-    // Fallback to manual parse if value is missing
-    const data = (result as any).value || JSON.parse(result.text || '{}');
+    // RESILIENT PARSING: uses cleanJsonResponse to strip markdown/extra text
+    const data = cleanJsonResponse((result as any).value || result.text || '{}');
     if (!data.property_id) data.property_id = `EG-${Math.floor(Math.random() * 1000)}`;
     if (!data.status) data.status = 'Active';
     if (!data.category) data.category = 'Residential';
     if (!data.transaction_type) data.transaction_type = 'Sale';
     return data;
   } catch (e: any) {
-    console.error("[EstateGuard-v1.1.8] Scraper Error:", e);
+    console.error("[EstateGuard-v1.1.8] Processing Error:", e);
     const msg = e.message || "Unknown error";
     
-    // Specific status code detection for 429 (Quota)
-    const isQuotaError = msg.includes("429") || msg.toLowerCase().includes("too many requests") || msg.toLowerCase().includes("quota");
+    // 1. QUOTA DETECTION
+    const isQuotaError = msg.includes("429") || msg.toLowerCase().includes("quota");
     if (isQuotaError) {
-        // Even in parsing error, try basic metadata if it was a URL
-        if (isUrl && lastScrapedHtml) {
-             return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
-        }
-        throw new Error("INTELLIGENCE QUOTA EXCEEDED: The Gemini API is currently rate-limited. Please wait 60 seconds or upgrade your API tier.");
+        if (isUrl && lastScrapedHtml) return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
+        throw new Error("INTELLIGENCE QUOTA EXCEEDED: The Gemini API is currently rate-limited. Please wait 60 seconds.");
     }
 
-      throw new Error(`API CONFIG ERROR: Gemini model not found. Please ensure your API key has access to 'gemini-2.5-flash' or 'gemini-1.5-flash'.`);
-    throw new Error(`Sync failed: ${msg}`);
+    // 2. MODEL ACCESS DETECTION
+    if (msg.includes("404") || msg.toLowerCase().includes("not found")) {
+      throw new Error(`API CONFIG ERROR: The requested model was not found. Please ensure your API key has access to standard Flash models.`);
+    }
+
+    // 3. PARSING FALLBACK
+    if (msg.includes("JSON_PARSE_FAILURE") && isUrl && lastScrapedHtml) {
+        console.warn("[EstateGuard] Falling back to basic metadata due to malformed AI response.");
+        return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
+    }
+    
+    throw new Error(`Intelligence Sync Failed: ${msg}`);
   }
 };
 
