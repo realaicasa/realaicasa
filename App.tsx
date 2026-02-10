@@ -341,13 +341,46 @@ const App: React.FC = () => {
           agent_notes: newLead.agent_notes
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("[EstateGuard-v1.1.8] Raw Supabase Error:", error);
+        throw new Error(`${error.message} (Code: ${error.code})${error.hint ? ' - Hint: ' + error.hint : ''}`);
+      }
       
       console.log("Lead captured and synced to cloud hub.");
     } catch (e: any) {
-      console.error("Failed to capture lead:", e);
-      const errorMsg = e.message || "Unknown error";
-      alert(`SECURITY ALERT: Lead capture synchronization failed. [Reason: ${errorMsg}]. The prospect data is currently unvaulted. Please verify your internet connection or Supabase service status.`);
+      console.error("[EstateGuard-v1.1.8] Lead Sync Error:", e);
+      const errorMsg = e.message || "Unknown connectivity issue";
+      alert(`SECURITY ALERT: Lead capture synchronization failed.\n\n[Reason: ${errorMsg}]\n\nAction: Verify your Supabase service status and RLS policies.`);
+    }
+  };
+
+  const handleIngestedProperty = async (p: PropertySchema) => {
+    // 1. Add to local state
+    setProperties(prev => [p, ...prev]);
+    setActiveTab('properties');
+
+    // 2. Persist to Supabase immediately
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('properties')
+        .upsert({
+          property_id: p.property_id,
+          user_id: user.id,
+          address: p.listing_details?.address || '',
+          price: p.listing_details?.price || 0,
+          status: p.status || 'Active',
+          data: p,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      console.log("[EstateGuard-v1.1.8] Ingested asset successfully vaulted in cloud.");
+    } catch (e: any) {
+      console.error("[EstateGuard-v1.1.8] Auto-Vault Failure:", e);
+      alert(`VAULTING FAILURE: Asset created in memory but failed to sync with the cloud. [Reason: ${e.message}]. Please save manually or check connection.`);
     }
   };
 
@@ -548,7 +581,7 @@ const App: React.FC = () => {
                 </div>
             )}
             {activeTab === 'leads' && <Kanban leads={leads} onStatusChange={handleStatusChange} onUpdateLead={handleUpdateLead} onAddLead={handleCaptureLead} />}
-            {activeTab === 'ingestion' && <IngestionPortal settings={settings} onPropertyAdded={(p) => { setProperties([p, ...properties]); setActiveTab('properties'); }} />}
+            {activeTab === 'ingestion' && <IngestionPortal settings={settings} onPropertyAdded={handleIngestedProperty} />}
             {activeTab === 'settings' && <Settings settings={settings} onUpdate={setSettings} onInjectPortfolio={handleInjectPortfolio} />}
             {activeTab === 'chat' && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">

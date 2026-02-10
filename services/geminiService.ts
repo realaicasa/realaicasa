@@ -33,8 +33,17 @@ const cleanJsonResponse = (text: string): any => {
 };
 
 const getApiKey = (manualKey?: string) => {
-  // Use a fallback to process.env or similar if import.meta.env is problematic in lint
-  return manualKey || (import.meta as any).env?.VITE_GEMINI_API_KEY || "";
+  if (manualKey) {
+    console.log("[EstateGuard-v1.1.8] Using manual API key from Identity Settings.");
+    return manualKey;
+  }
+  const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+  if (envKey) {
+    console.log("[EstateGuard-v1.1.8] Using system environment VITE_GEMINI_API_KEY.");
+    return envKey;
+  }
+  console.warn("[EstateGuard-v1.1.8] NO API KEY DETECTED. AI functionality will be limited to resilient fallbacks.");
+  return "";
 };
 
 // --- PROPERTY DATA SCRAPER ---
