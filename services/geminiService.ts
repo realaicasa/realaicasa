@@ -33,19 +33,22 @@ const cleanJsonResponse = (text: string): any => {
 };
 
 const getApiKey = (manualKey?: string) => {
-  // Only use manual key if it looks like a real key (not empty or just whitespace)
-  if (manualKey && manualKey.trim().length > 5) {
-    console.log("[EstateGuard-v1.1.8] Using manual API key from Identity Settings.");
-    return manualKey.trim();
+  // Only use manual key if it looks like a real Google AI key
+  const cleanedManual = manualKey?.trim() || "";
+  const isJunk = ["null", "undefined", "[object object]", ""].includes(cleanedManual.toLowerCase());
+  
+  if (!isJunk && cleanedManual.length > 5 && cleanedManual.startsWith("AIza")) {
+    console.log("[EstateGuard-v1.1.8] Using VALID manual API key from Identity Settings.");
+    return cleanedManual;
   }
   
   const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
-  if (envKey) {
+  if (envKey && envKey.length > 5) {
     console.log("[EstateGuard-v1.1.8] Using system environment VITE_GEMINI_API_KEY.");
     return envKey;
   }
   
-  console.warn("[EstateGuard-v1.1.8] NO VALID API KEY DETECTED. Check Vercel Env or Identity Settings.");
+  console.warn("[EstateGuard-v1.1.8] NO VALID KEY DETECTED. Proceeding with Resilient Fallback.");
   return "";
 };
 
