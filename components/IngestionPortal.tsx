@@ -76,23 +76,23 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
   };
 
   return (
-    <div className="bg-white rounded-[3rem] shadow-sm border border-slate-100 p-12 max-w-5xl mx-auto overflow-hidden relative">
+    <div className="glass-panel rounded-[3rem] p-12 max-w-5xl mx-auto overflow-hidden relative text-white">
       {loading && (
-        <div className="absolute inset-0 z-50 bg-white/90 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300 rounded-[3rem]">
+        <div className="absolute inset-0 z-50 bg-[#05080f]/90 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300 rounded-[3rem]">
            <div className="w-24 h-24 mb-6 relative">
-              <div className="absolute inset-0 border-4 border-gold/20 rounded-full"></div>
-              <div className="absolute inset-0 border-4 border-gold rounded-full border-t-transparent animate-spin"></div>
-              <i className="fa-solid fa-wand-magic-sparkles absolute inset-0 flex items-center justify-center text-gold text-2xl"></i>
+              <div className="absolute inset-0 border-4 border-white/10 rounded-full"></div>
+              <div className="absolute inset-0 border-4 rounded-full border-t-transparent animate-spin" style={{ borderColor: `${settings.primaryColor} transparent transparent transparent` }}></div>
+              <i className="fa-solid fa-wand-magic-sparkles absolute inset-0 flex items-center justify-center text-2xl" style={{ color: settings.primaryColor }}></i>
            </div>
-           <h3 className="text-xl font-luxury font-bold text-slate-900">Synchronizing Asset Intelligence</h3>
-           <p className="text-slate-500 text-sm mt-2 animate-pulse font-medium uppercase tracking-widest text-[10px]">Elite Precision Protocol Active...</p>
+           <h3 className="text-xl font-luxury font-bold text-white">Synchronizing Asset Intelligence</h3>
+           <p className="text-white/50 text-sm mt-2 animate-pulse font-medium uppercase tracking-widest text-[10px]">Elite Precision Protocol Active...</p>
         </div>
       )}
 
       <div className="mb-12 text-center">
-        <span className="text-[10px] font-black text-gold uppercase tracking-[0.3em] mb-4 block">Asset Orchestration</span>
-        <h2 className="text-3xl font-luxury font-bold text-slate-900 mb-3">Onboard Your Elite Portfolio</h2>
-        <p className="text-slate-500 max-w-lg mx-auto text-sm leading-relaxed">
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 block" style={{ color: settings.primaryColor }}>Asset Orchestration</span>
+        <h2 className="text-3xl font-luxury font-bold text-white mb-3">Onboard Your Elite Portfolio</h2>
+        <p className="text-white/60 max-w-lg mx-auto text-sm leading-relaxed">
            Transform scattered data into high-fidelity, secure property schemas with zero manual entry.
         </p>
       </div>
@@ -108,11 +108,12 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
             onClick={() => setActiveMode(mode.id as any)}
             className={`flex items-center gap-3 px-8 py-4 rounded-2xl border-2 transition-all duration-300 ${
               activeMode === mode.id 
-                ? 'border-gold bg-gold/5 text-slate-900 shadow-lg shadow-gold/10 scale-105' 
-                : 'border-slate-50 bg-slate-50 text-slate-400 hover:border-slate-200'
+                ? 'bg-white/5 text-white shadow-xl scale-105' 
+                : 'border-white/5 bg-white/5 text-white/40 hover:border-white/10'
             }`}
+            style={activeMode === mode.id ? { borderColor: settings.primaryColor } : {}}
           >
-            <i className={`fa-solid ${mode.icon} ${activeMode === mode.id ? 'text-gold' : ''}`}></i>
+            <i className={`fa-solid ${mode.icon}`} style={activeMode === mode.id ? { color: settings.primaryColor } : {}}></i>
             <span className="font-bold text-xs uppercase tracking-widest">{mode.label}</span>
           </button>
         ))}
@@ -121,13 +122,14 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
       <div className="space-y-8">
         {activeMode === 'url' && (
           <div className="space-y-3 animate-in slide-in-from-bottom-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Listing URL Source</label>
+            <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Listing URL Source</label>
             <div className="relative">
-               <i className="fa-solid fa-link absolute left-6 top-1/2 -translate-y-1/2 text-slate-300"></i>
+               <i className="fa-solid fa-link absolute left-6 top-1/2 -translate-y-1/2 text-white/20"></i>
                <input 
                   type="text" 
                   placeholder="https://exclusive-estates.com/listing/3409" 
-                  className="w-full pl-14 pr-6 py-5 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-gold focus:border-transparent outline-none transition-all text-sm font-medium bg-slate-50/50"
+                  className="w-full pl-14 pr-6 py-5 rounded-2xl border border-white/10 focus:ring-2 outline-none transition-all text-sm font-medium bg-white/5 text-white"
+                  style={{ '--tw-ring-color': settings.primaryColor } as any}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                 />
@@ -174,7 +176,8 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
         <button 
           onClick={handleProcess}
           disabled={loading || (!inputValue && activeMode !== 'voice')}
-          className="w-full py-5 gold-button rounded-2xl font-bold text-sm shadow-2xl shadow-gold/20 hover:scale-[1.01] disabled:opacity-30 disabled:hover:scale-100 transition-all flex items-center justify-center gap-3 active:scale-95"
+          className="w-full py-5 rounded-2xl font-bold text-sm shadow-2xl transition-all flex items-center justify-center gap-3 active:scale-95 text-slate-950 disabled:opacity-30"
+          style={{ backgroundColor: settings.primaryColor }}
         >
           <i className="fa-solid fa-shield-halved"></i>
           SECURE SYNC TO PORTFOLIO

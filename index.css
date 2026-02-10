@@ -2,9 +2,10 @@
 
 /* --- Restore Luxury Brand Identity --- */
 :root { 
-    --gold: #d4af37; 
+    --brand-primary: #d4af37; /* Default Gold */
+    --brand-primary-rgb: 212, 175, 55;
     --gold-dark: #b8860b; 
-    --brand-bg: #0f172a;
+    --brand-bg: #05080f; /* Deeper, more elite black */
 }
 
 body { 
@@ -12,7 +13,43 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #f8fafc;
+    background-color: #05080f;
+    color: #f8fafc;
+}
+
+/* Premium Design Utilities */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
 }
 
 /* Luxury font class for headings */

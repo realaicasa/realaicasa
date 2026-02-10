@@ -67,25 +67,26 @@ const SortableLead: React.FC<{
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className="bg-white p-4 rounded-xl shadow-sm border border-slate-100/50 hover:shadow-lg transition-all cursor-grab active:cursor-grabbing group relative"
+      className="glass-card p-4 rounded-xl shadow-sm border border-white/10 hover:shadow-lg transition-all cursor-grab active:cursor-grabbing group relative overflow-hidden"
     >
+      <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: lead.priority_score ? `rgba(var(--brand-primary-rgb), ${lead.priority_score / 10})` : 'transparent' }}></div>
       <div className="flex justify-between items-start mb-2 pointer-events-none">
-        <p className="font-bold text-slate-800 text-sm">{lead.name}</p>
-        <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${
-          lead.financing_status === 'Cash' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+        <p className="font-bold text-white text-sm">{lead.name}</p>
+        <span className={`text-[9px] font-bold px-2 py-0.5 rounded shadow-sm ${
+          lead.financing_status === 'Cash' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
         }`}>
           {lead.financing_status}
         </span>
       </div>
-      <p className="text-[10px] text-slate-500 mb-3 truncate font-medium pointer-events-none">{lead.property_address}</p>
+      <p className="text-[10px] text-white/40 mb-3 truncate font-medium pointer-events-none">{lead.property_address}</p>
       
-      <div className="flex items-center justify-between pt-2 border-t border-slate-50 mt-2">
+      <div className="flex items-center justify-between pt-2 border-t border-white/5 mt-2">
          <div className="flex items-center gap-2" onPointerDown={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
-            <div className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded-lg border transition-all ${lead.due_date ? 'bg-gold/10 border-gold text-gold font-bold' : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-gold hover:text-gold'}`}>
-               <i className="fa-regular fa-calendar"></i>
+            <div className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-lg border border-white/10 bg-white/5 text-white/40 hover:border-white/20 transition-all">
+               <i className="fa-regular fa-calendar" style={lead.due_date ? { color: 'var(--brand-primary)' } : {}}></i>
                <input 
                  type="date" 
-                 className="bg-transparent outline-none w-16 opacity-60 hover:opacity-100 cursor-pointer"
+                 className="bg-transparent outline-none w-16 opacity-60 hover:opacity-100 cursor-pointer text-[9px] text-white"
                  value={lead.due_date ? new Date(lead.due_date).toISOString().split('T')[0] : ''}
                  onChange={(e) => onUpdate({...lead, due_date: e.target.value})}
                />
@@ -95,7 +96,7 @@ const SortableLead: React.FC<{
          <div className="flex gap-1" onPointerDown={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
             <button 
               onClick={(e) => { e.stopPropagation(); onDelete(lead.id); }}
-              className="w-7 h-7 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-lg flex items-center justify-center transition-all shadow-sm"
+              className="w-7 h-7 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg flex items-center justify-center transition-all border border-red-500/20"
             >
               <i className="fa-solid fa-trash-can text-[10px]"></i>
             </button>
@@ -110,7 +111,7 @@ const DroppableColumn: React.FC<{ col: string; children: React.ReactNode; style:
   return (
     <div 
       ref={setNodeRef}
-      className={`${style.bg} p-2 rounded-2xl min-h-[500px] space-y-3 border ${style.border} bg-opacity-30 backdrop-blur-sm`}
+      className={`glass-panel p-2 rounded-2xl min-h-[500px] space-y-3 bg-opacity-30`}
     >
       {children}
     </div>
@@ -196,13 +197,13 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
       {/* Scroll Arrows */}
       <button 
         onClick={() => scroll('left')}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full shadow-xl flex items-center justify-center text-slate-400 hover:text-gold hover:scale-110 transition-all opacity-0 group-hover/kanban:opacity-100 hidden md:flex border border-slate-100"
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-[#05080f]/50 backdrop-blur-md rounded-full shadow-xl flex items-center justify-center text-white/40 hover:text-white hover:scale-110 transition-all opacity-0 group-hover/kanban:opacity-100 hidden md:flex border border-white/10"
       >
         <i className="fa-solid fa-chevron-left"></i>
       </button>
       <button 
         onClick={() => scroll('right')}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full shadow-xl flex items-center justify-center text-slate-400 hover:text-gold hover:scale-110 transition-all opacity-0 group-hover/kanban:opacity-100 hidden md:flex border border-slate-100"
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-[#05080f]/50 backdrop-blur-md rounded-full shadow-xl flex items-center justify-center text-white/40 hover:text-white hover:scale-110 transition-all opacity-0 group-hover/kanban:opacity-100 hidden md:flex border border-white/10"
       >
         <i className="fa-solid fa-chevron-right"></i>
       </button>
@@ -254,7 +255,8 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                       {idx === 0 && !isAddingLead && (
                         <button 
                           onClick={() => setIsAddingLead(true)}
-                          className="w-6 h-6 bg-[#d4af37] text-slate-950 rounded-md flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
+                          className="w-6 h-6 text-slate-950 rounded-md flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
+                          style={{ backgroundColor: 'var(--brand-primary)' }}
                         >
                           <i className="fa-solid fa-plus text-[10px]"></i>
                         </button>
@@ -263,18 +265,18 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                 </div>
 
                 {idx === 0 && isAddingLead && (
-                  <div className="mb-4 bg-white p-4 rounded-2xl border-2 border-gold shadow-xl">
+                  <div className="mb-4 glass-card p-4 rounded-2xl border-2 shadow-xl" style={{ borderColor: 'var(--brand-primary)' }}>
                      <div className="flex justify-between items-center mb-3">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Manual Ingestion</p>
-                        <button onClick={() => setIsAddingLead(false)} className="text-slate-400 hover:text-slate-600">
+                        <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">Manual Ingestion</p>
+                        <button onClick={() => setIsAddingLead(false)} className="text-white/30 hover:text-white">
                           <i className="fa-solid fa-xmark text-xs"></i>
                         </button>
                      </div>
                      <div className="space-y-3">
-                        <input className="w-full px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold outline-none" placeholder="Lead Name" value={newLeadData.name} onChange={e => setNewLeadData({...newLeadData, name: e.target.value})} />
-                        <input className="w-full px-3 py-2 rounded-lg border border-slate-100 text-xs font-medium outline-none" placeholder="Phone / Email" value={newLeadData.phone} onChange={e => setNewLeadData({...newLeadData, phone: e.target.value})} />
-                        <input className="w-full px-3 py-2 rounded-lg border border-slate-100 text-xs font-medium outline-none" placeholder="Property Address" value={newLeadData.property_address} onChange={e => setNewLeadData({...newLeadData, property_address: e.target.value})} />
-                        <button onClick={() => { if (newLeadData.name && onAddLead) { onAddLead(newLeadData); setIsAddingLead(false); setNewLeadData({ name: '', phone: '', email: '', property_address: '' }); } }} className="w-full bg-gold text-slate-900 py-2 rounded-lg text-xs font-bold">Secure Prospect</button>
+                        <input className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold outline-none text-white" placeholder="Lead Name" value={newLeadData.name} onChange={e => setNewLeadData({...newLeadData, name: e.target.value})} />
+                        <input className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-medium outline-none text-white" placeholder="Phone / Email" value={newLeadData.phone} onChange={e => setNewLeadData({...newLeadData, phone: e.target.value})} />
+                        <input className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-medium outline-none text-white" placeholder="Property Address" value={newLeadData.property_address} onChange={e => setNewLeadData({...newLeadData, property_address: e.target.value})} />
+                        <button onClick={() => { if (newLeadData.name && onAddLead) { onAddLead(newLeadData); setIsAddingLead(false); setNewLeadData({ name: '', phone: '', email: '', property_address: '' }); } }} className="w-full py-2 rounded-lg text-xs font-bold text-slate-950" style={{ backgroundColor: 'var(--brand-primary)' }}>Secure Prospect</button>
                      </div>
                   </div>
                 )}
@@ -306,17 +308,25 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
 
           <div className="flex-shrink-0 w-[85vw] sm:w-80 flex flex-col pt-1">
             {isAddingColumn ? (
-               <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                  <input autoFocus placeholder="New Column Name..." className="w-full text-sm font-bold mb-3 outline-none border-b-2 border-gold pb-1" value={newColumnName} onChange={(e) => setNewColumnName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddColumn()} />
+               <div className="glass-panel p-4 rounded-xl shadow-xl border border-white/10">
+                  <input 
+                    autoFocus 
+                    placeholder="New Stage Name..." 
+                    className="w-full text-sm font-bold mb-3 bg-transparent border-b border-white/20 outline-none text-white pb-1 focus:border-brand-primary" 
+                    value={newColumnName} 
+                    onChange={(e) => setNewColumnName(e.target.value)} 
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddColumn()} 
+                    style={{ '--brand-primary': 'var(--brand-primary)' } as any}
+                  />
                   <div className="flex gap-2">
-                    <button onClick={handleAddColumn} className="flex-1 bg-gold text-slate-900 py-1.5 rounded-lg text-xs font-bold">Add</button>
-                    <button onClick={() => setIsAddingColumn(false)} className="flex-1 bg-slate-100 text-slate-500 py-1.5 rounded-lg text-xs font-bold">Cancel</button>
+                    <button onClick={handleAddColumn} className="flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-950" style={{ backgroundColor: 'var(--brand-primary)' }}>Deploy Stage</button>
+                    <button onClick={() => setIsAddingColumn(false)} className="flex-1 bg-white/5 text-white/40 py-1.5 rounded-lg text-xs font-bold border border-white/5">Cancel</button>
                   </div>
                </div>
             ) : (
-               <button onClick={() => setIsAddingColumn(true)} className="w-full h-12 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center gap-2 text-slate-400 hover:border-gold hover:text-gold transition-all">
-                  <i className="fa-solid fa-plus"></i>
-                  <span className="font-bold text-xs uppercase tracking-widest">Add Stage</span>
+               <button onClick={() => setIsAddingColumn(true)} className="w-full h-12 border-2 border-dashed border-white/10 rounded-xl flex items-center justify-center gap-2 text-white/20 hover:border-white/30 hover:text-white/40 transition-all group">
+                  <i className="fa-solid fa-plus group-hover:scale-110 transition-transform"></i>
+                  <span className="font-bold text-[10px] uppercase tracking-wider">New Pipeline Stage</span>
                </button>
             )}
           </div>
@@ -325,98 +335,160 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
 
       {selectedLead && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-           <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-md" onClick={() => setSelectedLead(null)}></div>
-           <div className="relative bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl overflow-hidden flex flex-col md:flex-row h-full max-h-[85vh]">
-              <div className="w-full md:w-80 bg-slate-50 border-r border-slate-100 p-8 flex flex-col gap-8 overflow-y-auto">
+           <div className="absolute inset-0 bg-[#05080f]/80 backdrop-blur-xl" onClick={() => setSelectedLead(null)}></div>
+           <div className="relative glass-panel w-full max-w-5xl rounded-[3.5rem] shadow-[0_32px_120px_-15px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh]">
+              {/* Sidebar: Core Identity */}
+              <div className="w-full md:w-80 bg-black/20 backdrop-blur-md border-r border-white/5 p-10 flex flex-col gap-8 overflow-y-auto">
                  <div>
-                    <span className="text-[10px] font-black text-gold uppercase tracking-[0.2em] mb-2 block">Prospect ID: {selectedLead.id}</span>
-                    <h3 className="text-2xl font-luxury font-bold text-slate-900">{selectedLead.name}</h3>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-2 block opacity-30 text-white">Prospect Fingerprint</span>
+                    <h3 className="text-3xl font-luxury font-bold text-white tracking-tight">{selectedLead.name}</h3>
                     <div className="flex gap-2 mt-4">
-                       <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase ${selectedLead.financing_status === 'Cash' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
-                          {selectedLead.financing_status} Buyer
+                       <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl border ${
+                         selectedLead.financing_status === 'Cash' 
+                           ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                           : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                       }`}>
+                          {selectedLead.financing_status} CAPITAL
                        </span>
                     </div>
                  </div>
-                 <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-slate-600">
-                       <i className="fa-solid fa-phone text-gold w-4"></i>
-                       <span className="text-xs font-bold">{selectedLead.phone}</span>
+
+                 <div className="space-y-6 pt-6 border-t border-white/5">
+                    <div className="flex items-center gap-4 text-white/60 hover:text-white transition-colors group">
+                       <i className="fa-solid fa-phone w-5 text-center transition-transform group-hover:scale-110" style={{ color: 'var(--brand-primary)' }}></i>
+                       <span className="text-xs font-bold tracking-wide">{selectedLead.phone}</span>
                     </div>
                     {selectedLead.email && (
-                       <div className="flex items-center gap-3 text-slate-600">
-                          <i className="fa-solid fa-envelope text-gold w-4"></i>
-                          <span className="text-xs font-bold truncate">{selectedLead.email}</span>
+                       <div className="flex items-center gap-4 text-white/60 hover:text-white transition-colors group">
+                          <i className="fa-solid fa-envelope w-5 text-center transition-transform group-hover:scale-110" style={{ color: 'var(--brand-primary)' }}></i>
+                          <span className="text-xs font-bold truncate tracking-wide">{selectedLead.email}</span>
                        </div>
                     )}
                  </div>
-                  <div className="pt-8 border-t border-slate-200">
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Intelligence Score</p>
-                     <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm group">
-                        <div className="flex items-center justify-between mb-2">
-                           <p className="text-[10px] text-slate-400 font-bold uppercase">Priority Level</p>
-                           {(() => {
-                              const score = (selectedLead.conversation_history?.length || 0) * 10 + (selectedLead.agent_notes?.length || 0) / 10;
-                              const level = score > 50 ? 'Elite' : score > 20 ? 'High' : 'Standard';
-                              const color = level === 'Elite' ? 'text-gold' : level === 'High' ? 'text-indigo-600' : 'text-slate-400';
-                              return <span className={`text-[10px] font-black uppercase ${color}`}>{level}</span>;
-                           })()}
+
+                  <div className="pt-8 border-t border-white/5">
+                     <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-5">Intelligence Grade</p>
+                     <div className="bg-white/5 p-6 rounded-[2rem] border border-white/5 shadow-2xl space-y-4">
+                        <div className="flex items-center justify-between">
+                           <p className="text-[10px] text-white/40 font-bold uppercase tracking-tighter">Priority Index</p>
+                           <span className="text-[11px] font-black uppercase" style={{ color: 'var(--brand-primary)' }}>
+                             {selectedLead.priority_score || 0}/10
+                           </span>
                         </div>
-                        <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                           <div 
-                              className="h-full bg-gold transition-all duration-1000" 
-                              style={{ width: `${Math.min(((selectedLead.conversation_history?.length || 0) * 10 + (selectedLead.agent_notes?.length || 0) / 20), 100)}%` }}
-                           ></div>
-                        </div>
+                        <input 
+                           type="range" min="0" max="10" 
+                           className="w-full accent-brand-primary cursor-pointer h-1.5 bg-white/10 rounded-full"
+                           style={{ '--brand-primary': 'var(--brand-primary)' } as any}
+                           value={selectedLead.priority_score || 0}
+                           onChange={(e) => {
+                             const updated = {...selectedLead, priority_score: parseInt(e.target.value)};
+                             setSelectedLead(updated);
+                             onUpdateLead!(updated);
+                           }}
+                        />
                      </div>
                   </div>
+
                   <div className="pt-4">
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Inquiry Context</p>
-                     <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm group">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Target Property</p>
-                        <p className="text-xs font-bold text-slate-800 leading-relaxed mb-3">{selectedLead.property_address}</p>
+                     <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">Engagement Context</p>
+                     <div className="bg-white/5 p-6 rounded-[2rem] border border-white/5">
+                        <p className="text-[10px] text-white/40 font-bold uppercase mb-2">Target Asset</p>
+                        <p className="text-xs font-bold text-white/80 leading-relaxed italic">{selectedLead.property_address}</p>
                      </div>
                   </div>
-                  <div className="mt-auto">
-                     <button onClick={() => setSelectedLead(null)} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs shadow-xl active:scale-95 transition-all">Done Reviewing</button>
+
+                  <div className="mt-auto pt-10">
+                     <button onClick={() => setSelectedLead(null)} className="w-full py-5 bg-white text-slate-950 rounded-[1.5rem] font-bold text-xs shadow-[0_10px_30px_rgba(255,255,255,0.1)] active:scale-95 transition-all uppercase tracking-widest hover:bg-white/90">
+                       Done Reviewing
+                     </button>
                   </div>
               </div>
 
-              <div className="flex-1 p-8 md:p-12 overflow-y-auto space-y-12 no-scrollbar">
+              {/* Main Content: Logs and Intelligence */}
+              <div className="flex-1 p-10 md:p-16 overflow-y-auto space-y-16 no-scrollbar bg-[#05080f]/40">
                  <section>
-                    <h4 className="text-lg font-luxury font-bold text-slate-900 mb-6 flex items-center gap-3">
-                       <i className="fa-solid fa-user-tie text-gold"></i>
-                       Agent Intelligence Notes
-                    </h4>
-                    <textarea 
-                       className="w-full p-6 bg-slate-50 border border-slate-200 rounded-3xl text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all resize-none min-h-[150px]"
-                       placeholder="Add strategic notes..."
-                       value={selectedLead.agent_notes || ""}
-                       onChange={(e) => {
-                          const updated = {...selectedLead, agent_notes: e.target.value};
-                          setSelectedLead(updated);
-                          onUpdateLead!(updated);
-                       }}
-                    />
+                    <div className="flex items-center justify-between mb-8">
+                       <h4 className="text-xl font-luxury font-bold text-white flex items-center gap-4">
+                          <i className="fa-solid fa-user-shield" style={{ color: 'var(--brand-primary)' }}></i>
+                          Intelligence Dossier
+                       </h4>
+                       <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+                          <i className="fa-regular fa-calendar text-[11px]" style={{ color: 'var(--brand-primary)' }}></i>
+                          <span className="text-[10px] font-bold text-white/50 uppercase">Follow-up:</span>
+                          <input 
+                            type="date" 
+                            className="bg-transparent border-none outline-none text-[10px] font-bold text-white cursor-pointer uppercase"
+                            value={selectedLead.due_date ? new Date(selectedLead.due_date).toISOString().split('T')[0] : ''}
+                            onChange={(e) => {
+                              const updated = {...selectedLead, due_date: e.target.value};
+                              setSelectedLead(updated);
+                              onUpdateLead!(updated);
+                            }}
+                          />
+                       </div>
+                    </div>
+                    
+                    <div className="space-y-6">
+                       <div className="relative">
+                          <textarea 
+                             className="w-full p-8 bg-white/5 border border-white/10 rounded-[2.5rem] text-sm font-medium focus:ring-2 focus:ring-brand-primary outline-none transition-all resize-none min-h-[200px] text-white/80 leading-relaxed"
+                             style={{ '--brand-primary': 'var(--brand-primary)' } as any}
+                             placeholder="Capture internal strategy, gate requirements, or agent insights..."
+                             value={selectedLead.agent_notes || ""}
+                             onChange={(e) => {
+                                const updated = {...selectedLead, agent_notes: e.target.value};
+                                setSelectedLead(updated);
+                                onUpdateLead!(updated);
+                             }}
+                          />
+                          <button 
+                            className="absolute bottom-6 right-6 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-950 shadow-2xl hover:scale-105 active:scale-95 transition-all"
+                            style={{ backgroundColor: 'var(--brand-primary)' }}
+                            onClick={() => {
+                               const timestamp = new Date().toLocaleString();
+                               const prefix = `\n[${timestamp}] Agent Note: `;
+                               const updated = {
+                                 ...selectedLead, 
+                                 agent_notes: (selectedLead.agent_notes || "") + prefix
+                               };
+                               setSelectedLead(updated);
+                               onUpdateLead!(updated);
+                            }}
+                          >
+                            <i className="fa-solid fa-clock-rotate-left mr-2"></i>
+                            Timestamp Entry
+                          </button>
+                       </div>
+                    </div>
                  </section>
+
                  <section>
-                    <h4 className="text-lg font-luxury font-bold text-slate-900 mb-6 flex items-center gap-3">
-                       <i className="fa-solid fa-comments text-gold"></i>
-                       Conversation History
+                    <h4 className="text-xl font-luxury font-bold text-white mb-8 flex items-center gap-4">
+                       <i className="fa-solid fa-fingerprint" style={{ color: 'var(--brand-primary)' }}></i>
+                       Captured Dialogue
                     </h4>
-                     <div className="space-y-6">
+                     <div className="space-y-10 relative">
+                        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-white/5 rounded-full"></div>
                         {selectedLead.conversation_history && selectedLead.conversation_history.length > 0 ? (
-                           selectedLead.conversation_history.map((msg, i) => (
-                              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                 <div className={`max-w-[85%] p-5 rounded-3xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-slate-900 text-white rounded-tr-none' : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none shadow-sm'}`}>
-                                    <div className={`text-[9px] font-black uppercase opacity-40 mb-2 tracking-widest ${msg.role === 'user' ? 'text-gold' : 'text-slate-500'}`}>{msg.role === 'user' ? 'Prospect' : 'Concierge Intelligence'}</div>
-                                    {msg.content}
+                           selectedLead.conversation_history.map((msg: any, i) => (
+                              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
+                                 <div className={`max-w-[85%] p-6 rounded-[2rem] text-sm leading-relaxed shadow-2xl border ${
+                                   msg.role === 'user' 
+                                     ? 'bg-white/10 text-white rounded-tr-none border-white/10' 
+                                     : 'bg-[#05080f]/60 text-white/80 border-white/5 rounded-tl-none backdrop-blur-md'
+                                 }`}>
+                                    <div className={`text-[9px] font-black uppercase opacity-40 mb-3 tracking-[0.2em] flex items-center gap-2 ${msg.role === 'user' ? 'text-white' : ''}`}>
+                                      {msg.role === 'user' ? <i className="fa-solid fa-user text-[8px]"></i> : <i className="fa-solid fa-robot text-[8px]"></i>}
+                                      {msg.role === 'user' ? 'PROSPECT' : 'ELITE CONCIERGE'}
+                                    </div>
+                                    <p className="font-medium tracking-wide">{msg.content || msg.text || ""}</p>
                                  </div>
                               </div>
                            ))
                         ) : (
-                           <div className="p-12 border-2 border-dashed border-slate-100 rounded-[2rem] flex flex-col items-center justify-center text-slate-400 bg-slate-50/50">
-                              <i className="fa-solid fa-ghost text-4xl mb-4 opacity-10"></i>
-                              <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Zero captured dialogue for this session</p>
+                           <div className="p-20 border-2 border-dashed border-white/5 rounded-[3rem] flex flex-col items-center justify-center text-white/20 bg-white/5">
+                              <i className="fa-solid fa-terminal text-4xl mb-6 opacity-20"></i>
+                              <p className="text-[10px] font-black uppercase tracking-[0.3em]">No digitized session data available</p>
                            </div>
                         )}
                      </div>

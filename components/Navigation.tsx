@@ -42,7 +42,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
               className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group ${
                 activeTab === item.id 
                   ? 'shadow-xl font-bold scale-[1.02] border' 
-                  : 'text-slate-500 hover:bg-slate-900/50 hover:text-slate-300'
+                  : 'text-white/60 hover:bg-white/5 hover:text-white'
               }`}
               style={activeTab === item.id ? { 
                 backgroundColor: `${brandColor}15`, 

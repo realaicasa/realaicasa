@@ -8,7 +8,7 @@ interface PropertyCardProps {
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
   const isEstateGuard = property.tier === PropertyTier.ESTATE_GUARD;
-  const hasVideo = !!property.listing_details.video_tour_url;
+  const hasVideo = !!property.listing_details?.video_tour_url;
 
   return (
     <div 
@@ -27,8 +27,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
             <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] shadow-xl backdrop-blur-md ${
               property.transaction_type === 'Rent' || property.transaction_type === 'Lease' 
                 ? 'bg-emerald-600/90 text-white border border-emerald-400/30' 
-                : 'bg-gold/90 text-slate-950 border border-white/20'
-            }`}>
+                : 'text-slate-950 border border-white/20'
+            }`}
+             style={!(property.transaction_type === 'Rent' || property.transaction_type === 'Lease') ? { backgroundColor: `rgba(var(--brand-primary-rgb), 0.9)` } : {}}
+            >
               {property.transaction_type === 'Rent' || property.transaction_type === 'Lease' ? 'RENTAL ASSET' : 'FOR SALE'}
             </span>
             {isEstateGuard && (
@@ -47,16 +49,16 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
       
       <div className="p-6">
         <div className="mb-4">
-            <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${
-              property.transaction_type === 'Rent' || property.transaction_type === 'Lease' ? 'text-emerald-500' : 'text-gold'
-            }`}>{property.category}</span>
-            <h4 className="font-luxury font-bold text-slate-900 text-lg line-clamp-1 mt-1">{property.listing_details.address}</h4>
+            <span className={`text-[9px] font-black uppercase tracking-[0.3em]`} style={{ color: (property.transaction_type === 'Rent' || property.transaction_type === 'Lease' ? '' : 'var(--brand-primary)') }}>
+              {property.category}
+            </span>
+            <h4 className="font-luxury font-bold text-slate-900 text-lg line-clamp-1 mt-1">{property.listing_details?.address}</h4>
         </div>
         
         <div className="flex items-center gap-4 text-slate-500 text-xs font-bold mb-4">
-          <span className="flex items-center gap-1.5"><i className="fa-solid fa-bed text-gold"></i> {property.listing_details.key_stats.bedrooms || '-'}</span>
-          <span className="flex items-center gap-1.5"><i className="fa-solid fa-bath text-gold"></i> {property.listing_details.key_stats.bathrooms || '-'}</span>
-          <span className="flex items-center gap-1.5"><i className="fa-solid fa-maximize text-gold"></i> {property.listing_details.key_stats.sq_ft.toLocaleString()}</span>
+          <span className="flex items-center gap-1.5"><i className="fa-solid fa-bed" style={{ color: 'var(--brand-primary)' }}></i> {property.listing_details?.key_stats?.bedrooms || '-'}</span>
+          <span className="flex items-center gap-1.5"><i className="fa-solid fa-bath" style={{ color: 'var(--brand-primary)' }}></i> {property.listing_details?.key_stats?.bathrooms || '-'}</span>
+          <span className="flex items-center gap-1.5"><i className="fa-solid fa-maximize" style={{ color: 'var(--brand-primary)' }}></i> {property.listing_details?.key_stats?.sq_ft?.toLocaleString() || '-'}</span>
         </div>
         
         <p className="text-slate-600 text-xs line-clamp-2 italic mb-6 leading-relaxed">

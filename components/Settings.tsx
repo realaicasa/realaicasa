@@ -62,13 +62,13 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
 
   return (
     <div className="max-w-4xl mx-auto space-y-10">
-      <div className="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
-        <div className="bg-slate-950 p-10 text-white flex justify-between items-center border-b-2 border-gold/30">
+      <div className="glass-panel rounded-[3rem] overflow-hidden">
+        <div className="bg-[#05080f]/50 p-10 text-white flex justify-between items-center border-b border-white/10">
           <div>
             <h2 className="text-2xl font-luxury font-bold">Agency HQ</h2>
-            <p className="text-slate-400 text-sm mt-1">Whitelabel the concierge and PWA experience.</p>
+            <p className="text-white/40 text-sm mt-1">Whitelabel the concierge and PWA experience.</p>
           </div>
-          <div className="bg-gold text-slate-950 px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-[0.2em]">
+          <div className="px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-slate-950" style={{ backgroundColor: settings.primaryColor }}>
              Professional Tier
           </div>
         </div>
@@ -76,18 +76,19 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
         <div className="p-10 space-y-12">
           {/* Identity Section */}
           <section>
-            <h3 className="font-bold text-slate-800 mb-8 flex items-center gap-4 text-lg">
-              <i className="fa-solid fa-palette text-gold"></i> 
+            <h3 className="font-bold text-white mb-8 flex items-center gap-4 text-lg">
+              <i className="fa-solid fa-palette" style={{ color: settings.primaryColor }}></i> 
               Whitelabeling
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Agency Display Name</label>
+                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Agency Display Name</label>
                 <input 
                   type="text" 
                   value={settings.businessName}
                   onChange={(e) => onUpdate({...settings, businessName: e.target.value})}
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold outline-none transition-all font-medium"
+                  className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 outline-none transition-all font-medium text-white"
+                  style={{ '--tw-ring-color': settings.primaryColor } as any}
                 />
               </div>
               <div className="space-y-3">
@@ -134,25 +135,26 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           </section>
 
           {/* AI Provisioning Section */}
-          <section className="bg-slate-50 p-10 rounded-[3rem] border border-slate-100">
-            <h3 className="font-bold text-slate-800 mb-8 flex items-center gap-4 text-lg">
-              <i className="fa-solid fa-microchip text-gold"></i> 
+          <section className="bg-white/5 p-10 rounded-[3rem] border border-white/5">
+            <h3 className="font-bold text-white mb-8 flex items-center gap-4 text-lg">
+              <i className="fa-solid fa-microchip" style={{ color: settings.primaryColor }}></i> 
               AI Core Provisioning
             </h3>
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                <p className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-tight">Gemini API Key</p>
-                <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+            <div className="bg-black/20 p-8 rounded-2xl border border-white/5 shadow-sm">
+                <p className="text-xs font-bold text-white/70 mb-2 uppercase tracking-tight">Gemini API Key</p>
+                <p className="text-xs text-white/40 mb-6 leading-relaxed">
                    Your dedicated API key powers your specific agent's intelligence. No data is shared across agencies.
-                   <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-gold font-bold ml-1 hover:underline">Get key here →</a>
+                   <a href="https://aistudio.google.com/app/apikey" target="_blank" className="font-bold ml-1 hover:underline" style={{ color: settings.primaryColor }}>Get key here →</a>
                 </p>
                 <div className="relative">
-                    <i className="fa-solid fa-key absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                    <i className="fa-solid fa-key absolute left-5 top-1/2 -translate-y-1/2 text-white/20"></i>
                     <input 
                         type="password" 
                         placeholder="Paste Gemini API Key..."
                         value={settings.apiKey}
                         onChange={(e) => onUpdate({...settings, apiKey: e.target.value})}
-                        className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold outline-none text-sm font-mono"
+                        className="w-full pl-12 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 outline-none text-sm font-mono text-white"
+                        style={{ '--tw-ring-color': settings.primaryColor } as any}
                     />
                 </div>
             </div>
@@ -207,7 +209,8 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
              <button 
                 onClick={handleSave}
                 disabled={isSaving}
-                className="gold-button px-12 py-4 rounded-2xl font-bold text-sm shadow-2xl shadow-gold/20 flex items-center gap-3 transition-transform active:scale-95 disabled:opacity-50"
+                className="px-12 py-4 rounded-2xl font-bold text-sm shadow-2xl flex items-center gap-3 transition-transform active:scale-95 disabled:opacity-50 text-slate-950"
+                style={{ backgroundColor: settings.primaryColor }}
              >
                 {isSaving ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-floppy-disk"></i>}
                 {isSaving ? 'Synchronizing...' : 'Save All Changes'}

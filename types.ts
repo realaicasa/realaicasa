@@ -90,6 +90,8 @@ export interface Lead {
   notes: string[];
   conversation_history?: { role: string; content: string; timestamp: string; }[];
   agent_notes?: string;
+  notes_log?: { text: string; timestamp: string; agent_name?: string; }[];
+  priority_score?: number;
 }
 
 export interface AgentSettings {

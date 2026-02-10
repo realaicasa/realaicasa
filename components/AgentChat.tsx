@@ -90,20 +90,20 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
 
   return (
     <div className="flex flex-col h-[650px] relative">
-      <div className="mb-4 bg-gold/10 border-l-4 border-gold p-4 rounded-r-2xl">
-         <p className="text-xs font-bold text-slate-800 italic">
+      <div className="mb-4 bg-white/5 border-l-4 p-4 rounded-r-2xl" style={{ borderColor: settings.primaryColor }}>
+         <p className="text-xs font-bold text-white/70 italic">
            "{settings.conciergeIntro || 'Ask our happy assistant about any of our properties 24/7'}"
          </p>
       </div>
 
-      <div className="flex-1 flex flex-col bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
-        <div className="bg-slate-950 text-white p-6 flex items-center justify-between border-b-2 border-gold/20">
+      <div className="flex-1 flex flex-col glass-panel rounded-[2.5rem] overflow-hidden shadow-2xl relative">
+        <div className="bg-[#05080f]/80 text-white p-6 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gold text-slate-950 shadow-lg shadow-gold/20">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg text-slate-950" style={{ backgroundColor: settings.primaryColor }}>
               <i className="fa-solid fa-robot text-xl"></i>
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gold opacity-80">Guard Intelligence</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80" style={{ color: settings.primaryColor }}>Guard Intelligence</p>
               <p className="text-md font-luxury font-bold tracking-tight">{settings.businessName}</p>
             </div>
           </div>
@@ -136,8 +136,8 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
             <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
               <div className={`max-w-[85%] px-6 py-4 rounded-3xl text-sm leading-relaxed shadow-sm transition-all ${
                 m.role === 'user' 
-                  ? 'bg-slate-900 text-white rounded-tr-none border border-white/5' 
-                  : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none'
+                  ? 'bg-white/10 text-white rounded-tr-none border border-white/5' 
+                  : 'bg-white/5 text-white/90 border border-white/10 rounded-tl-none'
               }`}>
                 {m.text}
               </div>

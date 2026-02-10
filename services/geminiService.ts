@@ -265,11 +265,35 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
 
     // Stage 1: cleanJsonResponse handles nested curly braces extraction
     const data = cleanJsonResponse(rawText);
+    
+    // Stage 2: Structural Hardening (Prevent UI Crashes)
     if (!data.property_id) data.property_id = `EG-${Math.floor(Math.random() * 1000)}`;
     if (!data.status) data.status = 'Active';
     if (!data.category) data.category = 'Residential';
+    if (!data.tier) data.tier = 'Standard';
     if (!data.transaction_type) data.transaction_type = 'Sale';
-    return data;
+    
+    if (!data.listing_details) {
+      data.listing_details = {
+        address: "New Asset",
+        price: 0,
+        hero_narrative: "Scraping complete. Analysis required.",
+        key_stats: { bedrooms: 0, bathrooms: 0, sq_ft: 0 }
+      };
+    } else {
+      // Deep merge with defaults for listing_details
+      data.listing_details.key_stats = {
+        bedrooms: data.listing_details.key_stats?.bedrooms || 0,
+        bathrooms: data.listing_details.key_stats?.bathrooms || 0,
+        sq_ft: data.listing_details.key_stats?.sq_ft || 0
+      };
+    }
+
+    if (!data.visibility_protocol) {
+      data.visibility_protocol = { gated_fields: [] };
+    }
+
+    return data as PropertySchema;
   } catch (e: any) {
     console.error("[EstateGuard-v1.1.8] Processing Error:", e);
     const msg = e.message || "Unknown error";

@@ -44,7 +44,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
   if (isEditing) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300 max-h-[70vh] overflow-y-auto pr-4 custom-scrollbar">
-        <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-200">
+        <div className="glass-panel p-8 rounded-[2rem]">
           <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-200 pb-2">Asset Core Specification</h4>
           <div className="space-y-5">
             <div>
@@ -263,7 +263,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
         <div className="flex gap-4 sticky bottom-0 bg-white pt-4 border-t border-slate-100 mt-4">
           <button 
             onClick={handleSave}
-            className="flex-1 bg-slate-950 text-gold py-5 rounded-2xl font-bold text-sm shadow-xl active:scale-95 transition-transform"
+            className="flex-1 py-5 rounded-2xl font-bold text-sm shadow-xl active:scale-95 transition-transform text-slate-950"
+            style={{ backgroundColor: 'var(--brand-primary)' }}
           >
             Sychronize Asset Cloud
           </button>
@@ -336,8 +337,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
 
       <div className="space-y-8 bg-slate-50/50 p-10 rounded-[2.5rem] border border-slate-100">
         <div>
-          <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-[0.2em] mb-4">Market Narrative</h4>
-          <p className="text-slate-700 text-sm leading-relaxed italic border-l-4 border-gold pl-6 py-1">
+          <h4 className="font-black text-white/40 text-[10px] uppercase tracking-[0.2em] mb-4">Market Narrative</h4>
+          <p className="text-white/70 text-sm leading-relaxed italic border-l-4 pl-6 py-1" style={{ borderColor: 'var(--brand-primary)' }}>
             "{property.listing_details.hero_narrative || 'Market briefing currently in production.'}"
           </p>
         </div>
@@ -431,7 +432,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
       <div className="pt-8 flex flex-col sm:flex-row gap-4">
         <button 
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); onTest(); }}
-          className="gold-button flex-1 py-5 rounded-2xl font-bold text-sm shadow-2xl shadow-gold/30 flex items-center justify-center gap-3 active:scale-95 transition-all"
+          className="flex-1 py-5 rounded-2xl font-bold text-sm shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all text-slate-950"
+          style={{ backgroundColor: 'var(--brand-primary)', boxShadow: '0 20px 40px -10px rgba(var(--brand-primary-rgb), 0.3)' }}
         >
           <i className="fa-solid fa-shield-halved"></i>
           Test Guard Sandbox

@@ -76,6 +76,20 @@ const App: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Sync brand color to CSS Variables
+  useEffect(() => {
+    if (settings.primaryColor) {
+      document.documentElement.style.setProperty('--brand-primary', settings.primaryColor);
+      
+      // Convert hex to RGB for alpha utilities
+      const hex = settings.primaryColor.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      document.documentElement.style.setProperty('--brand-primary-rgb', `${r}, ${g}, ${b}`);
+    }
+  }, [settings.primaryColor]);
+
   // Fetch all data from Supabase whenever user changes
   useEffect(() => {
     if (!user) {
@@ -190,6 +204,8 @@ const App: React.FC = () => {
                 due_date: updated.due_date || null,
                 notes: updated.notes,
                 agent_notes: updated.agent_notes,
+                priority_score: updated.priority_score,
+                notes_log: updated.notes_log,
                 status: updated.status,
                 conversation_history: updated.conversation_history
             })
@@ -336,9 +352,12 @@ const App: React.FC = () => {
           property_address: newLead.property_address,
           status: newLead.status,
           created_at: newLead.timestamp,
-          notes: newLead.notes,
-          conversation_history: newLead.conversation_history,
-          agent_notes: newLead.agent_notes
+          notes: newLead.notes || [],
+          conversation_history: newLead.conversation_history || [],
+          agent_notes: newLead.agent_notes || "",
+          due_date: newLead.due_date,
+          priority_score: newLead.priority_score || 0,
+          notes_log: newLead.notes_log || []
         });
 
       if (error) {
@@ -471,10 +490,14 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-gold flex flex-col items-center gap-4">
-          <i className="fa-solid fa-shield-halved text-4xl animate-pulse"></i>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em]">Authenticating Secure Vault...</p>
+      <div className="min-h-screen bg-[#05080f] flex items-center justify-center relative overflow-hidden">
+        {/* Luxury background ambient light */}
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] opacity-20" style={{ backgroundColor: settings.primaryColor }}></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] opacity-10" style={{ backgroundColor: settings.primaryColor }}></div>
+        
+        <div className="flex flex-col items-center gap-6 relative z-10 glass-panel p-12 rounded-[3rem]">
+          <i className="fa-solid fa-shield-halved text-5xl animate-float" style={{ color: settings.primaryColor }}></i>
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/50">Protecting Asset Sovereignty...</p>
         </div>
       </div>
     );
@@ -485,7 +508,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden flex-col md:flex-row">
+    <div className="flex h-screen bg-[#05080f] overflow-hidden flex-col md:flex-row text-slate-200">
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} brandColor={settings.primaryColor} />
 
       <main className="flex-1 overflow-y-auto main-content no-scrollbar flex flex-col">
@@ -567,15 +590,16 @@ const App: React.FC = () => {
             {activeTab === 'dashboard' && <DashboardStats properties={properties} leads={leads} />}
             {activeTab === 'properties' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                    {properties.map(p => (
-                        <PropertyCard 
-                          key={p.property_id} 
-                          property={p} 
-                          onSelect={(p) => { 
-                            setSelectedPropertyId(p.property_id); 
-                            setIsDetailsOpen(true); 
-                          }} 
-                        />
+                    {properties.map((p, idx) => (
+                        <div key={p.property_id} className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: `${idx * 100}ms` }}>
+                          <PropertyCard 
+                            property={p} 
+                            onSelect={(p) => { 
+                              setSelectedPropertyId(p.property_id); 
+                              setIsDetailsOpen(true); 
+                            }} 
+                          />
+                        </div>
                     ))}
                 </div>
             )}
