@@ -251,8 +251,8 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
         result = await tryGenerate('gemini-1.5-flash', 'v1beta');
     } catch (e2: any) {
         try {
-            console.log("[EstateGuard-v1.1.9] Stage 3: Trying gemini-1.5-pro...");
-            result = await tryGenerate('gemini-1.5-pro', 'v1beta');
+            console.log("[EstateGuard-v1.1.9] Stage 3: Retry gemini-1.5-flash (Legacy)...");
+            result = await tryGenerate('gemini-1.5-flash', 'v1beta');
         } catch (e3: any) {
             console.error("[EstateGuard-v1.1.9] ALL STAGES FAILED.");
             if (isUrl && lastScrapedHtml) {

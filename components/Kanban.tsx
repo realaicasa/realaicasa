@@ -432,45 +432,100 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                        </div>
                     </div>
                     
-                    <div className="space-y-6">
-                       <div className="relative">
-                          <textarea 
-                             className="w-full p-8 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-[2.5rem] text-sm font-medium focus:ring-2 focus:ring-brand-primary outline-none transition-all resize-none min-h-[200px] text-[var(--text-main)] leading-relaxed"
-                             style={{ '--brand-primary': 'var(--brand-primary)' } as any}
-                             placeholder="Capture internal strategy, gate requirements, or agent insights..."
-                             value={selectedLead.agent_notes || ""}
-                             onChange={(e) => {
-                                const updated = {...selectedLead, agent_notes: e.target.value};
-                                setSelectedLead(updated);
-                                onUpdateLead!(updated);
+                     <div className="space-y-6">
+                        <div className="relative">
+                           <textarea 
+                              className="w-full p-8 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-[2.5rem] text-sm font-medium focus:ring-2 focus:ring-brand-primary outline-none transition-all resize-none min-h-[120px] text-[var(--text-main)] leading-relaxed"
+                              style={{ '--brand-primary': 'var(--brand-primary)' } as any}
+                              placeholder="Current strategic focus or executive summary..."
+                              value={selectedLead.agent_notes || ""}
+                              onChange={(e) => {
+                                 const updated = {...selectedLead, agent_notes: e.target.value};
+                                 setSelectedLead(updated);
+                                 onUpdateLead!(updated);
+                              }}
+                           />
+                           <div className="flex justify-end mt-2">
+                             <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest">Executive Summary (Shared with Team)</p>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="mt-12 pt-10 border-t border-[var(--glass-border)]">
+                        <h4 className="text-xl font-luxury font-bold text-[var(--text-main)] mb-6 flex items-center gap-4">
+                           <i className="fa-solid fa-list-ul" style={{ color: 'var(--brand-primary)' }}></i>
+                           Activity & Communication Log
+                        </h4>
+                        
+                        {/* New Note Input */}
+                        <div className="flex gap-4 mb-8">
+                           <input 
+                             id="new-note-input"
+                             className="flex-1 px-6 py-4 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-sm font-medium outline-none focus:border-brand-primary placeholder:text-[var(--text-muted)]"
+                             placeholder="Log a call, email, or update..."
+                             onKeyDown={(e) => {
+                               if (e.key === 'Enter') {
+                                 const val = e.currentTarget.value;
+                                 if (!val.trim()) return;
+                                 
+                                 const newNote = { text: val, timestamp: new Date().toISOString() };
+                                 const updatedLog = [newNote, ...(selectedLead.notes_log || [])];
+                                 const updated = { ...selectedLead, notes_log: updatedLog };
+                                 
+                                 setSelectedLead(updated);
+                                 onUpdateLead!(updated);
+                                 e.currentTarget.value = '';
+                               }
                              }}
-                          />
-                          <button 
-                            className="absolute bottom-6 right-6 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-950 shadow-2xl hover:scale-105 active:scale-95 transition-all"
-                            style={{ backgroundColor: 'var(--brand-primary)' }}
-                            onClick={() => {
-                               const timestamp = new Date().toLocaleString();
-                               const prefix = `\n[${timestamp}] Agent Note: `;
-                               const updated = {
-                                 ...selectedLead, 
-                                 agent_notes: (selectedLead.agent_notes || "") + prefix
-                               };
+                           />
+                           <button 
+                             className="px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-wider text-slate-950 shadow-lg hover:scale-105 active:scale-95 transition-all"
+                             style={{ backgroundColor: 'var(--brand-primary)' }}
+                             onClick={() => {
+                               const input = document.getElementById('new-note-input') as HTMLInputElement;
+                               if (!input || !input.value.trim()) return;
+                               
+                               const newNote = { text: input.value, timestamp: new Date().toISOString() };
+                               const updatedLog = [newNote, ...(selectedLead.notes_log || [])];
+                               const updated = { ...selectedLead, notes_log: updatedLog };
+                               
                                setSelectedLead(updated);
                                onUpdateLead!(updated);
-                            }}
-                          >
-                            <i className="fa-solid fa-clock-rotate-left mr-2"></i>
-                            Timestamp Entry
-                          </button>
-                       </div>
-                    </div>
-                 </section>
+                               input.value = '';
+                             }}
+                           >
+                             Log
+                           </button>
+                        </div>
 
-                 <section>
-                    <h4 className="text-xl font-luxury font-bold text-[var(--text-main)] mb-8 flex items-center gap-4">
-                       <i className="fa-solid fa-fingerprint" style={{ color: 'var(--brand-primary)' }}></i>
-                       Captured Dialogue
-                    </h4>
+                        {/* Activity Feed */}
+                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                           {selectedLead.notes_log && selectedLead.notes_log.length > 0 ? (
+                             selectedLead.notes_log.map((note, idx) => (
+                               <div key={idx} className="bg-[var(--glass-bg)] p-5 rounded-2xl border border-[var(--glass-border)] flex gap-4">
+                                  <div className="flex-shrink-0 mt-1">
+                                     <i className="fa-solid fa-circle-dot text-[8px] opacity-50"></i>
+                                  </div>
+                                  <div>
+                                     <p className="text-sm font-medium text-[var(--text-main)] mb-1">{note.text}</p>
+                                     <p className="text-[9px] font-black uppercase tracking-wider text-[var(--text-muted)] opacity-60">
+                                       {new Date(note.timestamp).toLocaleString()}
+                                     </p>
+                                  </div>
+                               </div>
+                             ))
+                           ) : (
+                             <p className="text-center text-[var(--text-muted)] text-xs italic py-4">No activity logged yet.</p>
+                           )}
+                        </div>
+                     </div>
+                  </section>
+
+                  <section>
+                     <h4 className="text-xl font-luxury font-bold text-[var(--text-main)] mb-8 flex items-center gap-4">
+                        <i className="fa-solid fa-fingerprint" style={{ color: 'var(--brand-primary)' }}></i>
+                        AI Conversation History
+                     </h4>
                      <div className="space-y-10 relative">
                         <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-white/5 rounded-full"></div>
                         {selectedLead.conversation_history && selectedLead.conversation_history.length > 0 ? (
