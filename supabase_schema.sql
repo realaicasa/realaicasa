@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS properties (
   price NUMERIC,
   status TEXT,
   data JSONB, -- Stores the full PropertySchema JSON
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 ALTER TABLE properties ENABLE ROW LEVEL SECURITY;

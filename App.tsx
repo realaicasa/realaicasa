@@ -372,8 +372,7 @@ const App: React.FC = () => {
           address: p.listing_details?.address || '',
           price: p.listing_details?.price || 0,
           status: p.status || 'Active',
-          data: p,
-          updated_at: new Date().toISOString()
+          data: p
         });
 
       if (error) throw error;

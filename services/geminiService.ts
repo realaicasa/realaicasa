@@ -33,16 +33,19 @@ const cleanJsonResponse = (text: string): any => {
 };
 
 const getApiKey = (manualKey?: string) => {
-  if (manualKey) {
+  // Only use manual key if it looks like a real key (not empty or just whitespace)
+  if (manualKey && manualKey.trim().length > 5) {
     console.log("[EstateGuard-v1.1.8] Using manual API key from Identity Settings.");
-    return manualKey;
+    return manualKey.trim();
   }
+  
   const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
   if (envKey) {
     console.log("[EstateGuard-v1.1.8] Using system environment VITE_GEMINI_API_KEY.");
     return envKey;
   }
-  console.warn("[EstateGuard-v1.1.8] NO API KEY DETECTED. AI functionality will be limited to resilient fallbacks.");
+  
+  console.warn("[EstateGuard-v1.1.8] NO VALID API KEY DETECTED. Check Vercel Env or Identity Settings.");
   return "";
 };
 
