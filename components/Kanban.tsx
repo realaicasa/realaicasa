@@ -35,6 +35,14 @@ const PASTEL_COLORS = [
   { name: 'Soft Cyan', bg: 'bg-cyan-50/80', border: 'border-cyan-100', dot: 'bg-cyan-400', text: 'text-cyan-900' },
 ];
 
+const getPriorityColor = (score: number) => {
+  if (score >= 9) return 'bg-red-500';
+  if (score >= 7) return 'bg-orange-500';
+  if (score >= 5) return 'bg-yellow-500';
+  if (score >= 3) return 'bg-blue-500';
+  return 'bg-slate-300';
+};
+
 const SortableLead: React.FC<{ 
   lead: Lead; 
   col: string; 
@@ -59,6 +67,8 @@ const SortableLead: React.FC<{
     zIndex: isDragging ? 50 : undefined,
     opacity: isDragging ? 0.5 : 1
   };
+  
+  const priorityColor = getPriorityColor(lead.priority_score || 0);
 
   return (
     <div 
@@ -69,18 +79,26 @@ const SortableLead: React.FC<{
       onClick={onClick}
       className="glass-card p-4 rounded-xl shadow-sm border border-[var(--glass-border)] hover:shadow-lg transition-all cursor-grab active:cursor-grabbing group relative overflow-hidden bg-[var(--card-bg)]"
     >
-      <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: lead.priority_score ? `rgba(var(--brand-primary-rgb), ${lead.priority_score / 10})` : 'transparent' }}></div>
-      <div className="flex justify-between items-start mb-2 pointer-events-none">
-        <p className="font-bold text-[var(--text-main)] text-sm">{lead.name}</p>
-        <span className={`text-[9px] font-bold px-2 py-0.5 rounded shadow-sm ${
-          lead.financing_status === 'Cash' ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' : 'bg-blue-500/20 text-blue-500 border border-blue-500/30'
-        }`}>
-          {lead.financing_status}
-        </span>
-      </div>
-      <p className="text-[10px] text-[var(--text-muted)] mb-3 truncate font-medium pointer-events-none">{lead.property_address}</p>
+      <div className={`absolute top-0 left-0 w-1.5 h-full ${priorityColor} opacity-80`}></div>
       
-      <div className="flex items-center justify-between pt-2 border-t border-[var(--glass-border)] mt-2">
+      <div className="flex justify-between items-start mb-2 pointer-events-none pl-2">
+        <p className="font-bold text-[var(--text-main)] text-sm">{lead.name}</p>
+        <div className="flex flex-col items-end gap-1">
+             <span className={`text-[9px] font-bold px-2 py-0.5 rounded shadow-sm ${
+               lead.financing_status === 'Cash' ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' : 'bg-blue-500/20 text-blue-500 border border-blue-500/30'
+             }`}>
+               {lead.financing_status}
+             </span>
+             {lead.priority_score && lead.priority_score > 0 ? (
+                 <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full text-white ${priorityColor}`}>
+                    {lead.priority_score}/10
+                 </span>
+             ) : null}
+        </div>
+      </div>
+      <p className="text-[10px] text-[var(--text-muted)] mb-3 truncate font-medium pointer-events-none pl-2">{lead.property_address}</p>
+      
+      <div className="flex items-center justify-between pt-2 border-t border-[var(--glass-border)] mt-2 pl-2">
          <div className="flex items-center gap-2" onPointerDown={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
             <div className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--text-muted)] hover:border-[var(--brand-primary)]/30 transition-all">
                <i className="fa-regular fa-calendar" style={lead.due_date ? { color: 'var(--brand-primary)' } : {}}></i>
@@ -373,23 +391,28 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                   <div className="pt-8 border-t border-[var(--glass-border)]">
                      <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-5">Intelligence Grade</p>
                      <div className="bg-[var(--glass-bg)] p-6 rounded-[2rem] border border-[var(--glass-border)] shadow-2xl space-y-4">
-                        <div className="flex items-center justify-between">
-                           <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-tighter">Priority Index</p>
-                           <span className="text-[11px] font-black uppercase" style={{ color: 'var(--brand-primary)' }}>
-                             {selectedLead.priority_score || 0}/10
-                           </span>
-                        </div>
-                        <input 
-                           type="range" min="0" max="10" 
-                           className="w-full accent-brand-primary cursor-pointer h-1.5 bg-white/10 rounded-full"
-                           style={{ '--brand-primary': 'var(--brand-primary)' } as any}
-                           value={selectedLead.priority_score || 0}
-                           onChange={(e) => {
-                             const updated = {...selectedLead, priority_score: parseInt(e.target.value)};
-                             setSelectedLead(updated);
-                             onUpdateLead!(updated);
-                           }}
-                        />
+                         <div className="flex items-center justify-between">
+                            <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-tighter">Priority Index</p>
+                            <span className={`text-[11px] font-black uppercase px-2 py-0.5 rounded-full text-white ${getPriorityColor(selectedLead.priority_score || 0)}`}>
+                              {selectedLead.priority_score || 0}/10
+                            </span>
+                         </div>
+                         <div className="relative h-2 bg-slate-200/20 rounded-full mt-2">
+                             <div 
+                               className={`absolute top-0 left-0 h-full rounded-full transition-all duration-300 ${getPriorityColor(selectedLead.priority_score || 0)}`}
+                               style={{ width: `${((selectedLead.priority_score || 0) / 10) * 100}%` }}
+                             ></div>
+                             <input 
+                                type="range" min="0" max="10" 
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                value={selectedLead.priority_score || 0}
+                                onChange={(e) => {
+                                  const updated = {...selectedLead, priority_score: parseInt(e.target.value)};
+                                  setSelectedLead(updated);
+                                  onUpdateLead!(updated);
+                                }}
+                             />
+                         </div>
                      </div>
                   </div>
 

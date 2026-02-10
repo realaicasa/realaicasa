@@ -258,11 +258,39 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
                 console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-pro (v1.0 Stable)...");
                 result = await tryGenerate('gemini-pro', 'v1');
             } catch (e4: any) {
+            } catch (e4: any) {
                 console.error("[EstateGuard-v1.1.9] ALL STAGES FAILED.");
+                
+                // Fallback 1: URL Metadata extraction
                 if (isUrl && lastScrapedHtml) {
                     console.warn("[EstateGuard-v1.1.8] Falling back to basic metadata extraction due to AI failure.");
                     return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
                 }
+                
+                // Fallback 2: Raw Text Encapsulation (Offline Mode)
+                if (!isUrl && processedInput.length > 10) {
+                     console.warn("[EstateGuard] Activate Offline Ingestion Protocol.");
+                     return {
+                        property_id: `EG-OFFLINE-${Math.floor(Math.random() * 1000)}`,
+                        category: 'Residential',
+                        transaction_type: 'Sale',
+                        status: 'Active',
+                        tier: PropertyTier.STANDARD,
+                        visibility_protocol: { public_fields: ['address', 'hero_narrative'], gated_fields: [] },
+                        listing_details: {
+                          address: "Manual Ingestion (AI Offline)",
+                          price: 0,
+                          image_url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80",
+                          key_stats: { sq_ft: 0, lot_size: "Unknown" },
+                          hero_narrative: processedInput // Save the raw text so user doesn't lose it
+                        },
+                        agent_notes: {
+                          motivation: "AI Services Unavailable - Manual Processing Required",
+                          showing_instructions: "See raw data in description."
+                        }
+                      } as PropertySchema;
+                }
+
                 throw e4;
             }
         }
