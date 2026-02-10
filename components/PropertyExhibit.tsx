@@ -14,9 +14,9 @@ const PropertyExhibit: React.FC<PropertyExhibitProps> = ({ property, onSelect })
     >
       <div className="aspect-[4/3] overflow-hidden relative">
         <img 
-          src={property.listing_details.image_url || `https://picsum.photos/seed/${property.property_id}/800/600`} 
+          src={property.listing_details?.image_url || `https://picsum.photos/seed/${property.property_id}/800/600`} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-          alt={property.listing_details.address}
+          alt={property.listing_details?.address || 'Property Landmark'}
         />
         <div className="absolute top-4 right-4 bg-slate-950/80 backdrop-blur-md text-gold px-3 py-1 rounded-full text-[10px] font-bold shadow-lg border border-gold/20 uppercase tracking-tighter">
           {property.transaction_type}
@@ -34,7 +34,7 @@ const PropertyExhibit: React.FC<PropertyExhibitProps> = ({ property, onSelect })
             {property.listing_details.address}
           </h3>
           <p className="text-2xl font-bold text-slate-950 mt-1">
-            {property.listing_details.price > 0 
+            {property.listing_details?.price && property.listing_details.price > 0 
               ? `$${property.listing_details.price.toLocaleString()}` 
               : 'Contact for Pricing'}
           </p>
@@ -51,13 +51,13 @@ const PropertyExhibit: React.FC<PropertyExhibitProps> = ({ property, onSelect })
 
         <div className="flex items-center gap-4 pt-2 border-t border-slate-50">
           <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[10px] uppercase">
-             <i className="fa-solid fa-bed"></i> {property.listing_details.key_stats.bedrooms || '-'}
+             <i className="fa-solid fa-bed"></i> {property.listing_details?.key_stats?.bedrooms || '-'}
           </div>
           <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[10px] uppercase">
-             <i className="fa-solid fa-bath"></i> {property.listing_details.key_stats.bathrooms || '-'}
+             <i className="fa-solid fa-bath"></i> {property.listing_details?.key_stats?.bathrooms || '-'}
           </div>
           <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[10px] uppercase">
-             <i className="fa-solid fa-maximize"></i> {property.listing_details.key_stats.sq_ft.toLocaleString()} FT²
+             <i className="fa-solid fa-maximize"></i> {property.listing_details?.key_stats?.sq_ft?.toLocaleString() || 'N/A'} FT²
           </div>
         </div>
       </div>

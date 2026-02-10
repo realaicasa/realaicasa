@@ -28,7 +28,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
   const handleRemove = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm(`DANGER: Are you sure you want to remove ${property.listing_details.address} from the portfolio? This will permanently delete the asset schema.`)) {
+    if (window.confirm(`DANGER: Are you sure you want to remove ${property.listing_details?.address || 'this asset'} from the portfolio? This will permanently delete the asset schema.`)) {
       onDelete();
     }
   };
@@ -51,10 +51,10 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
               <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Location Address</label>
               <input 
                 className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all"
-                value={editedProperty.listing_details.address}
+                value={editedProperty.listing_details?.address || ''}
                 onChange={e => setEditedProperty({
                   ...editedProperty, 
-                  listing_details: { ...editedProperty.listing_details, address: e.target.value }
+                  listing_details: { ...editedProperty.listing_details, address: e.target.value } as any
                 })}
               />
             </div>
@@ -132,13 +132,13 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
               <input 
                 type="number"
                 className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium focus:ring-2 focus:ring-gold outline-none transition-all"
-                value={editedProperty.listing_details.key_stats.sq_ft}
+                value={editedProperty.listing_details?.key_stats?.sq_ft || 0}
                 onChange={e => setEditedProperty({
                   ...editedProperty, 
                   listing_details: { 
                     ...editedProperty.listing_details, 
-                    key_stats: { ...editedProperty.listing_details.key_stats, sq_ft: Number(e.target.value) } 
-                  }
+                    key_stats: { ...editedProperty.listing_details?.key_stats, sq_ft: Number(e.target.value) } 
+                  } as any
                 })}
               />
             </div>
@@ -284,7 +284,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="aspect-video rounded-[2rem] overflow-hidden shadow-2xl border border-slate-100 bg-slate-200 relative group">
           <img 
-            src={property.listing_details.image_url || `https://picsum.photos/seed/${property.property_id}/800/600`} 
+            src={property.listing_details?.image_url || `https://picsum.photos/seed/${property.property_id}/800/600`} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
             alt="Property Hero" 
             onError={(e) => (e.currentTarget.src = 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80')}
@@ -312,7 +312,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
                 {property.status}
               </span>
             </div>
-            <h3 className="text-3xl font-luxury font-bold text-slate-900 leading-tight">{property.listing_details.address || 'Address Unspecified'}</h3>
+            <h3 className="text-3xl font-luxury font-bold text-slate-900 leading-tight">{property.listing_details?.address || 'Address Unspecified'}</h3>
             <p className="text-slate-500 text-sm flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
               Secure Asset Cloud • {property.property_id}
@@ -322,14 +322,14 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
             <div className="bg-slate-50 p-5 rounded-[1.5rem] border border-slate-100 shadow-sm">
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Valuation</p>
                <p className="text-xl font-bold text-slate-900">
-                 {property.listing_details.price > 0 
+                 {property.listing_details?.price && property.listing_details.price > 0 
                   ? `$${property.listing_details.price.toLocaleString()}` 
                   : 'Awaiting Quote'}
                </p>
             </div>
             <div className="bg-slate-50 p-5 rounded-[1.5rem] border border-slate-100 shadow-sm">
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Scale</p>
-               <p className="text-xl font-bold text-slate-900">{property.listing_details.key_stats.sq_ft ? property.listing_details.key_stats.sq_ft.toLocaleString() : 'N/A'} SQ FT</p>
+               <p className="text-xl font-bold text-slate-900">{property.listing_details?.key_stats?.sq_ft ? property.listing_details.key_stats.sq_ft.toLocaleString() : 'N/A'} SQ FT</p>
             </div>
           </div>
         </div>
@@ -339,7 +339,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
         <div>
           <h4 className="font-black text-white/40 text-[10px] uppercase tracking-[0.2em] mb-4">Market Narrative</h4>
           <p className="text-white/70 text-sm leading-relaxed italic border-l-4 pl-6 py-1" style={{ borderColor: 'var(--brand-primary)' }}>
-            "{property.listing_details.hero_narrative || 'Market briefing currently in production.'}"
+            "{property.listing_details?.hero_narrative || 'Market briefing currently in production.'}"
           </p>
         </div>
 
@@ -422,8 +422,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
                <i className="fa-solid fa-user-tie text-gold"></i> Agent Intelligence
              </h4>
              <div className="text-[11px] text-slate-600 space-y-2 bg-white p-6 rounded-2xl border border-slate-200/50 shadow-inner">
-               <p><span className="font-bold text-slate-900 uppercase">Motivation:</span> {property.agent_notes.motivation || 'Verify with HQ'}</p>
-               <p><span className="font-bold text-slate-900 uppercase">Access:</span> {property.agent_notes.showing_instructions || 'Appointment Required'}</p>
+               <p><span className="font-bold text-slate-900 uppercase">Motivation:</span> {property.agent_notes?.motivation || 'Verify with HQ'}</p>
+               <p><span className="font-bold text-slate-900 uppercase">Access:</span> {property.agent_notes?.showing_instructions || 'Appointment Required'}</p>
              </div>
            </div>
         </div>

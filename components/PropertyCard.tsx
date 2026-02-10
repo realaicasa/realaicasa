@@ -17,7 +17,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
     >
       <div className="relative h-56 overflow-hidden">
         <img 
-          src={property.listing_details.image_url || `https://picsum.photos/seed/${property.property_id}/600/400`} 
+          src={property.listing_details?.image_url || `https://picsum.photos/seed/${property.property_id}/600/400`} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
           alt="Property" 
           onError={(e) => (e.currentTarget.src = 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80')}
@@ -62,7 +62,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
         </div>
         
         <p className="text-slate-600 text-xs line-clamp-2 italic mb-6 leading-relaxed">
-          "{property.listing_details.hero_narrative}"
+          "{property.listing_details?.hero_narrative || 'Briefing in preparation...'}"
         </p>
         
         <div className="flex flex-wrap gap-1.5 mt-auto">
