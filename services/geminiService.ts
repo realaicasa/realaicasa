@@ -110,18 +110,22 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
 
   if (isUrl) {
     try {
-        console.log("[EstateGuard-v1.1.8] Ingestion active. Target: URL");
-        const proxyUrl = `/api/proxy?url=${encodeURIComponent(input.trim())}`;
-        const response = await fetch(proxyUrl);
+        console.log("[EstateGuard-v1.1.8] Ingestion active. Target: URL (via Jina.ai)");
+        // Use Jina.ai Reader for robust client-side scraping without a backend proxy
+        const scrapeUrl = `https://r.jina.ai/${input.trim()}`;
+        const response = await fetch(scrapeUrl);
         if (response.ok) {
             const scrapedText = await response.text();
             console.log(`[EstateGuard-v1.1.8] URL scraped. Raw length: ${scrapedText.length}`);
-            processedInput = scrapedText.slice(0, 30000); 
-            processingNote = `(Analysis based on content scraped from URL: ${input})`;
-            lastScrapedHtml = scrapedText;
+            processedInput = scrapedText.slice(0, 40000); // 40k chars limit
+            processingNote = `(Analysis based on Jina.ai extraction of: ${input})`;
+            // Store simple markdown as "html" for fallback since we don't have raw HTML
+            lastScrapedHtml = `<h1>Scraped Content</h1><p>${scrapedText.slice(0, 500)}...</p>`; 
+        } else {
+             throw new Error(`Jina.ai returned ${response.status}`);
         }
     } catch (e) {
-        console.warn("[EstateGuard-v1.1.8] Proxy failed, falling back to URL-only analysis.");
+        console.warn("[EstateGuard-v1.1.8] Scraping failed, falling back to URL-only analysis.", e);
     }
   } else {
     console.log("[EstateGuard-v1.1.8] Ingestion active. Target: Text");

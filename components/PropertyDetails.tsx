@@ -337,8 +337,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
 
       <div className="space-y-8 bg-slate-50/50 p-10 rounded-[2.5rem] border border-slate-100">
         <div>
-          <h4 className="font-black text-white/40 text-[10px] uppercase tracking-[0.2em] mb-4">Market Narrative</h4>
-          <p className="text-white/70 text-sm leading-relaxed italic border-l-4 pl-6 py-1" style={{ borderColor: 'var(--brand-primary)' }}>
+          <h4 className="font-black text-[var(--text-muted)] text-[10px] uppercase tracking-[0.2em] mb-4">Market Narrative</h4>
+          <p className="text-[var(--text-main)] text-sm leading-relaxed italic border-l-4 pl-6 py-1 opacity-80" style={{ borderColor: 'var(--brand-primary)' }}>
             "{property.listing_details?.hero_narrative || 'Market briefing currently in production.'}"
           </p>
         </div>
