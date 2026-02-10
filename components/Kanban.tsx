@@ -67,26 +67,26 @@ const SortableLead: React.FC<{
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className="glass-card p-4 rounded-xl shadow-sm border border-white/10 hover:shadow-lg transition-all cursor-grab active:cursor-grabbing group relative overflow-hidden"
+      className="glass-card p-4 rounded-xl shadow-sm border border-[var(--glass-border)] hover:shadow-lg transition-all cursor-grab active:cursor-grabbing group relative overflow-hidden bg-[var(--card-bg)]"
     >
       <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: lead.priority_score ? `rgba(var(--brand-primary-rgb), ${lead.priority_score / 10})` : 'transparent' }}></div>
       <div className="flex justify-between items-start mb-2 pointer-events-none">
-        <p className="font-bold text-white text-sm">{lead.name}</p>
+        <p className="font-bold text-[var(--text-main)] text-sm">{lead.name}</p>
         <span className={`text-[9px] font-bold px-2 py-0.5 rounded shadow-sm ${
-          lead.financing_status === 'Cash' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+          lead.financing_status === 'Cash' ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' : 'bg-blue-500/20 text-blue-500 border border-blue-500/30'
         }`}>
           {lead.financing_status}
         </span>
       </div>
-      <p className="text-[10px] text-white/40 mb-3 truncate font-medium pointer-events-none">{lead.property_address}</p>
+      <p className="text-[10px] text-[var(--text-muted)] mb-3 truncate font-medium pointer-events-none">{lead.property_address}</p>
       
-      <div className="flex items-center justify-between pt-2 border-t border-white/5 mt-2">
+      <div className="flex items-center justify-between pt-2 border-t border-[var(--glass-border)] mt-2">
          <div className="flex items-center gap-2" onPointerDown={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
-            <div className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-lg border border-white/10 bg-white/5 text-white/40 hover:border-white/20 transition-all">
+            <div className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--text-muted)] hover:border-[var(--brand-primary)]/30 transition-all">
                <i className="fa-regular fa-calendar" style={lead.due_date ? { color: 'var(--brand-primary)' } : {}}></i>
                <input 
                  type="date" 
-                 className="bg-transparent outline-none w-16 opacity-60 hover:opacity-100 cursor-pointer text-[9px] text-white"
+                 className="bg-transparent outline-none w-16 opacity-60 hover:opacity-100 cursor-pointer text-[9px] text-[var(--text-main)]"
                  value={lead.due_date ? new Date(lead.due_date).toISOString().split('T')[0] : ''}
                  onChange={(e) => onUpdate({...lead, due_date: e.target.value})}
                />
@@ -312,11 +312,11 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
 
           <div className="flex-shrink-0 w-[85vw] sm:w-80 flex flex-col pt-1">
             {isAddingColumn ? (
-               <div className="glass-panel p-4 rounded-xl shadow-xl border border-white/10">
+               <div className="glass-panel p-4 rounded-xl shadow-xl border border-[var(--glass-border)]">
                   <input 
                     autoFocus 
                     placeholder="New Stage Name..." 
-                    className="w-full text-sm font-bold mb-3 bg-transparent border-b border-white/20 outline-none text-white pb-1 focus:border-brand-primary" 
+                    className="w-full text-sm font-bold mb-3 bg-transparent border-b border-[var(--glass-border)] outline-none text-[var(--text-main)] pb-1 focus:border-brand-primary" 
                     value={newColumnName} 
                     onChange={(e) => setNewColumnName(e.target.value)} 
                     onKeyDown={(e) => e.key === 'Enter' && handleAddColumn()} 
@@ -324,11 +324,11 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                   />
                   <div className="flex gap-2">
                     <button onClick={handleAddColumn} className="flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-950" style={{ backgroundColor: 'var(--brand-primary)' }}>Deploy Stage</button>
-                    <button onClick={() => setIsAddingColumn(false)} className="flex-1 bg-white/5 text-white/40 py-1.5 rounded-lg text-xs font-bold border border-white/5">Cancel</button>
+                    <button onClick={() => setIsAddingColumn(false)} className="flex-1 bg-[var(--glass-bg)] text-[var(--text-muted)] py-1.5 rounded-lg text-xs font-bold border border-[var(--glass-border)]">Cancel</button>
                   </div>
                </div>
             ) : (
-               <button onClick={() => setIsAddingColumn(true)} className="w-full h-12 border-2 border-dashed border-white/10 rounded-xl flex items-center justify-center gap-2 text-white/20 hover:border-white/30 hover:text-white/40 transition-all group">
+               <button onClick={() => setIsAddingColumn(true)} className="w-full h-12 border-2 border-dashed border-[var(--glass-border)] rounded-xl flex items-center justify-center gap-2 text-[var(--text-muted)] hover:border-[var(--brand-primary)] hover:text-[var(--text-main)] transition-all group">
                   <i className="fa-solid fa-plus group-hover:scale-110 transition-transform"></i>
                   <span className="font-bold text-[10px] uppercase tracking-wider">New Pipeline Stage</span>
                </button>
@@ -339,13 +339,13 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
 
       {selectedLead && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-           <div className="absolute inset-0 bg-[#05080f]/80 backdrop-blur-xl" onClick={() => setSelectedLead(null)}></div>
-           <div className="relative glass-panel w-full max-w-5xl rounded-[3.5rem] shadow-[0_32px_120px_-15px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh]">
+           <div className="absolute inset-0 bg-[var(--bg-main)]/80 backdrop-blur-xl" onClick={() => setSelectedLead(null)}></div>
+           <div className="relative glass-panel w-full max-w-5xl rounded-[3.5rem] shadow-[0_32px_120px_-15px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh] border border-[var(--glass-border)] bg-[var(--bg-main)]">
               {/* Sidebar: Core Identity */}
-              <div className="w-full md:w-80 bg-black/20 backdrop-blur-md border-r border-white/5 p-10 flex flex-col gap-8 overflow-y-auto">
+              <div className="w-full md:w-80 bg-[var(--glass-bg)] backdrop-blur-md border-r border-[var(--glass-border)] p-10 flex flex-col gap-8 overflow-y-auto">
                  <div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-2 block opacity-30 text-white">Prospect Fingerprint</span>
-                    <h3 className="text-3xl font-luxury font-bold text-white tracking-tight">{selectedLead.name}</h3>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-2 block opacity-30 text-[var(--text-main)]">Prospect Fingerprint</span>
+                    <h3 className="text-3xl font-luxury font-bold text-[var(--text-main)] tracking-tight">{selectedLead.name}</h3>
                     <div className="flex gap-2 mt-4">
                        <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl border ${
                          selectedLead.financing_status === 'Cash' 
@@ -370,11 +370,11 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                     )}
                  </div>
 
-                  <div className="pt-8 border-t border-white/5">
-                     <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-5">Intelligence Grade</p>
-                     <div className="bg-white/5 p-6 rounded-[2rem] border border-white/5 shadow-2xl space-y-4">
+                  <div className="pt-8 border-t border-[var(--glass-border)]">
+                     <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-5">Intelligence Grade</p>
+                     <div className="bg-[var(--glass-bg)] p-6 rounded-[2rem] border border-[var(--glass-border)] shadow-2xl space-y-4">
                         <div className="flex items-center justify-between">
-                           <p className="text-[10px] text-white/40 font-bold uppercase tracking-tighter">Priority Index</p>
+                           <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-tighter">Priority Index</p>
                            <span className="text-[11px] font-black uppercase" style={{ color: 'var(--brand-primary)' }}>
                              {selectedLead.priority_score || 0}/10
                            </span>
@@ -394,10 +394,10 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                   </div>
 
                   <div className="pt-4">
-                     <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">Engagement Context</p>
-                     <div className="bg-white/5 p-6 rounded-[2rem] border border-white/5">
-                        <p className="text-[10px] text-white/40 font-bold uppercase mb-2">Target Asset</p>
-                        <p className="text-xs font-bold text-white/80 leading-relaxed italic">{selectedLead.property_address}</p>
+                     <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-4">Engagement Context</p>
+                     <div className="bg-[var(--glass-bg)] p-6 rounded-[2rem] border border-[var(--glass-border)]">
+                        <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase mb-2">Target Asset</p>
+                        <p className="text-xs font-bold text-[var(--text-main)] max-w-full break-words leading-relaxed italic">{selectedLead.property_address}</p>
                      </div>
                   </div>
 
@@ -409,19 +409,19 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
               </div>
 
               {/* Main Content: Logs and Intelligence */}
-              <div className="flex-1 p-10 md:p-16 overflow-y-auto space-y-16 no-scrollbar bg-[#05080f]/40">
+              <div className="flex-1 p-10 md:p-16 overflow-y-auto space-y-16 no-scrollbar bg-[var(--bg-main)]/40 text-[var(--text-main)]">
                  <section>
                     <div className="flex items-center justify-between mb-8">
-                       <h4 className="text-xl font-luxury font-bold text-white flex items-center gap-4">
+                       <h4 className="text-xl font-luxury font-bold text-[var(--text-main)] flex items-center gap-4">
                           <i className="fa-solid fa-user-shield" style={{ color: 'var(--brand-primary)' }}></i>
                           Intelligence Dossier
                        </h4>
-                       <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+                       <div className="flex items-center gap-3 bg-[var(--glass-bg)] px-4 py-2 rounded-xl border border-[var(--glass-border)]">
                           <i className="fa-regular fa-calendar text-[11px]" style={{ color: 'var(--brand-primary)' }}></i>
-                          <span className="text-[10px] font-bold text-white/50 uppercase">Follow-up:</span>
+                          <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase">Follow-up:</span>
                           <input 
                             type="date" 
-                            className="bg-transparent border-none outline-none text-[10px] font-bold text-white cursor-pointer uppercase"
+                            className="bg-transparent border-none outline-none text-[10px] font-bold text-[var(--text-main)] cursor-pointer uppercase"
                             value={selectedLead.due_date ? new Date(selectedLead.due_date).toISOString().split('T')[0] : ''}
                             onChange={(e) => {
                               const updated = {...selectedLead, due_date: e.target.value};
@@ -435,7 +435,7 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                     <div className="space-y-6">
                        <div className="relative">
                           <textarea 
-                             className="w-full p-8 bg-white/5 border border-white/10 rounded-[2.5rem] text-sm font-medium focus:ring-2 focus:ring-brand-primary outline-none transition-all resize-none min-h-[200px] text-white/80 leading-relaxed"
+                             className="w-full p-8 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-[2.5rem] text-sm font-medium focus:ring-2 focus:ring-brand-primary outline-none transition-all resize-none min-h-[200px] text-[var(--text-main)] leading-relaxed"
                              style={{ '--brand-primary': 'var(--brand-primary)' } as any}
                              placeholder="Capture internal strategy, gate requirements, or agent insights..."
                              value={selectedLead.agent_notes || ""}
@@ -467,7 +467,7 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                  </section>
 
                  <section>
-                    <h4 className="text-xl font-luxury font-bold text-white mb-8 flex items-center gap-4">
+                    <h4 className="text-xl font-luxury font-bold text-[var(--text-main)] mb-8 flex items-center gap-4">
                        <i className="fa-solid fa-fingerprint" style={{ color: 'var(--brand-primary)' }}></i>
                        Captured Dialogue
                     </h4>
@@ -478,10 +478,10 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
                                  <div className={`max-w-[85%] p-6 rounded-[2rem] text-sm leading-relaxed shadow-2xl border ${
                                    msg.role === 'user' 
-                                     ? 'bg-white/10 text-white rounded-tr-none border-white/10' 
-                                     : 'bg-[#05080f]/60 text-white/80 border-white/5 rounded-tl-none backdrop-blur-md'
+                                     ? 'bg-[var(--glass-bg)] text-[var(--text-main)] rounded-tr-none border-[var(--glass-border)]' 
+                                     : 'bg-[var(--glass-bg)] text-[var(--text-main)] border-[var(--glass-border)] rounded-tl-none backdrop-blur-md'
                                  }`}>
-                                    <div className={`text-[9px] font-black uppercase opacity-40 mb-3 tracking-[0.2em] flex items-center gap-2 ${msg.role === 'user' ? 'text-white' : ''}`}>
+                                    <div className={`text-[9px] font-black uppercase opacity-40 mb-3 tracking-[0.2em] flex items-center gap-2 ${msg.role === 'user' ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)]'}`}>
                                       {msg.role === 'user' ? <i className="fa-solid fa-user text-[8px]"></i> : <i className="fa-solid fa-robot text-[8px]"></i>}
                                       {msg.role === 'user' ? 'PROSPECT' : 'ELITE CONCIERGE'}
                                     </div>

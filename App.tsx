@@ -362,7 +362,6 @@ const App: React.FC = () => {
           status: newLead.status,
           created_at: newLead.timestamp,
           notes: newLead.notes || [],
-          conversation_history: newLead.conversation_history || [],
           agent_notes: newLead.agent_notes || "",
           due_date: newLead.due_date,
           priority_score: newLead.priority_score || 0,

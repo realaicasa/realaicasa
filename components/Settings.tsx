@@ -64,10 +64,10 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
   return (
     <div className="max-w-4xl mx-auto space-y-10">
       <div className="glass-panel rounded-[3rem] overflow-hidden">
-        <div className="bg-[#05080f]/50 p-10 text-white flex justify-between items-center border-b border-white/10">
+        <div className="bg-[var(--glass-bg)] p-10 text-[var(--text-main)] flex justify-between items-center border-b border-[var(--glass-border)]">
           <div>
             <h2 className="text-2xl font-luxury font-bold">Agency HQ</h2>
-            <p className="text-white/40 text-sm mt-1">Whitelabel the concierge and PWA experience.</p>
+            <p className="text-[var(--text-muted)] text-sm mt-1">Whitelabel the concierge and PWA experience.</p>
           </div>
           <div className="px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-slate-950" style={{ backgroundColor: settings.primaryColor }}>
              Professional Tier
@@ -77,18 +77,18 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
         <div className="p-10 space-y-12">
           {/* Identity Section */}
           <section>
-            <h3 className="font-bold text-white mb-8 flex items-center gap-4 text-lg">
+            <h3 className="font-bold text-[var(--text-main)] mb-8 flex items-center gap-4 text-lg">
               <i className="fa-solid fa-palette" style={{ color: settings.primaryColor }}></i> 
               Whitelabeling
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
-                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Agency Display Name</label>
+                <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Agency Display Name</label>
                 <input 
                   type="text" 
                   value={settings.businessName}
                   onChange={(e) => onUpdate({...settings, businessName: e.target.value})}
-                  className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 outline-none transition-all font-medium text-white"
+                  className="w-full px-5 py-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl focus:ring-2 outline-none transition-all font-medium text-[var(--text-main)]"
                   style={{ '--tw-ring-color': settings.primaryColor } as any}
                 />
               </div>
@@ -108,33 +108,33 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                 </div>
               </div>
             </div>
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-white/5 pt-8">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-[var(--glass-border)] pt-8">
               <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Interface Language</label>
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Interface Language</label>
                   <select 
                     value={settings.language}
                     onChange={(e) => onUpdate({...settings, language: e.target.value})}
-                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 outline-none transition-all font-medium text-sm text-white cursor-pointer"
+                    className="w-full px-5 py-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl focus:ring-2 outline-none transition-all font-medium text-sm text-[var(--text-main)] cursor-pointer"
                     style={{ '--tw-ring-color': settings.primaryColor } as any}
                   >
-                    <option value="en" className="bg-[#05080f]">English</option>
-                    <option value="es" className="bg-[#05080f]">Spanish</option>
-                    <option value="fr" className="bg-[#05080f]">French</option>
+                    <option value="en" className="bg-[var(--bg-main)]">English</option>
+                    <option value="es" className="bg-[var(--bg-main)]">Spanish</option>
+                    <option value="fr" className="bg-[var(--bg-main)]">French</option>
                   </select>
                </div>
 
                <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Visual Display Protocol</label>
-                  <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Visual Display Protocol</label>
+                  <div className="flex bg-[var(--glass-bg)] p-1 rounded-2xl border border-[var(--glass-border)]">
                       <button 
                         onClick={() => onUpdate({...settings, theme: 'dark'})}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'dark' ? 'bg-white text-slate-950 shadow-xl' : 'text-white/40 hover:text-white'}`}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'dark' ? 'bg-[var(--card-bg)] text-[var(--text-main)] shadow-xl' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                       >
                         Elite (Dark)
                       </button>
                       <button 
                         onClick={() => onUpdate({...settings, theme: 'light'})}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'light' ? 'bg-white text-slate-950 shadow-xl' : 'text-white/40 hover:text-white'}`}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'light' ? 'bg-[var(--card-bg)] text-[var(--text-main)] shadow-xl' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                       >
                         Traditional (Light)
                       </button>
@@ -156,25 +156,25 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           </section>
 
           {/* AI Provisioning Section */}
-          <section className="bg-white/5 p-10 rounded-[3rem] border border-white/5">
-            <h3 className="font-bold text-white mb-8 flex items-center gap-4 text-lg">
+          <section className="bg-[var(--glass-bg)] p-10 rounded-[3rem] border border-[var(--glass-border)]">
+            <h3 className="font-bold text-[var(--text-main)] mb-8 flex items-center gap-4 text-lg">
               <i className="fa-solid fa-microchip" style={{ color: settings.primaryColor }}></i> 
               AI Core Provisioning
             </h3>
-            <div className="bg-black/20 p-8 rounded-2xl border border-white/5 shadow-sm">
-                <p className="text-xs font-bold text-white/70 mb-2 uppercase tracking-tight">Gemini API Key</p>
-                <p className="text-xs text-white/40 mb-6 leading-relaxed">
+            <div className="bg-[var(--glass-bg)] p-8 rounded-2xl border border-[var(--glass-border)] shadow-sm">
+                <p className="text-xs font-bold text-[var(--text-main)] mb-2 uppercase tracking-tight">Gemini API Key</p>
+                <p className="text-xs text-[var(--text-muted)] mb-6 leading-relaxed">
                    Your dedicated API key powers your specific agent's intelligence. No data is shared across agencies.
                    <a href="https://aistudio.google.com/app/apikey" target="_blank" className="font-bold ml-1 hover:underline" style={{ color: settings.primaryColor }}>Get key here →</a>
                 </p>
                 <div className="relative">
-                    <i className="fa-solid fa-key absolute left-5 top-1/2 -translate-y-1/2 text-white/20"></i>
+                    <i className="fa-solid fa-key absolute left-5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
                     <input 
                         type="password" 
                         placeholder="Paste Gemini API Key..."
                         value={settings.apiKey}
                         onChange={(e) => onUpdate({...settings, apiKey: e.target.value})}
-                        className="w-full pl-12 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 outline-none text-sm font-mono text-white"
+                        className="w-full pl-12 pr-5 py-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl focus:ring-2 outline-none text-sm font-mono text-[var(--text-main)]"
                         style={{ '--tw-ring-color': settings.primaryColor } as any}
                     />
                 </div>
