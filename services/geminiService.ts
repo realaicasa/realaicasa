@@ -254,12 +254,17 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
             console.log("[EstateGuard-v1.1.9] Stage 3: Retry gemini-1.5-flash (Legacy)...");
             result = await tryGenerate('gemini-1.5-flash', 'v1beta');
         } catch (e3: any) {
-            console.error("[EstateGuard-v1.1.9] ALL STAGES FAILED.");
-            if (isUrl && lastScrapedHtml) {
-                console.warn("[EstateGuard-v1.1.8] Falling back to basic metadata extraction due to AI failure.");
-                return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
+            try {
+                console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-pro (v1.0 Stable)...");
+                result = await tryGenerate('gemini-pro', 'v1');
+            } catch (e4: any) {
+                console.error("[EstateGuard-v1.1.9] ALL STAGES FAILED.");
+                if (isUrl && lastScrapedHtml) {
+                    console.warn("[EstateGuard-v1.1.8] Falling back to basic metadata extraction due to AI failure.");
+                    return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
+                }
+                throw e4;
             }
-            throw e3;
         }
     }
   }

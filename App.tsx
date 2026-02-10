@@ -171,7 +171,12 @@ const App: React.FC = () => {
               property_address: l.property_address,
               status: l.status,
               timestamp: l.created_at,
-              notes: l.notes || []
+              notes: l.notes || [],
+              agent_notes: l.agent_notes || "",
+              due_date: l.due_date || null,
+              priority_score: l.priority_score || 0,
+              conversation_history: l.conversation_history || [],
+              notes_log: l.notes_log || []
           })));
         }
       } catch (error) {
