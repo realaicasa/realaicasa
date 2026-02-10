@@ -331,7 +331,10 @@ const App: React.FC = () => {
         timestamp: new Date().toISOString(),
         notes: leadPart.notes || [],
         conversation_history: leadPart.conversation_history || [],
-        agent_notes: leadPart.agent_notes || ""
+        agent_notes: leadPart.agent_notes || "",
+        due_date: leadPart.due_date || null,
+        priority_score: leadPart.priority_score || 0,
+        notes_log: leadPart.notes_log || []
       };
 
       // Optimistic Update
