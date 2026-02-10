@@ -127,16 +127,9 @@ const App: React.FC = () => {
         
         if (propData) {
           setProperties(propData.map((p: any) => ({
+              ...(p.data || {}),
               property_id: p.property_id,
-              category: p.category,
-              transaction_type: p.transaction_type || 'Sale',
-              status: p.status,
-              tier: p.tier,
-              visibility_protocol: p.visibility_protocol || { public_fields: ['address'], gated_fields: [] },
-              listing_details: p.listing_details,
-              deep_data: p.deep_data || {},
-              agent_notes: p.agent_notes || { motivation: '', showing_instructions: '' },
-              ai_training: p.ai_training
+              user_id: p.user_id
           })));
         }
 
@@ -220,15 +213,10 @@ const App: React.FC = () => {
             .upsert({
                 property_id: p.property_id,
                 user_id: user.id,
-                category: p.category,
-                transaction_type: p.transaction_type,
-                status: p.status,
-                tier: p.tier,
-                visibility_protocol: p.visibility_protocol,
-                listing_details: p.listing_details,
-                deep_data: p.deep_data,
-                agent_notes: p.agent_notes,
-                ai_training: p.ai_training,
+                address: p.listing_details?.address || '',
+                price: p.listing_details?.price || 0,
+                status: p.status || 'Active',
+                data: p,
                 updated_at: new Date().toISOString()
             });
         if (error) throw error;
@@ -277,15 +265,10 @@ const App: React.FC = () => {
           .upsert({
             property_id: p.property_id,
             user_id: p.user_id,
-            category: p.category,
-            transaction_type: p.transaction_type,
-            status: p.status,
-            tier: p.tier,
-            visibility_protocol: p.visibility_protocol,
-            listing_details: p.listing_details,
-            deep_data: p.deep_data,
-            agent_notes: p.agent_notes,
-            ai_training: p.ai_training,
+            address: p.listing_details?.address || '',
+            price: p.listing_details?.price || 0,
+            status: p.status || 'Active',
+            data: p,
             updated_at: p.updated_at
           });
         if (error) throw error;
@@ -299,16 +282,9 @@ const App: React.FC = () => {
       
       if (propData) {
         setProperties(propData.map((p: any) => ({
+            ...(p.data || {}),
             property_id: p.property_id,
-            category: p.category,
-            transaction_type: p.transaction_type || 'Sale',
-            status: p.status,
-            tier: p.tier,
-            visibility_protocol: p.visibility_protocol || { public_fields: ['address'], gated_fields: [] },
-            listing_details: p.listing_details,
-            deep_data: p.deep_data || {},
-            agent_notes: p.agent_notes || { motivation: '', showing_instructions: '' },
-            ai_training: p.ai_training
+            user_id: p.user_id
         })));
       }
 

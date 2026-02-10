@@ -28,6 +28,12 @@ export interface PropertySchema {
       sq_ft: number;
       lot_size: string;
       zoning?: string;
+      topography?: string;
+      utilities_available?: string[];
+      access_type?: string;
+      cap_rate?: number;
+      occupancy_pct?: number;
+      annual_revenue?: number;
     };
     hero_narrative: string;
   };
@@ -47,6 +53,9 @@ export interface PropertySchema {
     schools?: string;
     hospitals?: string;
     supermarkets?: string;
+    neighborhood_vibe?: string;
+    investment_potential?: string;
+    agent_insider_tips?: string;
   };
   amenities?: {
     pool?: boolean;

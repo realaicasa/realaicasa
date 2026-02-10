@@ -130,10 +130,55 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
                       bedrooms: { type: Type.NUMBER },
                       bathrooms: { type: Type.NUMBER },
                       sq_ft: { type: Type.NUMBER },
-                      lot_size: { type: Type.STRING }
+                      lot_size: { type: Type.STRING },
+                      zoning: { type: Type.STRING },
+                      topography: { type: Type.STRING },
+                      utilities_available: { type: Type.ARRAY, items: { type: Type.STRING } },
+                      access_type: { type: Type.STRING },
+                      cap_rate: { type: Type.NUMBER },
+                      occupancy_pct: { type: Type.NUMBER },
+                      annual_revenue: { type: Type.NUMBER }
                     }
                   },
                   hero_narrative: { type: Type.STRING }
+                }
+              },
+              deep_data: {
+                type: Type.OBJECT,
+                properties: {
+                   lease_terms: {
+                     type: Type.OBJECT,
+                     properties: {
+                       duration: { type: Type.STRING },
+                       deposit: { type: Type.NUMBER },
+                       utilities: { type: Type.STRING }
+                     }
+                   }
+                }
+              },
+              ai_training: {
+                type: Type.OBJECT,
+                properties: {
+                  proximityWaterfront: { type: Type.STRING },
+                  commuteTime: { type: Type.STRING },
+                  schools: { type: Type.STRING },
+                  hospitals: { type: Type.STRING },
+                  supermarkets: { type: Type.STRING },
+                  neighborhood_vibe: { type: Type.STRING },
+                  investment_potential: { type: Type.STRING },
+                  agent_insider_tips: { type: Type.STRING }
+                }
+              },
+              amenities: {
+                type: Type.OBJECT,
+                properties: {
+                  pool: { type: Type.BOOLEAN },
+                  garage: { type: Type.BOOLEAN },
+                  wifi: { type: Type.BOOLEAN },
+                  laundry: { type: Type.BOOLEAN },
+                  pets_allowed: { type: Type.BOOLEAN },
+                  gym: { type: Type.BOOLEAN },
+                  security: { type: Type.BOOLEAN }
                 }
               }
             },
@@ -149,12 +194,12 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.8] Stage 1: Trying v1/gemini-2.0-flash...");
-    result = await tryGenerate('gemini-2.0-flash', 'v1');
+    console.log("[EstateGuard-v1.1.8] Stage 1: Trying v1/gemini-2.5-flash...");
+    result = await tryGenerate('gemini-2.5-flash', 'v1');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.8] Stage 2: Trying v1beta/gemini-2.0-flash...");
-        result = await tryGenerate('gemini-2.0-flash', 'v1beta');
+        console.log("[EstateGuard-v1.1.8] Stage 2: Trying v1beta/gemini-2.5-flash...");
+        result = await tryGenerate('gemini-2.5-flash', 'v1beta');
     } catch (e2: any) {
         try {
             console.log("[EstateGuard-v1.1.8] Stage 3: Trying v1beta/gemini-1.5-flash...");
@@ -196,9 +241,7 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
         throw new Error("INTELLIGENCE QUOTA EXCEEDED: The Gemini API is currently rate-limited. Please wait 60 seconds or upgrade your API tier.");
     }
 
-    if (msg.includes("404") || msg.toLowerCase().includes("not found")) {
-      throw new Error(`API CONFIG ERROR: Gemini model not found. Please ensure your API key has access to 'gemini-2.0-flash' or 'gemini-1.5-flash'.`);
-    }
+      throw new Error(`API CONFIG ERROR: Gemini model not found. Please ensure your API key has access to 'gemini-2.5-flash' or 'gemini-1.5-flash'.`);
     throw new Error(`Sync failed: ${msg}`);
   }
 };
@@ -210,7 +253,7 @@ export const chatWithGuard = async (
 ) => {
   const client = getClient(settings.apiKey, 'v1');
   const response = await client.models.generateContent({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     contents: history,
     config: {
       system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
@@ -223,7 +266,7 @@ export const chatWithGuard = async (
 export const transcribeAudio = async (base64Audio: string, manualKey?: string): Promise<string> => {
   const client = getClient(manualKey, 'v1');
   const response = await client.models.generateContent({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     contents: [
       {
         role: 'user',
