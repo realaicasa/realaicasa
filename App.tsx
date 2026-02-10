@@ -37,7 +37,8 @@ const INITIAL_SETTINGS: AgentSettings = {
   marketingStrategy: '',
   teamMembers: '',
   awards: '',
-  legalDisclaimer: ''
+  legalDisclaimer: '',
+  theme: 'dark'
 };
 
 
@@ -76,8 +77,12 @@ const App: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Sync brand color to CSS Variables
+  // Sync theme and brand color to CSS Variables
   useEffect(() => {
+    // 1. Theme sync
+    document.documentElement.setAttribute('data-theme', settings.theme || 'dark');
+    
+    // 2. Brand color sync
     if (settings.primaryColor) {
       document.documentElement.style.setProperty('--brand-primary', settings.primaryColor);
       
@@ -88,7 +93,7 @@ const App: React.FC = () => {
       const b = parseInt(hex.substring(4, 6), 16);
       document.documentElement.style.setProperty('--brand-primary-rgb', `${r}, ${g}, ${b}`);
     }
-  }, [settings.primaryColor]);
+  }, [settings.primaryColor, settings.theme]);
 
   // Fetch all data from Supabase whenever user changes
   useEffect(() => {
@@ -129,7 +134,8 @@ const App: React.FC = () => {
             marketingStrategy: configData.marketing_strategy,
             teamMembers: configData.team_members,
             awards: configData.awards,
-            legalDisclaimer: configData.legal_disclaimer
+            legalDisclaimer: configData.legal_disclaimer,
+            theme: configData.theme || 'dark'
           });
         }
 
@@ -511,7 +517,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-[#05080f] overflow-hidden flex-col md:flex-row text-slate-200">
+    <div className="flex h-screen bg-[var(--bg-main)] overflow-hidden flex-col md:flex-row text-[var(--text-main)]">
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} brandColor={settings.primaryColor} />
 
       <main className="flex-1 overflow-y-auto main-content no-scrollbar flex flex-col">

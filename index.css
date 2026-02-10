@@ -1,11 +1,30 @@
 @import "tailwindcss";
 
 /* --- Restore Luxury Brand Identity --- */
-:root { 
-    --brand-primary: #d4af37; /* Default Gold */
+/* --- Semantic Theme Variables --- */
+:root {
+    --brand-primary: #d4af37;
     --brand-primary-rgb: 212, 175, 55;
-    --gold-dark: #b8860b; 
-    --brand-bg: #05080f; /* Deeper, more elite black */
+    --gold-dark: #b8860b;
+    
+    /* Dark Theme (Default/Elite) */
+    --bg-main: #05080f;
+    --bg-sidebar: #05080f;
+    --text-main: #f8fafc;
+    --text-muted: rgba(255, 255, 255, 0.4);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --card-bg: rgba(255, 255, 255, 0.05);
+}
+
+:root[data-theme='light'] {
+    --bg-main: #f8fafc;
+    --bg-sidebar: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: #e2e8f0;
+    --card-bg: #ffffff;
 }
 
 body { 
@@ -13,22 +32,22 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #05080f;
-    color: #f8fafc;
+    background-color: var(--bg-main);
+    color: var(--text-main);
 }
 
 /* Premium Design Utilities */
 .glass-panel {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
 }
 
 .glass-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--card-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
 }
 
 @keyframes float {

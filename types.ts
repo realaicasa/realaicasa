@@ -109,6 +109,7 @@ export interface AgentSettings {
   agentCount: number;
   conciergeIntro: string;
   language: string;
+  theme: 'light' | 'dark';
   // Business Knowledge Base
   termsAndConditions?: string;
   privacyPolicy?: string;

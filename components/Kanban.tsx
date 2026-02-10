@@ -265,17 +265,21 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                 </div>
 
                 {idx === 0 && isAddingLead && (
-                  <div className="mb-4 glass-card p-4 rounded-2xl border-2 shadow-xl" style={{ borderColor: 'var(--brand-primary)' }}>
+                  <div 
+                    className="mb-4 glass-card p-4 rounded-2xl border-2 shadow-xl" 
+                    style={{ borderColor: 'var(--brand-primary)' }}
+                    onPointerDown={e => e.stopPropagation()} // CRITICAL: Stop DnD kit from hijacking clicks
+                  >
                      <div className="flex justify-between items-center mb-3">
                         <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">Manual Ingestion</p>
                         <button onClick={() => setIsAddingLead(false)} className="text-white/30 hover:text-white">
                           <i className="fa-solid fa-xmark text-xs"></i>
                         </button>
                      </div>
-                     <div className="space-y-3">
-                        <input className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold outline-none text-white" placeholder="Lead Name" value={newLeadData.name} onChange={e => setNewLeadData({...newLeadData, name: e.target.value})} />
-                        <input className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-medium outline-none text-white" placeholder="Phone / Email" value={newLeadData.phone} onChange={e => setNewLeadData({...newLeadData, phone: e.target.value})} />
-                        <input className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-medium outline-none text-white" placeholder="Property Address" value={newLeadData.property_address} onChange={e => setNewLeadData({...newLeadData, property_address: e.target.value})} />
+                     <div className="space-y-3" onPointerDown={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
+                        <input className="w-full px-3 py-2 rounded-lg bg-[var(--glass-bg)] border border-[var(--glass-border)] text-xs font-bold outline-none text-[var(--text-main)]" placeholder="Lead Name" value={newLeadData.name} onChange={e => setNewLeadData({...newLeadData, name: e.target.value})} />
+                        <input className="w-full px-3 py-2 rounded-lg bg-[var(--glass-bg)] border border-[var(--glass-border)] text-xs font-medium outline-none text-[var(--text-main)]" placeholder="Phone / Email" value={newLeadData.phone} onChange={e => setNewLeadData({...newLeadData, phone: e.target.value})} />
+                        <input className="w-full px-3 py-2 rounded-lg bg-[var(--glass-bg)] border border-[var(--glass-border)] text-xs font-medium outline-none text-[var(--text-main)]" placeholder="Property Address" value={newLeadData.property_address} onChange={e => setNewLeadData({...newLeadData, property_address: e.target.value})} />
                         <button onClick={() => { if (newLeadData.name && onAddLead) { onAddLead(newLeadData); setIsAddingLead(false); setNewLeadData({ name: '', phone: '', email: '', property_address: '' }); } }} className="w-full py-2 rounded-lg text-xs font-bold text-slate-950" style={{ backgroundColor: 'var(--brand-primary)' }}>Secure Prospect</button>
                      </div>
                   </div>

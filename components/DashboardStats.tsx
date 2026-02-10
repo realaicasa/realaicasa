@@ -30,29 +30,29 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ properties, leads }) =>
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="glass-panel p-6 rounded-2xl shadow-sm">
-          <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Portfolio Volume</p>
-          <p className="text-2xl font-bold mt-1 text-white">{properties.length} Assets</p>
+          <p className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest">Portfolio Volume</p>
+          <p className="text-2xl font-bold mt-1 text-[var(--text-main)]">{properties.length} Assets</p>
           <div className="mt-2 text-emerald-400 text-xs font-semibold">
             <i className="fa-solid fa-building mr-1"></i> Active listings
           </div>
         </div>
         <div className="glass-panel p-6 rounded-2xl shadow-sm">
-          <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Qualified Leads</p>
-          <p className="text-2xl font-bold mt-1 text-white">{leads.length}</p>
+          <p className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest">Qualified Leads</p>
+          <p className="text-2xl font-bold mt-1 text-[var(--text-main)]">{leads.length}</p>
           <div className="mt-2 text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>
             <i className="fa-solid fa-fire mr-1"></i> Engagement active
           </div>
         </div>
         <div className="glass-panel p-6 rounded-2xl shadow-sm">
-          <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Gated Estates</p>
-          <p className="text-2xl font-bold mt-1 text-white">{estateGuardCount}</p>
-          <div className="mt-2 text-white/30 text-xs font-semibold uppercase tracking-tighter">
+          <p className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest">Gated Estates</p>
+          <p className="text-2xl font-bold mt-1 text-[var(--text-main)]">{estateGuardCount}</p>
+          <div className="mt-2 text-[var(--text-muted)] text-xs font-semibold uppercase tracking-tighter">
             High-security protection
           </div>
         </div>
         <div className="glass-panel p-6 rounded-2xl shadow-sm">
-          <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Capture Rate</p>
-          <p className="text-2xl font-bold mt-1 text-white">68%</p>
+          <p className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest">Capture Rate</p>
+          <p className="text-2xl font-bold mt-1 text-[var(--text-main)]">68%</p>
           <div className="mt-2 text-emerald-400 text-xs font-semibold">
             <i className="fa-solid fa-chart-line mr-1"></i> Optimal conversion
           </div>
@@ -61,10 +61,10 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ properties, leads }) =>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-panel p-8 rounded-2xl shadow-sm min-h-[350px]">
-          <h3 className="text-sm font-bold text-white/70 mb-6 uppercase tracking-wider">Lead Acquisition Heatmap</h3>
-          <div className="h-64 mt-4">
+          <h3 className="text-sm font-bold text-[var(--text-muted)] mb-6 uppercase tracking-wider">Lead Acquisition Heatmap</h3>
+          <div className="h-64 mt-4 w-full">
             {mounted && (
-              <ResponsiveContainer width="99%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={200}>
                 <AreaChart data={data}>
                   <defs>
                     <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
@@ -72,11 +72,11 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ properties, leads }) =>
                       <stop offset="95%" stopColor="var(--brand-primary)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--glass-border)" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}} />
                   <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#05080f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+                    contentStyle={{ backgroundColor: 'var(--bg-main)', border: '1px solid var(--glass-border)', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
                     itemStyle={{ color: 'var(--brand-primary)' }}
                   />
                   <Area type="monotone" dataKey="leads" stroke="var(--brand-primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorLeads)" />
@@ -87,21 +87,21 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ properties, leads }) =>
         </div>
 
         <div className="glass-panel p-8 rounded-2xl shadow-sm min-h-[350px]">
-          <h3 className="text-sm font-bold text-white/70 mb-6 uppercase tracking-wider">Asset Interaction Intensity</h3>
-          <div className="h-64 mt-4">
+          <h3 className="text-sm font-bold text-[var(--text-muted)] mb-6 uppercase tracking-wider">Asset Interaction Intensity</h3>
+          <div className="h-64 mt-4 w-full">
             {mounted && (
-              <ResponsiveContainer width="99%" height="100%">
-                <BarChart data={properties.slice(0, 5).map(p => ({ name: p.property_id, hits: Math.floor(Math.random() * 80) + 20 }))}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+              <ResponsiveContainer width="100%" height="100%" minHeight={200}>
+                <BarChart data={properties.slice(0, 5).map(p => ({ name: p.property_id.substring(0, 8), hits: Math.floor(Math.random() * 80) + 20 }))}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--glass-border)" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}} />
                   <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}} />
                   <Tooltip 
-                    cursor={{fill: 'rgba(255,255,255,0.05)'}}
-                    contentStyle={{ backgroundColor: '#05080f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+                    cursor={{fill: 'var(--glass-bg)'}}
+                    contentStyle={{ backgroundColor: 'var(--bg-main)', border: '1px solid var(--glass-border)', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
                   />
                   <Bar dataKey="hits" radius={[6, 6, 0, 0]}>
                     {properties.slice(0, 5).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={index % 2 === 0 ? 'var(--brand-primary)' : 'rgba(255,255,255,0.1)'} />
+                      <Cell key={`cell-${index}`} fill={index % 2 === 0 ? 'var(--brand-primary)' : 'var(--glass-border)'} />
                     ))}
                   </Bar>
                 </BarChart>

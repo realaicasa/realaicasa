@@ -45,6 +45,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           team_members: settings.teamMembers,
           awards: settings.awards,
           legal_disclaimer: settings.legalDisclaimer,
+          theme: settings.theme,
           updated_at: new Date().toISOString()
         });
 
@@ -107,19 +108,39 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                 </div>
               </div>
             </div>
-            <div className="mt-8 space-y-3">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Interface Language</label>
-                <select 
-                  value={settings.language}
-                  onChange={(e) => onUpdate({...settings, language: e.target.value})}
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold outline-none transition-all font-medium text-sm text-slate-700 cursor-pointer"
-                >
-                  <option value="en">English</option>
-                  <option value="es">Spanish</option>
-                  <option value="fr">French</option>
-                </select>
-                <p className="text-[10px] text-slate-400">Select the primary language for your agent interface.</p>
-             </div>
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-white/5 pt-8">
+              <div className="space-y-3">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Interface Language</label>
+                  <select 
+                    value={settings.language}
+                    onChange={(e) => onUpdate({...settings, language: e.target.value})}
+                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 outline-none transition-all font-medium text-sm text-white cursor-pointer"
+                    style={{ '--tw-ring-color': settings.primaryColor } as any}
+                  >
+                    <option value="en" className="bg-[#05080f]">English</option>
+                    <option value="es" className="bg-[#05080f]">Spanish</option>
+                    <option value="fr" className="bg-[#05080f]">French</option>
+                  </select>
+               </div>
+
+               <div className="space-y-3">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Visual Display Protocol</label>
+                  <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
+                      <button 
+                        onClick={() => onUpdate({...settings, theme: 'dark'})}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'dark' ? 'bg-white text-slate-950 shadow-xl' : 'text-white/40 hover:text-white'}`}
+                      >
+                        Elite (Dark)
+                      </button>
+                      <button 
+                        onClick={() => onUpdate({...settings, theme: 'light'})}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'light' ? 'bg-white text-slate-950 shadow-xl' : 'text-white/40 hover:text-white'}`}
+                      >
+                        Traditional (Light)
+                      </button>
+                  </div>
+               </div>
+            </div>
 
             <div className="mt-8 space-y-3">
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Concierge Welcome Intro</label>

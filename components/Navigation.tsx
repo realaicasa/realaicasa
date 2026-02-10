@@ -23,7 +23,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
 
   return (
     <>
-      <div className="hidden md:flex flex-col w-72 bg-slate-950 text-white h-screen border-r border-slate-900 shadow-2xl z-20">
+      <div className="hidden md:flex flex-col w-72 bg-[var(--bg-sidebar)] text-[var(--text-main)] h-screen border-r border-[var(--glass-border)] shadow-2xl z-20">
         <div className="p-8 flex items-center gap-4 mb-8">
           <div 
             className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"
@@ -82,7 +82,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
         </div>
       </div>
 
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950 border-t border-slate-900 px-2 py-3 z-50 flex justify-around items-center rounded-t-3xl shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-sidebar)] border-t border-[var(--glass-border)] px-2 py-3 z-50 flex justify-around items-center rounded-t-3xl shadow-[0_-10px_30px_rgba(0,0,0,0.1)]">
         {menuItems.map((item) => (
           <button
             key={item.id}
