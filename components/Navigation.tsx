@@ -42,7 +42,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
               className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group ${
                 activeTab === item.id 
                   ? 'shadow-xl font-bold scale-[1.02] border' 
-                  : 'text-white/60 hover:bg-white/5 hover:text-white'
+                  : 'text-[var(--text-muted)] hover:bg-[var(--glass-bg)] hover:text-[var(--text-main)]'
               }`}
               style={activeTab === item.id ? { 
                 backgroundColor: `${brandColor}15`, 
@@ -71,11 +71,11 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
 
         <div className="mt-auto p-8 border-t border-slate-900">
           <div className="flex items-center gap-3">
-             <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/10 overflow-hidden">
-                <i className="fa-solid fa-user text-slate-500 text-xs"></i>
+             <div className="w-8 h-8 rounded-full bg-[var(--card-bg)] flex items-center justify-center border border-[var(--glass-border)] overflow-hidden">
+                <i className="fa-solid fa-user text-[var(--text-muted)] text-xs"></i>
              </div>
              <div>
-                <p className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Agent Access</p>
+                <p className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-wider">Agent Access</p>
                 <p className="text-[10px] text-gold font-bold">Synchronized</p>
              </div>
           </div>
@@ -88,7 +88,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
             key={item.id}
             onClick={() => setActiveTab(item.id)}
             className="flex flex-col items-center gap-1 transition-all duration-200"
-            style={{ color: activeTab === item.id ? brandColor : '#64748b' }}
+            style={{ color: activeTab === item.id ? brandColor : 'var(--text-muted)' }}
           >
             <i 
               className={`fa-solid ${item.icon} text-xl transition-transform ${activeTab === item.id ? 'scale-110' : ''}`}
