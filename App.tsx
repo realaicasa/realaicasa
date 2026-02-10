@@ -356,7 +356,7 @@ const App: React.FC = () => {
           name: newLead.name,
           phone: newLead.phone,
           email: newLead.email,
-          financing_status: newLead.financing_status,
+          // financing_status: newLead.financing_status, // REMOVED TO FIX PGRST204
           property_id: newLead.property_id,
           property_address: newLead.property_address,
           status: newLead.status,
@@ -364,8 +364,8 @@ const App: React.FC = () => {
           notes: newLead.notes || [],
           agent_notes: newLead.agent_notes || "",
           due_date: newLead.due_date,
-          priority_score: newLead.priority_score || 0,
-          notes_log: newLead.notes_log || []
+          // priority_score: newLead.priority_score || 0, // POTENTIAL SCHEMA ISSUE
+          // notes_log: newLead.notes_log || [] // POTENTIAL SCHEMA ISSUE
         });
 
       if (error) {
