@@ -330,7 +330,7 @@ const App: React.FC = () => {
       if (!user) return;
 
       const newLead: Lead = {
-        id: `L-${Date.now()}`,
+        id: crypto.randomUUID(),
         name: leadPart.name || "New Prospect",
         phone: leadPart.phone || "N/A",
         email: leadPart.email || "",
