@@ -238,8 +238,8 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
     result = await tryGenerate('gemini-2.0-flash', 'v1');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.8] Stage 2: Trying v1/gemini-2.5-flash...");
-        result = await tryGenerate('gemini-2.5-flash', 'v1');
+        console.log("[EstateGuard-v1.1.8] Stage 2: Trying v1/gemini-1.5-flash...");
+        result = await tryGenerate('gemini-1.5-flash', 'v1');
     } catch (e2: any) {
         try {
             console.log("[EstateGuard-v1.1.8] Stage 3: Trying v1beta/gemini-1.5-flash...");
@@ -290,7 +290,10 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
     }
 
     if (!data.visibility_protocol) {
-      data.visibility_protocol = { gated_fields: [] };
+      data.visibility_protocol = { public_fields: [], gated_fields: [] };
+    } else {
+      data.visibility_protocol.public_fields = data.visibility_protocol.public_fields || [];
+      data.visibility_protocol.gated_fields = data.visibility_protocol.gated_fields || [];
     }
 
     return data as PropertySchema;
@@ -327,7 +330,7 @@ export const chatWithGuard = async (
 ) => {
   const client = getClient(settings.apiKey, 'v1');
   const response = await client.models.generateContent({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-1.5-flash',
     contents: history,
     config: {
       system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
@@ -340,7 +343,7 @@ export const chatWithGuard = async (
 export const transcribeAudio = async (base64Audio: string, manualKey?: string): Promise<string> => {
   const client = getClient(manualKey, 'v1');
   const response = await client.models.generateContent({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-1.5-flash',
     contents: [
       {
         role: 'user',

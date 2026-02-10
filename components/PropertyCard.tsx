@@ -66,12 +66,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
         </p>
         
         <div className="flex flex-wrap gap-1.5 mt-auto">
-          {property.visibility_protocol.gated_fields.slice(0, 3).map((field, idx) => (
+          {property.visibility_protocol?.gated_fields?.slice(0, 3).map((field, idx) => (
             <span key={idx} className="bg-slate-50 text-slate-400 border border-slate-100 px-2 py-1 rounded text-[8px] font-bold uppercase tracking-tighter">
               <i className="fa-solid fa-lock mr-1 scale-75 opacity-50"></i> {field.replace(/_/g, ' ')}
             </span>
           ))}
-          {property.visibility_protocol.gated_fields.length > 3 && (
+          {property.visibility_protocol?.gated_fields && property.visibility_protocol.gated_fields.length > 3 && (
               <span className="text-[8px] text-slate-300 font-bold ml-1">+{property.visibility_protocol.gated_fields.length - 3} MORE</span>
           )}
         </div>

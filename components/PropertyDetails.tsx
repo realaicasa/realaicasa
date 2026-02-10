@@ -406,7 +406,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
                <i className="fa-solid fa-lock text-gold"></i> Gated Protocols
              </h4>
              <div className="flex flex-wrap gap-2">
-               {property.visibility_protocol.gated_fields.length > 0 ? (
+               {property.visibility_protocol?.gated_fields && property.visibility_protocol.gated_fields.length > 0 ? (
                  property.visibility_protocol.gated_fields.map((field, idx) => (
                    <span key={idx} className="bg-slate-950 text-gold px-4 py-1.5 rounded-full text-[10px] font-bold shadow-md">
                      {field.replace(/_/g, ' ')}
