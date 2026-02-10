@@ -51,4 +51,5 @@ The "I Don't Know" Policy: If a detail is missing, you must set the field to 0, 
 ## TIERING LOGIC
 - Set "tier" to "Estate Guard" ONLY if price > 5,000,000.
 - Otherwise, set "tier" to "Standard".
+- OUTPUT: PURE JSON ONLY. No markdown, no "Here is your data", no conversational filler.
 `;

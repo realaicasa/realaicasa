@@ -64,12 +64,18 @@ let lastScrapedHtml = ""; // Local state to avoid window reliance if possible
 const extractBasicMetadata = (html: string): Partial<PropertySchema> => {
   const titleMatch = html.match(/<title>([^<]+)<\/title>/i);
   const h1Match = html.match(/<h1>([^<]+)<\/h1>/i);
-  const ogImageMatch = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) || 
-                       html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i);
-  const imgMatch = html.match(/<img[^>]+src="([^"]+)"/i);
+  // PRIORITY 1: Look for hero/featured images
+  const heroMatch = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) || 
+                    html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i) ||
+                    html.match(/<link[^>]+rel="image_src"[^>]+href="([^"]+)"/i);
+  
+  // PRIORITY 2: Look for large images in content, avoiding small icons/logos
+  const allImages = Array.from(html.matchAll(/<img[^>]+src="([^"]+)"[^>]*>/gi))
+    .map(match => match[1])
+    .filter(src => !src.includes('logo') && !src.includes('icon') && !src.includes('avatar'));
 
-  const address = titleMatch?.[1]?.trim() || h1Match?.[1]?.trim() || "Unrecognized Property";
-  const image_url = ogImageMatch?.[1] || imgMatch?.[1] || "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80";
+  const address = titleMatch?.[1]?.split('|')?.[0]?.trim() || h1Match?.[1]?.trim() || "Unrecognized Property";
+  const image_url = heroMatch?.[1] || allImages[0] || "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80";
 
   return {
     property_id: `EG-QUOTA-${Math.floor(Math.random() * 1000)}`,
@@ -129,7 +135,7 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
         contents: [{ 
           role: 'user', 
           parts: [{ 
-            text: `DATA SOURCE: "${processedInput}"\n\n${processingNote}\n\nCOMMAND:\n1. Extract ALL available property details.\n2. LOOK HARDER FOR SPECS: Bed, Bath, Sq Ft, Price.\n3. TRANSACTION TYPE: Detect if 'Rent', 'Lease' or 'Sale'.\n4. ADHERE TO THE GROUNDING PROTOCOL.\n5. DO NOT HALLUCINATE.` 
+            text: `DATA SOURCE: "${processedInput}"\n\n${processingNote}\n\nCOMMAND:\n1. Extract ALL available property details.\n2. LOOK HARDER FOR SPECS: Bed, Bath, Sq Ft, Price.\n3. TRANSACTION TYPE: Detect if 'Rent', 'Lease' or 'Sale'.\n4. ADHERE TO THE GROUNDING PROTOCOL.\n5. DO NOT HALLUCINATE.\n6. IMPORTANT: Return ONLY a raw JSON object. No conversational text, no markdown headers.` 
           }] 
         }],
         config: {
@@ -250,8 +256,15 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
   }
 
   try {
-    // RESILIENT PARSING: uses cleanJsonResponse to strip markdown/extra text
-    const data = cleanJsonResponse((result as any).value || result.text || '{}');
+    // Stage 0: Basic check - if it looks like markdown code block, extract from middle
+    let rawText = (result as any).value || result.text || '{}';
+    if (rawText.includes("```")) {
+      const blockMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (blockMatch) rawText = blockMatch[1].trim();
+    }
+
+    // Stage 1: cleanJsonResponse handles nested curly braces extraction
+    const data = cleanJsonResponse(rawText);
     if (!data.property_id) data.property_id = `EG-${Math.floor(Math.random() * 1000)}`;
     if (!data.status) data.status = 'Active';
     if (!data.category) data.category = 'Residential';
