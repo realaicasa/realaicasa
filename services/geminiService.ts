@@ -119,8 +119,13 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
             console.log(`[EstateGuard-v1.1.8] URL scraped. Raw length: ${scrapedText.length}`);
             processedInput = scrapedText.slice(0, 40000); // 40k chars limit
             processingNote = `(Analysis based on Jina.ai extraction of: ${input})`;
-            // Store simple markdown as "html" for fallback since we don't have raw HTML
-            lastScrapedHtml = `<h1>Scraped Content</h1><p>${scrapedText.slice(0, 500)}...</p>`; 
+            
+            // Try to extract a title from markdown (first # header)
+            const titleMatch = scrapedText.match(/^#\s+(.+)$/m);
+            const discoveredTitle = titleMatch ? titleMatch[1] : `Property at ${new URL(input).hostname}`;
+
+            // Store pseudo-HTML for fallback metadata extraction
+            lastScrapedHtml = `<h1>${discoveredTitle}</h1><p>${scrapedText.slice(0, 500)}...</p>`; 
         } else {
              throw new Error(`Jina.ai returned ${response.status}`);
         }
@@ -242,14 +247,14 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
     result = await tryGenerate('gemini-2.0-flash', 'v1');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.8] Stage 2: Trying v1/gemini-1.5-flash...");
-        result = await tryGenerate('gemini-1.5-flash', 'v1');
+        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-1.5-flash-latest...");
+        result = await tryGenerate('gemini-1.5-flash-latest', 'v1beta');
     } catch (e2: any) {
         try {
-            console.log("[EstateGuard-v1.1.8] Stage 3: Trying v1beta/gemini-1.5-flash...");
-            result = await tryGenerate('gemini-1.5-flash', 'v1beta');
+            console.log("[EstateGuard-v1.1.9] Stage 3: Trying gemini-1.5-pro-latest...");
+            result = await tryGenerate('gemini-1.5-pro-latest', 'v1beta');
         } catch (e3: any) {
-            console.error("[EstateGuard-v1.1.8] ALL STAGES FAILED.");
+            console.error("[EstateGuard-v1.1.9] ALL STAGES FAILED.");
             if (isUrl && lastScrapedHtml) {
                 console.warn("[EstateGuard-v1.1.8] Falling back to basic metadata extraction due to AI failure.");
                 return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
