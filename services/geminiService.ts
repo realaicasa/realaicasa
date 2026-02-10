@@ -35,20 +35,20 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
 
   if (isUrl) {
     try {
-        console.log("[EstateGuard-v1.1.6] Ingestion active. Target: URL");
+        console.log("[EstateGuard-v1.1.7] Ingestion active. Target: URL");
         const proxyUrl = `/api/proxy?url=${encodeURIComponent(input.trim())}`;
         const response = await fetch(proxyUrl);
         if (response.ok) {
             const scrapedText = await response.text();
-            console.log(`[EstateGuard-v1.1.6] URL scraped. Raw length: ${scrapedText.length}`);
+            console.log(`[EstateGuard-v1.1.7] URL scraped. Raw length: ${scrapedText.length}`);
             processedInput = scrapedText.slice(0, 30000); 
             processingNote = `(Analysis based on content scraped from URL: ${input})`;
         }
     } catch (e) {
-        console.warn("[EstateGuard-v1.1.6] Proxy failed, falling back to URL-only analysis.");
+        console.warn("[EstateGuard-v1.1.7] Proxy failed, falling back to URL-only analysis.");
     }
   } else {
-    console.log("[EstateGuard-v1.1.6] Ingestion active. Target: Text");
+    console.log("[EstateGuard-v1.1.7] Ingestion active. Target: Text");
   }
 
   const tryGenerate = async (modelName: string, apiVer: 'v1' | 'v1beta' = 'v1') => {
@@ -112,18 +112,18 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.6] Stage 1: Trying v1/gemini-2.0-flash...");
+    console.log("[EstateGuard-v1.1.7] Stage 1: Trying v1/gemini-2.0-flash...");
     result = await tryGenerate('gemini-2.0-flash', 'v1');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.6] Stage 2: Trying v1beta/gemini-2.0-flash...");
+        console.log("[EstateGuard-v1.1.7] Stage 2: Trying v1beta/gemini-2.0-flash...");
         result = await tryGenerate('gemini-2.0-flash', 'v1beta');
     } catch (e2: any) {
         try {
-            console.log("[EstateGuard-v1.1.6] Stage 3: Trying v1beta/gemini-flash-latest...");
-            result = await tryGenerate('gemini-flash-latest', 'v1beta');
+            console.log("[EstateGuard-v1.1.7] Stage 3: Trying v1beta/gemini-1.5-flash...");
+            result = await tryGenerate('gemini-1.5-flash', 'v1beta');
         } catch (e3: any) {
-            console.error("[EstateGuard-v1.1.6] ALL STAGES FAILED.");
+            console.error("[EstateGuard-v1.1.7] ALL STAGES FAILED.");
             throw e3;
         }
     }
@@ -139,7 +139,7 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
     if (!data.transaction_type) data.transaction_type = 'Sale';
     return data;
   } catch (e: any) {
-    console.error("[EstateGuard-v1.1.6] Scraper Error:", e);
+    console.error("[EstateGuard-v1.1.7] Scraper Error:", e);
     const msg = e.message || "Unknown error";
     
     // Specific status code detection for 429 (Quota)
@@ -149,7 +149,7 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
     }
 
     if (msg.includes("404") || msg.toLowerCase().includes("not found")) {
-      throw new Error(`API CONFIG ERROR: Gemini model not found. Please ensure your API key has access to 'gemini-2.0-flash'.`);
+      throw new Error(`API CONFIG ERROR: Gemini model not found. Please ensure your API key has access to 'gemini-2.0-flash' or 'gemini-1.5-flash'.`);
     }
     throw new Error(`Sync failed: ${msg}`);
   }

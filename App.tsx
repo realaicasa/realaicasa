@@ -44,7 +44,7 @@ const INITIAL_SETTINGS: AgentSettings = {
 
 const App: React.FC = () => {
   useEffect(() => {
-    console.log("[EstateGuard-v1.1.6] App Component Mounted");
+    console.log("[EstateGuard-v1.1.7] App Component Mounted");
   }, []);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [settings, setSettings] = useState<AgentSettings>(INITIAL_SETTINGS);
