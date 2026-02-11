@@ -45,6 +45,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           team_members: settings.teamMembers,
           awards: settings.awards,
           legal_disclaimer: settings.legalDisclaimer,
+          training_enhancements: settings.trainingEnhancements,
           theme: settings.theme,
           updated_at: new Date().toISOString()
         });
@@ -202,7 +203,8 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                 { label: 'Marketing Strategy', field: 'marketingStrategy', icon: 'fa-bullhorn' },
                 { label: 'Team Members', field: 'teamMembers', icon: 'fa-users' },
                 { label: 'Awards & Accolades', field: 'awards', icon: 'fa-trophy' },
-                { label: 'Legal Disclaimer', field: 'legalDisclaimer', icon: 'fa-gavel' }
+                { label: 'Legal Disclaimer', field: 'legalDisclaimer', icon: 'fa-gavel' },
+                { label: 'Continuous Training Enhancements', field: 'trainingEnhancements', icon: 'fa-wand-magic-sparkles' }
               ].map((item) => (
                 <div key={item.field} className="space-y-3">
                   <div className="flex items-center gap-2">

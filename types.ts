@@ -121,6 +121,7 @@ export interface AgentSettings {
   teamMembers?: string;
   awards?: string;
   legalDisclaimer?: string;
+  trainingEnhancements?: string;
 }
 
 export interface ChatMessage {

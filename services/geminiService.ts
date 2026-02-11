@@ -10,7 +10,8 @@ const hydrateInstruction = (settings: AgentSettings) => {
     .replace(/{SPECIALTIES}/g, settings.specialties?.join(", ") || "Luxury Real Estate")
     .replace(/{AWARDS}/g, settings.awards || "Top Rated Agency")
     .replace(/{MARKETING_STRATEGY}/g, settings.marketingStrategy || "Client-first approach")
-    .replace(/{TEAM_MEMBERS}/g, settings.teamMembers || "Our elite team of specialists");
+    .replace(/{TEAM_MEMBERS}/g, settings.teamMembers || "Our elite team of specialists")
+    .replace(/{TRAINING_ENHANCEMENTS}/g, settings.trainingEnhancements || "Follow current professional standards.");
 };
 
 // --- SECURE API KEY RESOLVER ---
