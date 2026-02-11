@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AgentSettings } from '../types';
 
 import { supabase } from '../services/supabaseClient';
@@ -10,6 +11,7 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfolio }) => {
+  const { t } = useTranslation();
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -18,7 +20,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
     try {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) {
-        alert("AUTHENTICATION REQUIRED: Please sign in to your EstateGuard account to synchronize your agency identity.");
+        alert(t('settings.alerts.auth_required', { defaultValue: "AUTHENTICATION REQUIRED: Please sign in to your EstateGuard account to synchronize your agency identity." }));
         return;
       }
 
@@ -67,11 +69,11 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
       <div className="glass-panel rounded-[3rem] overflow-hidden">
         <div className="bg-[var(--glass-bg)] p-10 text-[var(--text-main)] flex justify-between items-center border-b border-[var(--glass-border)]">
           <div>
-            <h2 className="text-2xl font-luxury font-bold">Agency HQ</h2>
-            <p className="text-[var(--text-muted)] text-sm mt-1">Whitelabel the concierge and PWA experience.</p>
+            <h2 className="text-2xl font-luxury font-bold">{t('settings.agency_hq')}</h2>
+            <p className="text-[var(--text-muted)] text-sm mt-1">{t('settings.agency_hq_desc')}</p>
           </div>
           <div className="px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-slate-950" style={{ backgroundColor: settings.primaryColor }}>
-             Professional Tier
+             {t('settings.pro_tier')}
           </div>
         </div>
         
@@ -80,11 +82,11 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           <section>
             <h3 className="font-bold text-[var(--text-main)] mb-8 flex items-center gap-4 text-lg">
               <i className="fa-solid fa-palette" style={{ color: settings.primaryColor }}></i> 
-              Whitelabeling
+              {t('settings.whitelabeling')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
-                <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Agency Display Name</label>
+                <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.labels.agency_name')}</label>
                 <input 
                   type="text" 
                   value={settings.businessName}
@@ -94,7 +96,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                 />
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Brand Primary Color</label>
+                <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.labels.brand_color')}</label>
                 <div className="flex gap-4 items-center">
                   <input 
                     type="color" 
@@ -103,15 +105,15 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                     className="w-16 h-16 rounded-2xl border-0 cursor-pointer p-0 overflow-hidden shadow-sm hover:scale-105 transition-transform"
                   />
                   <div>
-                    <p className="text-xs font-mono text-slate-400 font-bold uppercase">{settings.primaryColor}</p>
-                    <p className="text-[10px] text-slate-400">Picks highlight colors</p>
+                    <p className="text-xs font-mono text-[var(--text-muted)] font-bold uppercase">{settings.primaryColor}</p>
+                    <p className="text-[10px] text-[var(--text-muted)]">{t('settings.hints.color')}</p>
                   </div>
                 </div>
               </div>
             </div>
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-[var(--glass-border)] pt-8">
               <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Interface Language</label>
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.labels.language')}</label>
                   <select 
                     value={settings.language}
                     onChange={(e) => onUpdate({...settings, language: e.target.value})}
@@ -125,34 +127,35 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                </div>
 
                <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Visual Display Mode</label>
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.labels.display_mode')}</label>
                   <div className="flex bg-[var(--glass-bg)] p-1 rounded-2xl border border-[var(--glass-border)]">
                       <button 
                         onClick={() => onUpdate({...settings, theme: 'dark'})}
                         className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'dark' ? 'bg-[var(--card-bg)] text-[var(--text-main)] shadow-xl' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                       >
-                        Elite (Dark)
+                        {t('settings.themes.dark')}
                       </button>
                       <button 
                         onClick={() => onUpdate({...settings, theme: 'light'})}
                         className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'light' ? 'bg-[var(--card-bg)] text-[var(--text-main)] shadow-xl' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                       >
-                        Traditional (Light)
+                        {t('settings.themes.light')}
                       </button>
                   </div>
                </div>
             </div>
 
             <div className="mt-8 space-y-3">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Concierge Welcome Intro</label>
+              <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.labels.concierge_intro')}</label>
               <textarea 
                 rows={2}
                 value={settings.conciergeIntro}
                 onChange={(e) => onUpdate({...settings, conciergeIntro: e.target.value})}
                 placeholder="Ask our happy assistant about any of our properties 24/7"
-                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold outline-none transition-all font-medium text-sm"
+                className="w-full px-5 py-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl focus:ring-2 outline-none transition-all font-medium text-sm text-[var(--text-main)]"
+                style={{ '--tw-ring-color': settings.primaryColor } as any}
               />
-              <p className="text-[10px] text-slate-400">This text appears above the chatbot bubble on your website.</p>
+              <p className="text-[10px] text-[var(--text-muted)]">{t('settings.hints.intro')}</p>
             </div>
           </section>
 
@@ -160,13 +163,13 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           <section className="bg-[var(--glass-bg)] p-10 rounded-[3rem] border border-[var(--glass-border)]">
             <h3 className="font-bold text-[var(--text-main)] mb-8 flex items-center gap-4 text-lg">
               <i className="fa-solid fa-microchip" style={{ color: settings.primaryColor }}></i> 
-              AI Core Provisioning
+              {t('settings.ai_provisioning')}
             </h3>
             <div className="bg-[var(--glass-bg)] p-8 rounded-2xl border border-[var(--glass-border)] shadow-sm">
-                <p className="text-xs font-bold text-[var(--text-main)] mb-2 uppercase tracking-tight">Gemini API Key</p>
+                <p className="text-xs font-bold text-[var(--text-main)] mb-2 uppercase tracking-tight">{t('settings.labels.api_key')}</p>
                 <p className="text-xs text-[var(--text-muted)] mb-6 leading-relaxed">
-                   Your dedicated API key powers your specific agent's intelligence. No data is shared across agencies.
-                   <a href="https://aistudio.google.com/app/apikey" target="_blank" className="font-bold ml-1 hover:underline" style={{ color: settings.primaryColor }}>Get key here →</a>
+                   {t('settings.api_key_desc')}
+                   <a href="https://aistudio.google.com/app/apikey" target="_blank" className="font-bold ml-1 hover:underline" style={{ color: settings.primaryColor }}>{t('settings.get_key')} →</a>
                 </p>
                 <div className="relative">
                     <i className="fa-solid fa-key absolute left-5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
@@ -180,16 +183,33 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                     />
                 </div>
             </div>
+
+            {onInjectPortfolio && (
+              <div className="mt-8 pt-8 border-t border-[var(--glass-border)]">
+                <div className="flex items-center justify-between gap-6 p-6 bg-gold/5 rounded-2xl border border-gold/20">
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-[var(--text-main)] mb-1">{t('settings.portfolio_sync')}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{t('settings.portfolio_sync_desc')}</p>
+                  </div>
+                  <button 
+                    onClick={onInjectPortfolio}
+                    className="px-6 py-3 rounded-xl bg-gold text-slate-950 text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform"
+                  >
+                    {t('settings.inject_button')}
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Business Knowledge Base Training (The 10 Boxes) */}
           <section>
-            <h3 className="font-bold text-slate-800 mb-8 flex items-center gap-4 text-lg">
+            <h3 className="font-bold text-[var(--text-main)] mb-8 flex items-center gap-4 text-lg">
               <i className="fa-solid fa-brain text-gold"></i> 
-              Knowledge Base Training
+              {t('settings.knowledge_base')}
             </h3>
-            <p className="text-sm text-slate-500 mb-8 max-w-2xl leading-relaxed">
-              Define your agency's proprietary intelligence. The AI concierge uses this data to answer complex visitor questions about your business operations and legal standards.
+            <p className="text-sm text-[var(--text-muted)] mb-8 max-w-2xl leading-relaxed">
+              {t('settings.knowledge_base_desc')}
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -208,15 +228,16 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
               ].map((item) => (
                 <div key={item.field} className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <i className={`fa-solid ${item.icon} text-gold/60 text-xs`}></i>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.label}</label>
+                    <i className={`fa-solid ${item.icon} text-[var(--gold)]/60 text-xs`}></i>
+                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{item.label}</label>
                   </div>
                   <textarea 
                     rows={3}
                     value={(settings as any)[item.field] || ''}
                     onChange={(e) => onUpdate({...settings, [item.field]: e.target.value})}
                     placeholder={`Define your ${item.label.toLowerCase()}...`}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold outline-none transition-all font-medium text-xs leading-relaxed"
+                    className="w-full px-5 py-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl focus:ring-2 outline-none transition-all font-medium text-xs leading-relaxed text-[var(--text-main)]"
+                    style={{ '--tw-ring-color': settings.primaryColor } as any}
                   />
                 </div>
               ))}
@@ -226,7 +247,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           <div className="pt-10 border-t border-slate-100 flex justify-end items-center gap-6">
              {saveSuccess && (
                  <span className="text-emerald-600 text-sm font-bold animate-fade-in flex items-center gap-2">
-                    <i className="fa-solid fa-circle-check"></i> Changes synchronized
+                    <i className="fa-solid fa-circle-check"></i> {t('settings.status.synced')}
                  </span>
              )}
              <button 
@@ -236,7 +257,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                 style={{ backgroundColor: settings.primaryColor }}
              >
                 {isSaving ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-floppy-disk"></i>}
-                {isSaving ? 'Synchronizing...' : 'Save All Changes'}
+                {isSaving ? t('settings.status.syncing') : t('settings.save_button')}
              </button>
           </div>
         </div>

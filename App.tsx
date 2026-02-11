@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import i18n from './i18n'; // Import i18n configuration
 import Navigation from './components/Navigation';
 import DashboardStats from './components/DashboardStats';
@@ -44,6 +45,7 @@ const INITIAL_SETTINGS: AgentSettings = {
 
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   useEffect(() => {
     console.log("[EstateGuard-v1.1.9] App Component Mounted");
   }, []);
@@ -135,6 +137,7 @@ const App: React.FC = () => {
             teamMembers: configData.team_members,
             awards: configData.awards,
             legalDisclaimer: configData.legal_disclaimer,
+            trainingEnhancements: configData.training_enhancements,
             theme: configData.theme || 'dark'
           });
         }
@@ -146,11 +149,14 @@ const App: React.FC = () => {
           .eq('user_id', user.id);
         
         if (propData) {
+          console.log(`[EstateGuard-v1.1.9] Fetched ${propData.length} properties from cloud hub.`);
           setProperties(propData.map((p: any) => ({
               ...(p.data || {}),
               property_id: p.property_id,
               user_id: p.user_id
           })));
+        } else {
+          console.warn("[EstateGuard-v1.1.9] No property data returned from vault.");
         }
 
         // 3. Fetch Leads
@@ -161,6 +167,7 @@ const App: React.FC = () => {
           .order('created_at', { ascending: false });
 
         if (leadData) {
+          console.log(`[EstateGuard-v1.1.9] Fetched ${leadData.length} leads from cloud pipeline.`);
           setLeads(leadData.map((l: any) => ({
               id: l.id,
               name: l.name,
@@ -178,6 +185,8 @@ const App: React.FC = () => {
               conversation_history: l.conversation_history || [],
               notes_log: l.notes_log || []
           })));
+        } else {
+          console.warn("[EstateGuard-v1.1.9] No lead data returned from registry.");
         }
       } catch (error) {
         console.error('Core Sync Error:', error);
@@ -602,12 +611,12 @@ const App: React.FC = () => {
                 )}
               </div>
               <h2 className="text-4xl font-luxury font-bold text-slate-950">
-                {activeTab === 'dashboard' && 'Market Command'}
-                {activeTab === 'properties' && 'Portfolio Control'}
-                {activeTab === 'leads' && 'Pipeline Management'}
-                {activeTab === 'settings' && 'Identity & Branding'}
-                {activeTab === 'chat' && 'Concierge Deployment'}
-                {activeTab === 'ingestion' && 'Asset Onboarding'}
+                {activeTab === 'dashboard' && t('app.headers.dashboard')}
+                {activeTab === 'properties' && t('app.headers.properties')}
+                {activeTab === 'leads' && t('app.headers.leads')}
+                {activeTab === 'settings' && t('app.headers.settings')}
+                {activeTab === 'chat' && t('app.headers.chat')}
+                {activeTab === 'ingestion' && t('app.headers.ingestion')}
               </h2>
             </div>
           </header>
@@ -733,12 +742,12 @@ const App: React.FC = () => {
         <footer className="mt-auto px-10 py-16 bg-slate-950 text-slate-600 text-[11px] font-bold border-t border-white/5 uppercase tracking-[0.2em]">
           <div className="flex flex-col md:flex-row justify-between items-center gap-10">
             <div className="flex flex-wrap justify-center gap-12">
-              <button onClick={() => showFooterModal('manual')} className="hover:text-gold transition-colors">Operating Manual</button>
-              <button onClick={() => showFooterModal('privacy')} className="hover:text-gold transition-colors">Privacy Cloud</button>
-              <button onClick={() => showFooterModal('terms')} className="hover:text-gold transition-colors">Terms</button>
-              <button onClick={() => showFooterModal('legal')} className="hover:text-gold transition-colors">Legal Sovereignty</button>
+              <button onClick={() => showFooterModal('manual')} className="hover:text-gold transition-colors">{t('app.footer.manual')}</button>
+              <button onClick={() => showFooterModal('privacy')} className="hover:text-gold transition-colors">{t('app.footer.privacy')}</button>
+              <button onClick={() => showFooterModal('terms')} className="hover:text-gold transition-colors">{t('app.footer.terms')}</button>
+              <button onClick={() => showFooterModal('legal')} className="hover:text-gold transition-colors">{t('app.footer.legal')}</button>
             </div>
-            <p className="text-gold font-luxury text-base lowercase normal-case italic tracking-tight opacity-60">EstateGuard AI — Synchronized Intelligence</p>
+            <p className="text-gold font-luxury text-base lowercase normal-case italic tracking-tight opacity-60">{t('app.footer.tagline')}</p>
           </div>
         </footer>
       </main>

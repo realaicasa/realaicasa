@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../services/supabaseClient';
 
 interface NavigationProps {
@@ -8,13 +9,14 @@ interface NavigationProps {
 }
 
 const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandColor = '#d4af37' }) => {
+  const { t } = useTranslation();
   const menuItems = [
-    { id: 'dashboard', icon: 'fa-chart-line', label: 'Command' },
-    { id: 'properties', icon: 'fa-building', label: 'Portfolio' },
-    { id: 'leads', icon: 'fa-layer-group', label: 'Leads' },
-    { id: 'ingestion', icon: 'fa-plus-circle', label: 'Ingest' },
-    { id: 'chat', icon: 'fa-comments', label: 'Concierge' },
-    { id: 'settings', icon: 'fa-id-card', label: 'Identity' },
+    { id: 'dashboard', icon: 'fa-chart-line', label: t('sidebar.dashboard') },
+    { id: 'properties', icon: 'fa-building', label: t('sidebar.properties') },
+    { id: 'leads', icon: 'fa-layer-group', label: t('sidebar.leads') },
+    { id: 'ingestion', icon: 'fa-plus-circle', label: t('sidebar.ingestion') },
+    { id: 'chat', icon: 'fa-comments', label: t('sidebar.chat') },
+    { id: 'settings', icon: 'fa-id-card', label: t('sidebar.settings') },
   ];
 
   const handleSignOut = async () => {
@@ -65,7 +67,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
             className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-500 hover:bg-red-500/10 hover:text-red-400 transition-all duration-300"
           >
             <i className="fa-solid fa-power-off"></i>
-            <span className="text-xs uppercase tracking-[0.2em]">Sign Out</span>
+            <span className="text-xs uppercase tracking-[0.2em]">{t('sidebar.sign_out', { defaultValue: 'Sign Out' })}</span>
           </button>
         </div>
 
@@ -74,10 +76,10 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
              <div className="w-8 h-8 rounded-full bg-[var(--card-bg)] flex items-center justify-center border border-[var(--glass-border)] overflow-hidden">
                 <i className="fa-solid fa-user text-[var(--text-muted)] text-xs"></i>
              </div>
-             <div>
-                <p className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-wider">Agent Access</p>
-                <p className="text-[10px] text-gold font-bold">Synchronized</p>
-             </div>
+              <div>
+                 <p className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-wider">{t('sidebar.agent_access', { defaultValue: 'Agent Access' })}</p>
+                 <p className="text-[10px] text-gold font-bold">{t('sidebar.synchronized', { defaultValue: 'Synchronized' })}</p>
+              </div>
           </div>
         </div>
       </div>

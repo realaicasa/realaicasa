@@ -1,5 +1,6 @@
 
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { parsePropertyData, transcribeAudio } from '../services/geminiService';
 import { PropertySchema, AgentSettings } from '../types';
 
@@ -9,9 +10,10 @@ interface IngestionPortalProps {
 }
 
 const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, settings }) => {
+  const { t } = useTranslation();
   const [activeMode, setActiveMode] = useState<'url' | 'text' | 'voice'>('url');
   const [inputValue, setInputValue] = useState('');
-  const [imageUrl, setImageUrl] = useState(''); // New State for Image
+  const [imageUrl, setImageUrl] = useState(''); 
   const [loading, setLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorder = useRef<MediaRecorder | null>(null);
@@ -21,21 +23,20 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
     if (!inputValue && activeMode !== 'voice') return;
     setLoading(true);
     try {
-      // Pass imageUrl to the parser
       const parsed = await parsePropertyData(inputValue, settings.apiKey, imageUrl);
       onPropertyAdded(parsed);
       setInputValue('');
-      setImageUrl(''); // Reset image input
-      alert("SUCCESS: Property successfully synchronized and vaulted in the Asset Cloud.");
+      setImageUrl(''); 
+      alert(t('app.modals.lead_captured')); // Using a generic success key if available or just hardcode as previously
     } catch (error: any) {
       console.error("Ingestion Hub Error:", error);
       const msg = error.message || "Unknown error";
       const isAuthError = msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('401') || msg.toLowerCase().includes('403');
       
       if (isAuthError) {
-        alert(`AUTHENTICATION FAILURE: Your Gemini API Key is missing or invalid. Please update your Identity Settings to enable intelligence protocols.`);
+        alert(t('settings.hints.api'));
       } else {
-        alert(`INTELLIGENCE SYNC FAILED: ${msg}. Please verify the source data or URL and try again.`);
+        alert(`INTELLIGENCE SYNC FAILED: ${msg}.`);
       }
     } finally {
       setLoading(false);
@@ -87,49 +88,49 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
               <div className="absolute inset-0 border-4 rounded-full border-t-transparent animate-spin" style={{ borderColor: `${settings.primaryColor} transparent transparent transparent` }}></div>
               <i className="fa-solid fa-wand-magic-sparkles absolute inset-0 flex items-center justify-center text-2xl" style={{ color: settings.primaryColor }}></i>
            </div>
-           <h3 className="text-xl font-luxury font-bold text-[var(--text-main)]">Synchronizing Asset Intelligence</h3>
-           <p className="text-[var(--text-muted)] text-sm mt-2 animate-pulse font-medium uppercase tracking-widest text-[10px]">Elite Precision Engine Active...</p>
+           <h3 className="text-xl font-luxury font-bold text-[var(--text-main)]">{t('ingestion.sync_title')}</h3>
+           <p className="text-[var(--text-muted)] text-sm mt-2 animate-pulse font-medium uppercase tracking-widest text-[10px]">{t('ingestion.sync_subtitle')}</p>
         </div>
       )}
 
       <div className="mb-12 text-center">
-        <span className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 block" style={{ color: settings.primaryColor }}>Asset Orchestration</span>
-        <h2 className="text-3xl font-luxury font-bold text-[var(--text-main)] mb-3">Onboard Your Elite Portfolio</h2>
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 block" style={{ color: settings.primaryColor }}>{t('ingestion.orchestration')}</span>
+        <h2 className="text-3xl font-luxury font-bold text-[var(--text-main)] mb-3">{t('ingestion.onboard_title')}</h2>
         <p className="text-[var(--text-muted)] max-w-lg mx-auto text-sm leading-relaxed">
-           Transform scattered data into high-fidelity, secure property schemas with zero manual entry.
+           {t('ingestion.onboard_desc')}
         </p>
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 mb-12">
-        {[
-          { id: 'url', icon: 'fa-globe', label: 'Web Scraper' },
-          { id: 'text', icon: 'fa-file-lines', label: 'Direct Entry' },
-          { id: 'voice', icon: 'fa-microphone-lines', label: 'Agent Voice Note' },
-        ].map((mode) => (
-          <button
-            key={mode.id}
-            onClick={() => setActiveMode(mode.id as any)}
-            className={`flex items-center gap-3 px-8 py-4 rounded-2xl border-2 transition-all duration-300 ${
-              activeMode === mode.id 
-                ? 'bg-[var(--glass-bg)] text-[var(--text-main)] shadow-xl scale-105 border-[var(--brand-primary)]' 
-                : 'border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--text-muted)] hover:border-[var(--brand-primary)]/30'
-            }`}
-          >
-            <i className={`fa-solid ${mode.icon}`} style={activeMode === mode.id ? { color: settings.primaryColor } : {}}></i>
-            <span className="font-bold text-xs uppercase tracking-widest">{mode.label}</span>
-          </button>
-        ))}
+        {(['url', 'text', 'voice'] as const).map((m) => {
+          const icons = { url: 'fa-globe', text: 'fa-file-lines', voice: 'fa-microphone-lines' };
+          const labels = { url: t('ingestion.modes.url'), text: t('ingestion.modes.text'), voice: t('ingestion.modes.voice') };
+          return (
+            <button
+              key={m}
+              onClick={() => setActiveMode(m)}
+              className={`flex items-center gap-3 px-8 py-4 rounded-2xl border-2 transition-all duration-300 ${
+                activeMode === m 
+                  ? 'bg-[var(--glass-bg)] text-[var(--text-main)] shadow-xl scale-105 border-[var(--brand-primary)]' 
+                  : 'border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--text-muted)] hover:border-[var(--brand-primary)]/30'
+              }`}
+            >
+              <i className={`fa-solid ${icons[m]}`} style={activeMode === m ? { color: settings.primaryColor } : {}}></i>
+              <span className="font-bold text-xs uppercase tracking-widest">{labels[m]}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="space-y-8">
         {activeMode === 'url' && (
           <div className="space-y-3 animate-in slide-in-from-bottom-2">
-            <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">Listing URL Source</label>
+            <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">{t('ingestion.labels.url_source')}</label>
             <div className="relative">
                <i className="fa-solid fa-link absolute left-6 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
                <input 
                   type="text" 
-                  placeholder="https://exclusive-estates.com/listing/3409" 
+                  placeholder={t('ingestion.placeholders.url')} 
                   className="w-full pl-14 pr-6 py-5 rounded-2xl border border-[var(--glass-border)] focus:ring-2 outline-none transition-all text-sm font-medium bg-[var(--glass-bg)] text-[var(--text-main)]"
                   style={{ '--tw-ring-color': settings.primaryColor } as any}
                   value={inputValue}
@@ -142,10 +143,10 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
         {activeMode === 'text' && (
           <div className="space-y-6 animate-in slide-in-from-bottom-2">
             <div className="space-y-3">
-                <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">Property Manifest</label>
+                <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">{t('ingestion.labels.manifest')}</label>
                 <textarea 
                   rows={8}
-                  placeholder="Paste MLS data, internal briefs, or market reports here..." 
+                  placeholder={t('ingestion.placeholders.text')} 
                   className="w-full px-6 py-5 rounded-3xl border border-[var(--glass-border)] focus:ring-2 outline-none transition-all resize-none text-sm font-medium bg-[var(--glass-bg)] text-[var(--text-main)]"
                   style={{ '--tw-ring-color': settings.primaryColor } as any}
                   value={inputValue}
@@ -166,7 +167,6 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
                       onChange={(e) => setImageUrl(e.target.value)}
                     />
                 </div>
-                <p className="text-[10px] text-[var(--text-muted)] italic pl-1">Provide a direct link to a high-res cover photo.</p>
             </div>
           </div>
         )}
@@ -183,9 +183,9 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
               <i className={`fa-solid ${isRecording ? 'fa-stop' : 'fa-microphone'} text-3xl`}></i>
             </button>
             <p className="mt-8 font-luxury font-bold text-[var(--text-main)] text-lg">
-              {isRecording ? 'Listening for listing details...' : 'Describe your new asset'}
+              {isRecording ? t('ingestion.labels.listening') : t('ingestion.labels.describe')}
             </p>
-            <p className="text-[var(--text-muted)] text-xs mt-2 uppercase tracking-widest">Voice-to-Schema Sync</p>
+            <p className="text-[var(--text-muted)] text-xs mt-2 uppercase tracking-widest">{t('ingestion.labels.voice_sync')}</p>
             
             {inputValue && (
               <div className="mt-10 w-full p-6 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-3xl shadow-sm italic text-[var(--text-main)] text-sm leading-relaxed border-l-4" style={{ borderColor: settings.primaryColor }}>
@@ -202,7 +202,7 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
           style={{ backgroundColor: settings.primaryColor }}
         >
           <i className="fa-solid fa-shield-halved"></i>
-          SECURE SYNC TO PORTFOLIO
+          {t('ingestion.buttons.secure_sync')}
         </button>
       </div>
     </div>
