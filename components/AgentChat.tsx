@@ -63,7 +63,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
       const phoneMatch = input.match(/(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/);
       if (phoneMatch) {
         onLeadCaptured({
-          name: "Direct Sandbox Lead",
+          name: "Direct Elite Lead",
           phone: phoneMatch[0],
           property_id: property?.property_id || "General",
           property_address: property?.listing_details?.address || "N/A",

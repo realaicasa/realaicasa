@@ -692,7 +692,7 @@ const App: React.FC = () => {
                                 <div className="flex items-center justify-between gap-10">
                                     <div className="flex-1">
                                         <p className="font-bold text-slate-950 text-xl flex items-center gap-3">
-                                           Estate Guard Protocol
+                                           Estate Guard System
                                            <span className={`text-[10px] px-3 py-1 rounded-full font-black ${settings.highSecurityMode ? 'bg-gold/20 text-gold shadow-lg shadow-gold/10' : 'bg-slate-200 text-slate-500'}`}>
                                               {settings.highSecurityMode ? 'SECURE' : 'OPEN'}
                                            </span>
@@ -716,7 +716,7 @@ const App: React.FC = () => {
                         <div className="sticky top-10">
                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                               <span className="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
-                              Concierge Sandbox
+                              Elite Concierge
                            </p>
                            <AgentChat 
                                property={selectedProperty || properties[0]} 

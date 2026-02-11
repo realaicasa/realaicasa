@@ -406,7 +406,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-slate-200 pt-8">
            <div>
              <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-               <i className="fa-solid fa-lock text-gold"></i> Gated Protocols
+               <i className="fa-solid fa-lock text-gold"></i> Secure Viewings
              </h4>
              <div className="flex flex-wrap gap-2">
                {property.visibility_protocol?.gated_fields && property.visibility_protocol.gated_fields.length > 0 ? (
@@ -439,7 +439,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
           style={{ backgroundColor: 'var(--brand-primary)', boxShadow: '0 20px 40px -10px rgba(var(--brand-primary-rgb), 0.3)' }}
         >
           <i className="fa-solid fa-shield-halved"></i>
-          Test Guard Sandbox
+          Connect with Elite Concierge
         </button>
         <button 
           onClick={handleEditToggle}

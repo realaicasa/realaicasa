@@ -99,7 +99,7 @@ const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
         visibility_protocol: { public_fields: ['address', 'image_url', 'hero_narrative'], gated_fields: [] },
         listing_details: {
             address: finalAddress,
-            hero_narrative: "AI LIMIT REACHED: Generated via Offline Regex Protocol. " + (html.length > 200 ? html.substring(0, 300) + "..." : html),
+            hero_narrative: "AI LIMIT REACHED: Generated via Offline Intelligence. " + (html.length > 200 ? html.substring(0, 300) + "..." : html),
             image_url: finalImage,
             price,
             key_stats: { 
@@ -276,7 +276,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                 console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-pro (v1.0 Stable)...");
                 result = await tryGenerate('gemini-pro', 'v1');
             } catch (e4: any) {
-                console.warn("[EstateGuard-v1.1.9] ALL AI STAGES FAILED. Switching to Offline Protocol.");
+                console.warn("[EstateGuard-v1.1.9] ALL AI STAGES FAILED. Switching to Offline Mode.");
                 
                 // Fallback 1: URL Metadata extraction
                 if (isUrl && lastScrapedHtml) {
@@ -286,7 +286,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                 
                 // Fallback 2: Raw Text Encapsulation (Offline Mode)
                 if (!isUrl && processedInput.length > 10) {
-                     console.warn("[EstateGuard] Activate Offline Ingestion Protocol.");
+                     console.warn("[EstateGuard] Activate Offline Ingestion Mode.");
                      
                      // Regex Parsing Engine
                      const priceMatch = processedInput.match(/\$([\d,]+)/);
@@ -431,9 +431,9 @@ export const chatWithGuard = async (
 ) => {
   const models = [
     { name: 'gemini-1.5-flash', api: 'v1' },
-    { name: 'gemini-2.0-flash-exp', api: 'v1' },
-    { name: 'gemini-1.5-flash', api: 'v1beta' },
-    { name: 'gemini-pro', api: 'v1' }
+    { name: 'gemini-2.0-flash', api: 'v1beta' }, // 2.0 is often v1beta in some envs
+    { name: 'gemini-1.5-pro', api: 'v1' },
+    { name: 'gemini-1.0-pro', api: 'v1' }
   ];
 
   let lastError: any = null;
