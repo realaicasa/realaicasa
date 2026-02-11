@@ -61,13 +61,7 @@ const getClient = (manualKey?: string, version: 'v1' | 'v1beta' = 'v1') => {
 // --- PROPERTY DATA SCRAPER ---
 let lastScrapedHtml = ""; // Local state to avoid window reliance if possible
 
-const extractBasicMetadata = (html: string): Partial<PropertySchema> => {
-  const titleMatch = html.match(/<title>([^<]+)<\/title>/i);
-  const h1Match = html.match(/<h1>([^<]+)<\/h1>/i);
-  // PRIORITY 1: Look for hero/featured images
-  const heroMatch = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) || 
-                    html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i) ||
-  const extractBasicMetadata = (html: string) => {
+const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
       // Regex Parsing Engine
       const priceMatch = html.match(/\$([\d,]+)/);
       const price = priceMatch ? parseInt(priceMatch[1].replace(/,/g, '')) : 0;
@@ -278,7 +272,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                 // Fallback 1: URL Metadata extraction
                 if (isUrl && lastScrapedHtml) {
                     console.warn("[EstateGuard-v1.1.9] Falling back to basic metadata extraction due to AI failure.");
-                    return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
+                    return extractBasicMetadata(lastScrapedHtml, fallbackImageUrl) as PropertySchema;
                 }
                 
                 // Fallback 2: Raw Text Encapsulation (Offline Mode)
@@ -386,7 +380,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
     // 1. QUOTA DETECTION
     const isQuotaError = msg.includes("429") || msg.toLowerCase().includes("quota");
     if (isQuotaError) {
-        if (isUrl && lastScrapedHtml) return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
+        if (isUrl && lastScrapedHtml) return extractBasicMetadata(lastScrapedHtml, fallbackImageUrl) as PropertySchema;
         throw new Error("INTELLIGENCE QUOTA EXCEEDED: The Gemini API is currently rate-limited. Please wait 60 seconds.");
     }
 
@@ -398,7 +392,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
     // 3. PARSING FALLBACK
     if (msg.includes("JSON_PARSE_FAILURE") && isUrl && lastScrapedHtml) {
         console.warn("[EstateGuard] Falling back to basic metadata due to malformed AI response.");
-        return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
+        return extractBasicMetadata(lastScrapedHtml, fallbackImageUrl) as PropertySchema;
     }
     
     throw new Error(`Intelligence Sync Failed: ${msg}`);
