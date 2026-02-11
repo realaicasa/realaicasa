@@ -99,14 +99,14 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
       <div className="flex-1 flex flex-col glass-panel rounded-[2.5rem] overflow-hidden shadow-2xl relative">
         <div className="bg-[#05080f]/80 text-white p-6 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg text-slate-950" style={{ backgroundColor: settings.primaryColor }}>
-              <i className="fa-solid fa-robot text-xl"></i>
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80" style={{ color: settings.primaryColor }}>Guard Intelligence</p>
-              <p className="text-md font-luxury font-bold tracking-tight">{settings.businessName}</p>
-            </div>
+          <div className="bg-gold p-3 rounded-2xl text-slate-950 shadow-lg shadow-gold/20">
+            <i className="fa-solid fa-robot text-xl"></i>
           </div>
+          <div>
+            <p className="text-[10px] font-black text-gold uppercase tracking-[0.2em]">Elite Digital Concierge</p>
+            <p className="text-xl font-luxury font-bold text-white tracking-tight leading-tight">{settings.businessName || 'Elite Agent'}</p>
+          </div>
+        </div>
           <div className="flex items-center gap-3">
               {property && (
                 <span className={`text-[10px] font-bold px-3 py-1 rounded-full border border-slate-800 uppercase ${specificQuestionCount >= 2 ? 'bg-red-900/40 text-red-400 animate-pulse' : 'bg-slate-900 text-slate-500'}`}>
@@ -121,17 +121,21 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
             <div className="h-full flex flex-col items-center justify-center text-slate-400 p-12 text-center space-y-8 animate-in fade-in duration-1000">
               <div className="w-24 h-24 bg-white rounded-[2.5rem] flex items-center justify-center shadow-2xl border border-slate-100 relative">
                  <i className="fa-solid fa-shield-halved text-4xl text-gold/40"></i>
-                 <div className="absolute -top-2 -right-2 w-6 h-6 bg-gold rounded-full animate-ping opacity-20"></div>
+                 <div className="absolute -top-1 -right-1 flex h-4 w-4">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500"></span>
+                 </div>
               </div>
               <div className="space-y-3">
-                  <p className="text-2xl font-luxury text-slate-900 font-bold tracking-tight">Concierge Sandbox</p>
+                  <p className="text-2xl font-luxury text-slate-900 font-bold tracking-tight">Ready to Assist</p>
                   <p className="text-sm max-w-sm mx-auto text-slate-500 leading-relaxed font-semibold">
-                     {property ? (
-                       <>Live Deployment Simulation for <br/><span className="text-gold uppercase tracking-widest text-[10px] font-black">{property?.listing_details?.address || "Selected Property"}</span></>
-                     ) : (
-                       <>Deployment Protocol: <span className="text-gold uppercase tracking-widest text-[10px] font-black">Global Readiness Mode</span></>
+                     Our AI Specialist is ready to assist with your portfolio {property && (
+                       <>for <br/><span className="text-gold uppercase tracking-widest text-[10px] font-black">{property?.listing_details?.address || "Selected Property"}</span></>
                      )}
                   </p>
+                  {!property && (
+                    <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Global Intelligence Mode • Active</p>
+                  )}
               </div>
             </div>
           )}

@@ -429,21 +429,34 @@ export const chatWithGuard = async (
   propertyContext: PropertySchema,
   settings: AgentSettings
 ) => {
-  try {
-    const client = getClient(settings.apiKey, 'v1beta'); // Use v1beta for better model compatibility in this env
-    const response = await client.models.generateContent({
-      model: 'gemini-1.5-flash',
-      contents: history,
-      config: {
-        system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
-      } as any
-    });
+  const models = [
+    { name: 'gemini-1.5-flash', api: 'v1' },
+    { name: 'gemini-2.0-flash-exp', api: 'v1' },
+    { name: 'gemini-1.5-flash', api: 'v1beta' },
+    { name: 'gemini-pro', api: 'v1' }
+  ];
 
-    return response.text;
-  } catch (err: any) {
-    console.error("[EstateGuard] chatWithGuard Connectivity Error:", err);
-    throw err;
+  let lastError: any = null;
+
+  for (const m of models) {
+    try {
+      const client = getClient(settings.apiKey, m.api as any);
+      const response = await client.models.generateContent({
+        model: m.name,
+        contents: history,
+        config: {
+          system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
+        } as any
+      });
+      return response.text;
+    } catch (err: any) {
+      console.warn(`[EstateGuard] chatWithGuard fallback: ${m.name} (${m.api}) failed.`, err.message);
+      lastError = err;
+    }
   }
+
+  console.error("[EstateGuard] chatWithGuard: All models failed.", lastError);
+  throw lastError;
 };
 
 export const transcribeAudio = async (base64Audio: string, manualKey?: string): Promise<string> => {
