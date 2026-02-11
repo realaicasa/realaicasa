@@ -258,7 +258,6 @@ export const parsePropertyData = async (input: string, manualKey?: string): Prom
                 console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-pro (v1.0 Stable)...");
                 result = await tryGenerate('gemini-pro', 'v1');
             } catch (e4: any) {
-            } catch (e4: any) {
                 console.error("[EstateGuard-v1.1.9] ALL STAGES FAILED.");
                 
                 // Fallback 1: URL Metadata extraction
