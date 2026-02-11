@@ -176,13 +176,16 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
                       type="checkbox"
                       className="peer sr-only"
                       checked={!!(editedProperty.amenities as any)?.[item.field]}
-                      onChange={e => setEditedProperty({
-                        ...editedProperty,
-                        amenities: {
-                          ...editedProperty.amenities,
-                          [item.field]: e.target.checked
-                        }
-                      })}
+                      onChange={e => {
+                        const currentAmenities = editedProperty.amenities || {};
+                        setEditedProperty({
+                          ...editedProperty,
+                          amenities: {
+                            ...currentAmenities,
+                            [item.field]: e.target.checked
+                          }
+                        });
+                      }}
                     />
                     <div className="w-6 h-6 border-2 border-slate-200 rounded-lg group-hover:border-gold transition-colors peer-checked:bg-gold peer-checked:border-gold flex items-center justify-center">
                       <i className="fa-solid fa-check text-white text-[10px] scale-0 peer-checked:scale-100 transition-transform"></i>
