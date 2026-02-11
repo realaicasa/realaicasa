@@ -38,17 +38,17 @@ const getApiKey = (manualKey?: string) => {
   const isJunk = ["null", "undefined", "[object object]", ""].includes(cleanedManual.toLowerCase());
   
   if (!isJunk && cleanedManual.length > 5 && cleanedManual.startsWith("AIza")) {
-    console.log("[EstateGuard-v1.1.8] Using VALID manual API key from Identity Settings.");
+    console.log("[EstateGuard-v1.1.9] Using VALID manual API key from Identity Settings.");
     return cleanedManual;
   }
   
   const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
   if (envKey && envKey.length > 5) {
-    console.log("[EstateGuard-v1.1.8] Using system environment VITE_GEMINI_API_KEY.");
+    console.log("[EstateGuard-v1.1.9] Using system environment VITE_GEMINI_API_KEY.");
     return envKey;
   }
   
-  console.warn("[EstateGuard-v1.1.8] NO VALID KEY DETECTED. Proceeding with Resilient Fallback.");
+  console.warn("[EstateGuard-v1.1.9] NO VALID KEY DETECTED. Proceeding with Resilient Fallback.");
   return "";
 };
 
@@ -110,13 +110,13 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
 
   if (isUrl) {
     try {
-        console.log("[EstateGuard-v1.1.8] Ingestion active. Target: URL (via Jina.ai)");
+        console.log("[EstateGuard-v1.1.9] Ingestion active. Target: URL (via Jina.ai)");
         // Use Jina.ai Reader for robust client-side scraping without a backend proxy
         const scrapeUrl = `https://r.jina.ai/${input.trim()}`;
         const response = await fetch(scrapeUrl);
         if (response.ok) {
             const scrapedText = await response.text();
-            console.log(`[EstateGuard-v1.1.8] URL scraped. Raw length: ${scrapedText.length}`);
+            console.log(`[EstateGuard-v1.1.9] URL scraped. Raw length: ${scrapedText.length}`);
             processedInput = scrapedText.slice(0, 40000); // 40k chars limit
             processingNote = `(Analysis based on Jina.ai extraction of: ${input})`;
             
@@ -130,10 +130,10 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
              throw new Error(`Jina.ai returned ${response.status}`);
         }
     } catch (e) {
-        console.warn("[EstateGuard-v1.1.8] Scraping failed, falling back to URL-only analysis.", e);
+        console.warn("[EstateGuard-v1.1.9] Scraping failed, falling back to URL-only analysis.", e);
     }
   } else {
-    console.log("[EstateGuard-v1.1.8] Ingestion active. Target: Text");
+    console.log("[EstateGuard-v1.1.9] Ingestion active. Target: Text");
   }
 
   const tryGenerate = async (modelName: string, apiVer: 'v1' | 'v1beta' = 'v1') => {
@@ -236,14 +236,14 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
       });
       return response;
     } catch (e: any) {
-      console.warn(`[EstateGuard-v1.1.8] Failed: ${modelName} on ${apiVer}. Error: ${e.message}`);
+      console.warn(`[EstateGuard-v1.1.9] Failed: ${modelName} on ${apiVer}. Error: ${e.message}`);
       throw e;
     }
   };
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.8] Stage 1: Trying v1/gemini-2.0-flash...");
+    console.log("[EstateGuard-v1.1.9] Stage 1: Trying v1/gemini-2.0-flash...");
     result = await tryGenerate('gemini-2.0-flash', 'v1');
   } catch (e: any) {
     try {
@@ -262,7 +262,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                 
                 // Fallback 1: URL Metadata extraction
                 if (isUrl && lastScrapedHtml) {
-                    console.warn("[EstateGuard-v1.1.8] Falling back to basic metadata extraction due to AI failure.");
+                    console.warn("[EstateGuard-v1.1.9] Falling back to basic metadata extraction due to AI failure.");
                     return extractBasicMetadata(lastScrapedHtml) as PropertySchema;
                 }
                 
@@ -339,7 +339,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
 
     return data as PropertySchema;
   } catch (e: any) {
-    console.error("[EstateGuard-v1.1.8] Processing Error:", e);
+    console.error("[EstateGuard-v1.1.9] Processing Error:", e);
     const msg = e.message || "Unknown error";
     
     // 1. QUOTA DETECTION

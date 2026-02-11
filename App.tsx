@@ -45,7 +45,7 @@ const INITIAL_SETTINGS: AgentSettings = {
 
 const App: React.FC = () => {
   useEffect(() => {
-    console.log("[EstateGuard-v1.1.8] App Component Mounted");
+    console.log("[EstateGuard-v1.1.9] App Component Mounted");
   }, []);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [settings, setSettings] = useState<AgentSettings>(INITIAL_SETTINGS);
@@ -378,13 +378,13 @@ const App: React.FC = () => {
         });
 
       if (error) {
-        console.error("[EstateGuard-v1.1.8] Raw Supabase Error:", error);
+        console.error("[EstateGuard-v1.1.9] Raw Supabase Error:", error);
         throw new Error(`${error.message} (Code: ${error.code})${error.hint ? ' - Hint: ' + error.hint : ''}`);
       }
       
       console.log("Lead captured and synced to cloud hub.");
     } catch (e: any) {
-      console.error("[EstateGuard-v1.1.8] Lead Sync Error:", e);
+      console.error("[EstateGuard-v1.1.9] Lead Sync Error:", e);
       const errorMsg = e.message || "Unknown connectivity issue";
       alert(`SECURITY ALERT: Lead capture synchronization failed.\n\n[Reason: ${errorMsg}]\n\nAction: Verify your Supabase service status and RLS policies.`);
     }
@@ -412,9 +412,9 @@ const App: React.FC = () => {
         });
 
       if (error) throw error;
-      console.log("[EstateGuard-v1.1.8] Ingested asset successfully vaulted in cloud.");
+      console.log("[EstateGuard-v1.1.9] Ingested asset successfully vaulted in cloud.");
     } catch (e: any) {
-      console.error("[EstateGuard-v1.1.8] Auto-Vault Failure:", e);
+      console.error("[EstateGuard-v1.1.9] Auto-Vault Failure:", e);
       alert(`VAULTING FAILURE: Asset created in memory but failed to sync with the cloud. [Reason: ${e.message}]. Please save manually or check connection.`);
     }
   };
