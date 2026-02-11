@@ -98,9 +98,12 @@
   "ingestion": {
     "sync_title": "Synchronizing Asset Intelligence",
     "sync_subtitle": "Gemini 3 Flash Pro is structuring your listing data...",
-    "orchestration": "Asset Orchestration",
-    "onboard_title": "Onboard Your Elite Portfolio",
-    "onboard_desc": "Transform scattered data into high-fidelity, secure property schemas with zero manual entry.",
+    "orchestration": "AI INGESTION ORCHESTRATOR",
+    "onboard_title": "Onboard New Asset",
+    "onboard_desc": "Sync property data from URLs, raw text, or voice memos. Gemini AI will structure and vault the asset instantly.",
+    "status": {
+      "success": "ASSET VAULTED: Property successfully synchronized with your secure cloud."
+    },
     "modes": {
       "url": "Web Scraper",
       "text": "Direct Entry",
@@ -147,6 +150,12 @@
     "ai_provision_title": "AI Core Provisioning",
     "knowledge_base_title": "Business Knowledge Base",
     "knowledge_base_desc": "Train your AI agent on your specific business details. Fill in as many as possible.",
+    "sections": {
+      "identity": "Agency Identity",
+      "whitelabeling": "Asset Intelligence Hub",
+      "deployment": "Concierge Sync",
+      "training": "Continuous Intelligence Training"
+    },
     "labels": {
       "agency_name": "Agency Display Name",
       "brand_color": "Brand Primary Color",
@@ -161,8 +170,15 @@
       "marketing": "Marketing Strategy",
       "team": "Team Members",
       "awards": "Awards & Recognition",
-      "legal": "Legal Disclaimer"
+      "legal": "Legal Disclaimer",
+      "status": "Agency Status"
     },
+    "themes": {
+      "title": "Visual Display Mode",
+      "dark": "Elite (Dark)",
+      "light": "Traditional (Light)"
+    },
+    "inject_button": "Inject Starter Portfolio",
     "hints": {
       "color": "Picks highlight colors",
       "intro": "This text appears above the chatbot bubble on your website.",

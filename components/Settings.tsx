@@ -69,11 +69,11 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
       <div className="glass-panel rounded-[3rem] overflow-hidden">
         <div className="bg-[var(--glass-bg)] p-10 text-[var(--text-main)] flex justify-between items-center border-b border-[var(--glass-border)]">
           <div>
-            <h2 className="text-2xl font-luxury font-bold">{t('settings.agency_hq')}</h2>
-            <p className="text-[var(--text-muted)] text-sm mt-1">{t('settings.agency_hq_desc')}</p>
+            <h2 className="text-2xl font-luxury font-bold">{t('settings.title')}</h2>
+            <p className="text-[var(--text-muted)] text-sm mt-1">{t('settings.subtitle')}</p>
           </div>
           <div className="px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-slate-950" style={{ backgroundColor: settings.primaryColor }}>
-             {t('settings.pro_tier')}
+             {t('settings.tier_badge')}
           </div>
         </div>
         
@@ -82,7 +82,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           <section>
             <h3 className="font-bold text-[var(--text-main)] mb-8 flex items-center gap-4 text-lg">
               <i className="fa-solid fa-palette" style={{ color: settings.primaryColor }}></i> 
-              {t('settings.whitelabeling')}
+              {t('settings.sections.identity')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
@@ -127,7 +127,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                </div>
 
                <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.labels.display_mode')}</label>
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.themes.title')}</label>
                   <div className="flex bg-[var(--glass-bg)] p-1 rounded-2xl border border-[var(--glass-border)]">
                       <button 
                         onClick={() => onUpdate({...settings, theme: 'dark'})}
@@ -163,13 +163,13 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           <section className="bg-[var(--glass-bg)] p-10 rounded-[3rem] border border-[var(--glass-border)]">
             <h3 className="font-bold text-[var(--text-main)] mb-8 flex items-center gap-4 text-lg">
               <i className="fa-solid fa-microchip" style={{ color: settings.primaryColor }}></i> 
-              {t('settings.ai_provisioning')}
+              {t('settings.ai_provision_title')}
             </h3>
             <div className="bg-[var(--glass-bg)] p-8 rounded-2xl border border-[var(--glass-border)] shadow-sm">
                 <p className="text-xs font-bold text-[var(--text-main)] mb-2 uppercase tracking-tight">{t('settings.labels.api_key')}</p>
                 <p className="text-xs text-[var(--text-muted)] mb-6 leading-relaxed">
-                   {t('settings.api_key_desc')}
-                   <a href="https://aistudio.google.com/app/apikey" target="_blank" className="font-bold ml-1 hover:underline" style={{ color: settings.primaryColor }}>{t('settings.get_key')} →</a>
+                   {t('settings.hints.api')}
+                   <a href="https://aistudio.google.com/app/apikey" target="_blank" className="font-bold ml-1 hover:underline" style={{ color: settings.primaryColor }}>{t('settings.get_key', { defaultValue: 'Get Key' })} →</a>
                 </p>
                 <div className="relative">
                     <i className="fa-solid fa-key absolute left-5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
@@ -188,8 +188,8 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
               <div className="mt-8 pt-8 border-t border-[var(--glass-border)]">
                 <div className="flex items-center justify-between gap-6 p-6 bg-gold/5 rounded-2xl border border-gold/20">
                   <div className="flex-1">
-                    <p className="text-sm font-bold text-[var(--text-main)] mb-1">{t('settings.portfolio_sync')}</p>
-                    <p className="text-xs text-[var(--text-muted)]">{t('settings.portfolio_sync_desc')}</p>
+                    <p className="text-sm font-bold text-[var(--text-main)] mb-1">{t('settings.sections.whitelabeling')}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{t('settings.subtitle')}</p>
                   </div>
                   <button 
                     onClick={onInjectPortfolio}
@@ -206,7 +206,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           <section>
             <h3 className="font-bold text-[var(--text-main)] mb-8 flex items-center gap-4 text-lg">
               <i className="fa-solid fa-brain text-gold"></i> 
-              {t('settings.knowledge_base')}
+              {t('settings.knowledge_base_title')}
             </h3>
             <p className="text-sm text-[var(--text-muted)] mb-8 max-w-2xl leading-relaxed">
               {t('settings.knowledge_base_desc')}
@@ -223,8 +223,8 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                 { label: 'Marketing Strategy', field: 'marketingStrategy', icon: 'fa-bullhorn' },
                 { label: 'Team Members', field: 'teamMembers', icon: 'fa-users' },
                 { label: 'Awards & Accolades', field: 'awards', icon: 'fa-trophy' },
-                { label: 'Legal Disclaimer', field: 'legalDisclaimer', icon: 'fa-gavel' },
-                { label: 'Continuous Training Enhancements', field: 'trainingEnhancements', icon: 'fa-wand-magic-sparkles' }
+                { label: t('settings.labels.legal'), field: 'legalDisclaimer', icon: 'fa-gavel' },
+                { label: t('settings.sections.training'), field: 'trainingEnhancements', icon: 'fa-wand-magic-sparkles' }
               ].map((item) => (
                 <div key={item.field} className="space-y-3">
                   <div className="flex items-center gap-2">
@@ -257,7 +257,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                 style={{ backgroundColor: settings.primaryColor }}
              >
                 {isSaving ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-floppy-disk"></i>}
-                {isSaving ? t('settings.status.syncing') : t('settings.save_button')}
+                {isSaving ? t('settings.buttons.saving') : t('settings.buttons.save')}
              </button>
           </div>
         </div>

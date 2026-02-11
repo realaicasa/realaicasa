@@ -27,7 +27,7 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
       onPropertyAdded(parsed);
       setInputValue('');
       setImageUrl(''); 
-      alert(t('app.modals.lead_captured')); // Using a generic success key if available or just hardcode as previously
+      alert(t('ingestion.status.success', { defaultValue: 'ASSET VAULTED: Property successfully synchronized with your secure cloud.' }));
     } catch (error: any) {
       console.error("Ingestion Hub Error:", error);
       const msg = error.message || "Unknown error";

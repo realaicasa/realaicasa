@@ -97,26 +97,26 @@ const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
         transaction_type: 'Sale',
         status: 'Active',
         tier: PropertyTier.STANDARD,
-        visibility_protocol: { public_fields: ['address', 'image_url', 'hero_narrative'], gated_fields: [] },
+        visibility_protocol: { public_fields: ['address', 'image_url', 'hero_narrative', 'price', 'bedrooms', 'bathrooms', 'sq_ft'], gated_fields: [] },
         listing_details: {
             address: finalAddress,
-            hero_narrative: "AI LIMIT REACHED: Generated via Offline Intelligence. " + (html.length > 200 ? html.substring(0, 300) + "..." : html),
+            hero_narrative: "AI LIMIT REACHED: Generated via Offline Intelligence. This asset was captured while the Gemini API was temporarily rate-limited. Review and verify all details manually. \n\nRAW SOURCE SNIPPET: " + (html.length > 200 ? html.substring(0, 300) + "..." : html),
             image_url: finalImage,
-            price,
+            price: price || 0,
             key_stats: { 
-                sq_ft: sqft, 
+                sq_ft: sqft || 0, 
                 lot_size: "Unknown",
-                bedrooms: beds,
-                bathrooms: baths
+                bedrooms: beds || 0,
+                bathrooms: baths || 0
             }
         },
         amenities: { general: html.toLowerCase().includes('pool') ? ['Pool'] : [] },
         seo: {
-            meta_title: `Luxury Property for Sale | ${finalAddress}`,
-            meta_description: `Discover this stunning property at ${finalAddress}. Features ${beds} beds, ${baths} baths, and premium amenities. Schedule a viewing today.`
+            meta_title: `Exclusive Listing | ${finalAddress}`,
+            meta_description: `Discover this property at ${finalAddress}. Features ${beds} beds, ${baths} baths. Captured via EstateGuard Offline Engine.`
         },
         deep_data: {},
-        agent_notes: { motivation: "", showing_instructions: "" }
+        agent_notes: { motivation: "Captured during API quota limit.", showing_instructions: "Manual verification required." }
       } as any;
   };
 
@@ -317,27 +317,27 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                         transaction_type: 'Sale',
                         status: 'Active',
                         tier: PropertyTier.STANDARD,
-                        visibility_protocol: { public_fields: ['address', 'hero_narrative', 'image_url'], gated_fields: [] },
+                        visibility_protocol: { public_fields: ['address', 'hero_narrative', 'image_url', 'price', 'bedrooms', 'bathrooms', 'sq_ft'], gated_fields: [] },
                         listing_details: {
                           address,
-                          price,
+                          price: price || 0,
                           image_url: fallbackImageUrl || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80",
                           key_stats: { 
-                              sq_ft: sqft, 
+                              sq_ft: sqft || 0, 
                               lot_size: "Unknown", 
-                              bedrooms: beds, 
-                              bathrooms: baths 
+                              bedrooms: beds || 0, 
+                              bathrooms: baths || 0 
                           },
-                          hero_narrative: processedInput // Save the raw text so user doesn't lose it
+                          hero_narrative: "OFFLINE CAPTURE: AI services were unavailable at the time of ingestion. \n\nRAW SOURCE:\n" + processedInput 
                         },
                         agent_notes: {
                           motivation: "AI Services Unavailable - Manual Processing Required",
-                          showing_instructions: "See raw data in description."
+                          showing_instructions: "Review raw narrative for details."
                         },
                         amenities: { general: processedInput.toLowerCase().includes('pool') ? ['Pool'] : [] },
                         seo: {
                             meta_title: `Exclusive Listing | ${address}`,
-                            meta_description: `Explore this exceptional property at ${address}. Offered at $${price.toLocaleString()}. Contact us for details.`
+                            meta_description: `Explore this property at ${address}. Captured via EstateGuard Offline Engine.`
                         },
                         deep_data: {}
                       } as PropertySchema;
@@ -358,7 +358,9 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
     }
 
     // Stage 1: cleanJsonResponse handles nested curly braces extraction
+    console.log("[EstateGuard-v1.1.9] AI Response received. Parsing...");
     const data = cleanJsonResponse(rawText);
+    console.log("[EstateGuard-v1.1.9] Successfully parsed property:", data.listing_details?.address || "Unnamed Asset");
     
     // Stage 2: Structural Hardening (Prevent UI Crashes)
     if (!data.property_id) data.property_id = `EG-${Math.floor(Math.random() * 1000)}`;
