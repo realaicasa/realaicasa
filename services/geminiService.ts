@@ -430,10 +430,11 @@ export const chatWithGuard = async (
   settings: AgentSettings
 ) => {
   const models = [
+    { name: 'gemini-2.0-flash', api: 'v1beta' },
     { name: 'gemini-1.5-flash', api: 'v1' },
-    { name: 'gemini-2.0-flash', api: 'v1beta' }, // 2.0 is often v1beta in some envs
+    { name: 'gemini-flash-latest', api: 'v1beta' },
     { name: 'gemini-1.5-pro', api: 'v1' },
-    { name: 'gemini-1.0-pro', api: 'v1' }
+    { name: 'gemini-pro-latest', api: 'v1beta' }
   ];
 
   let lastError: any = null;

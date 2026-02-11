@@ -15,6 +15,11 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
   const [specificQuestionCount, setSpecificQuestionCount] = useState(0);
   const [isGated, setIsGated] = useState(false);
   const [leadFormData, setLeadFormData] = useState({ name: '', phone: '', comm: 'WhatsApp', time: 'ASAP' });
+  
+  // Conversational Capture State from "Perfect" version
+  const [collectionStep, setCollectionStep] = useState<'IDLE' | 'NAME' | 'MODE' | 'EMAIL' | 'TIME'>('IDLE');
+  const [tempLeadData, setTempLeadData] = useState<{name?: string; phone?: string; comm?: string; email?: string; time?: string}>({});
+  
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,10 +28,93 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
     }
   }, [messages, isTyping, isGated]);
 
+  // Conversational Capture Logic from "Perfect" version
+  const processCollectionStep = (userInput: string) => {
+    const userMsg: ChatMessage = { role: 'user', text: userInput };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setIsTyping(true);
+    
+    setTimeout(() => {
+      let nextStep = collectionStep;
+      let botResponse = "";
+      
+      switch (collectionStep) {
+        case 'NAME':
+          setTempLeadData(prev => ({ ...prev, name: userInput }));
+          botResponse = `Thank you, ${userInput}. How would you prefer our specialists to contact you? (WhatsApp, Voice Call, or SMS?)`;
+          nextStep = 'MODE';
+          break;
+          
+        case 'MODE':
+          setTempLeadData(prev => ({ ...prev, comm: userInput }));
+          botResponse = "Excellent. When is the most convenient time for our team to reach out to you?";
+          nextStep = 'TIME';
+          break;
+          
+        case 'TIME':
+          setTempLeadData(prev => ({ ...prev, time: userInput }));
+          botResponse = "Perfect. I have synchronized your request with our Elite Desk. An agent will reach out to you as requested. Is there anything else I can assist you with today?";
+          
+          // Finalize Capture
+          const finalData = { ...tempLeadData, time: userInput };
+          onLeadCaptured({
+            name: finalData.name || 'DIRECT ELITE LEAD',
+            phone: finalData.phone,
+            property_id: property?.property_id || "General",
+            property_address: property?.listing_details?.address || "N/A",
+            notes: [`Prefers ${finalData.comm || 'contact'} at ${userInput}`]
+          });
+          
+          nextStep = 'IDLE';
+          break;
+      }
+
+      setMessages(prev => [...prev, { role: 'model', text: botResponse }]);
+      setCollectionStep(nextStep);
+      setIsTyping(false);
+    }, 1000);
+  };
+
   const handleSend = async () => {
     if (!input.trim() || isGated) return;
+
+    // Intercept for Collection Flow from "Perfect" version
+    if (collectionStep !== 'IDLE') {
+      processCollectionStep(input);
+      return;
+    }
     
     const userMsg: ChatMessage = { role: 'user', text: input };
+
+    // Check for affirmative agreement to a solicitation from "Perfect" version
+    const lastBotMsg = messages.length > 0 ? messages[messages.length - 1].text.toLowerCase() : "";
+    const isSolicitation = lastBotMsg.includes("leave your number") || lastBotMsg.includes("get back to you") || lastBotMsg.includes("ask for a quick call");
+    const isAffirmative = /^(ok|yes|sure|yeah|please|correct|right)$/i.test(input.trim());
+    
+    if (isSolicitation && isAffirmative) {
+       setMessages(prev => [...prev, userMsg, { 
+        role: 'model', 
+        text: "Capital. To ensure we have everything ready, may I have your name please?" 
+      }]);
+      setCollectionStep('NAME');
+      setInput('');
+      return;
+    }
+
+    // Phone detection intercept from "Perfect" version
+    const phoneMatch = input.match(/(\+\d{1,3}[\s-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/) || input.match(/\d{7,15}/);
+    if (phoneMatch) {
+      setMessages(prev => [...prev, userMsg, { 
+        role: 'model', 
+        text: "I've noted that number for our specialists. May I have your name so they know who to ask for?" 
+      }]);
+      setTempLeadData({ phone: phoneMatch[0] });
+      setCollectionStep('NAME');
+      setInput('');
+      return; 
+    }
+
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
@@ -55,19 +143,9 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
       const responseText = await chatWithGuard(history, property, settings);
       setMessages(prev => [...prev, { role: 'model', text: responseText || '' }]);
 
+      // Gating intercept
       if (shouldGateNow) {
         setIsGated(true);
-      }
-
-      // Quick-capture if they just type a number in sandbox
-      const phoneMatch = input.match(/(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/);
-      if (phoneMatch) {
-        onLeadCaptured({
-          name: "Direct Elite Lead",
-          phone: phoneMatch[0],
-          property_id: property?.property_id || "General",
-          property_address: property?.listing_details?.address || "N/A",
-        });
       }
     } catch (e) {
       setMessages(prev => [...prev, { role: 'model', text: "Guard connection unstable. Please try again or contact " + settings.businessName + " directly." }]);
