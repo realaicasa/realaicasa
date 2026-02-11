@@ -101,7 +101,7 @@ const extractBasicMetadata = (html: string): Partial<PropertySchema> => {
   };
 };
 
-export const parsePropertyData = async (input: string, manualKey?: string): Promise<PropertySchema> => {
+export const parsePropertyData = async (input: string, manualKey?: string, fallbackImageUrl?: string): Promise<PropertySchema> => {
   let client = getClient(manualKey, 'v1');
   
   const isUrl = input.trim().startsWith('http');
