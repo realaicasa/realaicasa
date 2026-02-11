@@ -67,39 +67,54 @@ const extractBasicMetadata = (html: string): Partial<PropertySchema> => {
   // PRIORITY 1: Look for hero/featured images
   const heroMatch = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) || 
                     html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i) ||
-                    html.match(/<link[^>]+rel="image_src"[^>]+href="([^"]+)"/i);
-  
-  // PRIORITY 2: Look for large images in content, avoiding small icons/logos
-  const allImages = Array.from(html.matchAll(/<img[^>]+src="([^"]+)"[^>]*>/gi))
-    .map(match => match[1])
-    .filter(src => !src.includes('logo') && !src.includes('icon') && !src.includes('avatar'));
+  const extractBasicMetadata = (html: string) => {
+      // Regex Parsing Engine
+      const priceMatch = html.match(/\$([\d,]+)/);
+      const price = priceMatch ? parseInt(priceMatch[1].replace(/,/g, '')) : 0;
+      
+      const bedMatch = html.match(/(\d+)\s*(?:bed|bd|bedroom)/i);
+      const beds = bedMatch ? parseInt(bedMatch[1]) : 0;
+      
+      const bathMatch = html.match(/(\d+(?:\.\d+)?)\s*(?:bath|ba|bathroom)/i);
+      const baths = bathMatch ? parseFloat(bathMatch[1]) : 0;
+      
+      const sqftMatch = html.match(/(\d{1,3}(?:,\d{3})*)\s*(?:sq|square)\.?\s*(?:ft|feet)/i);
+      const sqft = sqftMatch ? parseInt(sqftMatch[1].replace(/,/g, '')) : 0;
 
-  const address = titleMatch?.[1]?.split('|')?.[0]?.trim() || h1Match?.[1]?.trim() || "Unrecognized Property";
-  const image_url = heroMatch?.[1] || allImages[0] || "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80";
+      // Address Extraction
+      let address = "Imported Listing";
+      const titleMatch = html.match(/<title>(.*?)<\/title>/i);
+      const addressMatch = html.match(/\d+\s+[\w\s]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Place|Pl|Square|Sq|Way)[^,\n<]*/i);
+      
+      if (addressMatch) {
+          address = addressMatch[0];
+      } else if (titleMatch) {
+          address = titleMatch[1].split('|')[0].trim();
+      }
 
-  return {
-    property_id: `EG-QUOTA-${Math.floor(Math.random() * 1000)}`,
-    category: 'Residential',
-    transaction_type: 'Sale',
-    status: 'Active',
-    tier: PropertyTier.STANDARD,
-    visibility_protocol: { public_fields: ['address', 'image_url'], gated_fields: [] },
-    listing_details: {
-      address,
-      price: 0,
-      image_url,
-      key_stats: {
-        sq_ft: 0,
-        lot_size: "Unknown"
-      },
-      hero_narrative: "INTELLIGENCE SYNC PAUSED: Your Gemini API quota has been reached. Basic metadata was recovered from the URL, but deep analysis requires a quota reset (60s) or a higher tier key."
-    },
-    agent_notes: {
-      motivation: "Quota Reached during sync.",
-      showing_instructions: "AI analysis pending quota reset."
-    }
+      // Image Extraction
+      const imgMatch = html.match(/<meta property="og:image" content="(.*?)"/i) || html.match(/<img[^>]+src=["'](.*?)["']/i);
+      const finalImage = fallbackImageUrl || (imgMatch ? imgMatch[1] : "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80");
+
+      return {
+        property_id: `EG-QUOTA-${Math.floor(Math.random() * 1000)}`,
+        category: 'Residential',
+        transaction_type: 'Sale',
+        status: 'Active',
+        tier: PropertyTier.STANDARD,
+        visibility_protocol: { public_fields: ['address', 'image_url', 'hero_narrative'], gated_fields: [] },
+        listing_details: {
+            address,
+            hero_narrative: "AI LIMIT REACHED: Generated via Offline Regex Protocol. " + (html.length > 200 ? html.substring(0, 300) + "..." : html),
+            image_url: finalImage,
+            price,
+            bedrooms: beds,
+            bathrooms: baths,
+            key_stats: { sq_ft: sqft, lot_size: "Unknown" }
+        },
+        amenities: { general: html.toLowerCase().includes('pool') ? ['Pool'] : [] }
+      };
   };
-};
 
 export const parsePropertyData = async (input: string, manualKey?: string, fallbackImageUrl?: string): Promise<PropertySchema> => {
   let client = getClient(manualKey, 'v1');
@@ -269,24 +284,50 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                 // Fallback 2: Raw Text Encapsulation (Offline Mode)
                 if (!isUrl && processedInput.length > 10) {
                      console.warn("[EstateGuard] Activate Offline Ingestion Protocol.");
+                     
+                     // Regex Parsing Engine
+                     const priceMatch = processedInput.match(/\$([\d,]+)/);
+                     const price = priceMatch ? parseInt(priceMatch[1].replace(/,/g, '')) : 0;
+                     
+                     const bedMatch = processedInput.match(/(\d+)\s*(?:bed|bd|bedroom)/i);
+                     const beds = bedMatch ? parseInt(bedMatch[1]) : 0;
+                     
+                     const bathMatch = processedInput.match(/(\d+(?:\.\d+)?)\s*(?:bath|ba|bathroom)/i);
+                     const baths = bathMatch ? parseFloat(bathMatch[1]) : 0;
+
+                     const sqftMatch = processedInput.match(/(\d{1,3}(?:,\d{3})*)\s*(?:sq|square)\.?\s*(?:ft|feet)/i);
+                     const sqft = sqftMatch ? parseInt(sqftMatch[1].replace(/,/g, '')) : 0;
+
+                     // Address Extraction
+                     let address = "Manual Ingestion (AI Offline)";
+                     const addressMatch = processedInput.match(/\d+\s+[\w\s]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Place|Pl|Square|Sq|Way)[^,\n]*/i);
+                     if (addressMatch) {
+                        address = addressMatch[0];
+                     } else {
+                        address = processedInput.substring(0, 50).split('\n')[0];
+                     }
+
                      return {
                         property_id: `EG-OFFLINE-${Math.floor(Math.random() * 1000)}`,
                         category: 'Residential',
                         transaction_type: 'Sale',
                         status: 'Active',
                         tier: PropertyTier.STANDARD,
-                        visibility_protocol: { public_fields: ['address', 'hero_narrative'], gated_fields: [] },
+                        visibility_protocol: { public_fields: ['address', 'hero_narrative', 'image_url'], gated_fields: [] },
                         listing_details: {
-                          address: "Manual Ingestion (AI Offline)",
-                          price: 0,
-                          image_url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80",
-                          key_stats: { sq_ft: 0, lot_size: "Unknown" },
+                          address,
+                          price,
+                          bedrooms: beds,
+                          bathrooms: baths,
+                          image_url: fallbackImageUrl || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80",
+                          key_stats: { sq_ft: sqft, lot_size: "Unknown" },
                           hero_narrative: processedInput // Save the raw text so user doesn't lose it
                         },
                         agent_notes: {
                           motivation: "AI Services Unavailable - Manual Processing Required",
                           showing_instructions: "See raw data in description."
-                        }
+                        },
+                        amenities: { general: processedInput.toLowerCase().includes('pool') ? ['Pool'] : [] }
                       } as PropertySchema;
                 }
 
