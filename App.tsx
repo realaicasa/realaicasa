@@ -741,7 +741,7 @@ const App: React.FC = () => {
       <Modal 
         isOpen={isDetailsOpen} 
         onClose={() => setIsDetailsOpen(false)} 
-        title="Asset Intelligence Hub"
+        title="Property Intelligence"
       >
         {selectedProperty && (
           <PropertyDetails 

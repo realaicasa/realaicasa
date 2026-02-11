@@ -102,9 +102,12 @@ const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
             hero_narrative: "AI LIMIT REACHED: Generated via Offline Regex Protocol. " + (html.length > 200 ? html.substring(0, 300) + "..." : html),
             image_url: finalImage,
             price,
-            bedrooms: beds,
-            bathrooms: baths,
-            key_stats: { sq_ft: sqft, lot_size: "Unknown" }
+            key_stats: { 
+                sq_ft: sqft, 
+                lot_size: "Unknown",
+                bedrooms: beds,
+                bathrooms: baths
+            }
         },
         amenities: { general: html.toLowerCase().includes('pool') ? ['Pool'] : [] }
       };
@@ -311,10 +314,13 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                         listing_details: {
                           address,
                           price,
-                          bedrooms: beds,
-                          bathrooms: baths,
                           image_url: fallbackImageUrl || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80",
-                          key_stats: { sq_ft: sqft, lot_size: "Unknown" },
+                          key_stats: { 
+                              sq_ft: sqft, 
+                              lot_size: "Unknown", 
+                              bedrooms: beds, 
+                              bathrooms: baths 
+                          },
                           hero_narrative: processedInput // Save the raw text so user doesn't lose it
                         },
                         agent_notes: {
