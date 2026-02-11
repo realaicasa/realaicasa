@@ -88,7 +88,7 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
               <i className="fa-solid fa-wand-magic-sparkles absolute inset-0 flex items-center justify-center text-2xl" style={{ color: settings.primaryColor }}></i>
            </div>
            <h3 className="text-xl font-luxury font-bold text-[var(--text-main)]">Synchronizing Asset Intelligence</h3>
-           <p className="text-[var(--text-muted)] text-sm mt-2 animate-pulse font-medium uppercase tracking-widest text-[10px]">Elite Precision Protocol Active...</p>
+           <p className="text-[var(--text-muted)] text-sm mt-2 animate-pulse font-medium uppercase tracking-widest text-[10px]">Elite Precision Engine Active...</p>
         </div>
       )}
 

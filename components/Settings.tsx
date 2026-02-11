@@ -124,7 +124,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                </div>
 
                <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Visual Display Protocol</label>
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Visual Display Mode</label>
                   <div className="flex bg-[var(--glass-bg)] p-1 rounded-2xl border border-[var(--glass-border)]">
                       <button 
                         onClick={() => onUpdate({...settings, theme: 'dark'})}
