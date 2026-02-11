@@ -76,14 +76,14 @@ const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
       const sqft = sqftMatch ? parseInt(sqftMatch[1].replace(/,/g, '')) : 0;
 
       // Address Extraction
-      let address = "Imported Listing";
+      let finalAddress = "Imported Listing";
       const titleMatch = html.match(/<title>(.*?)<\/title>/i);
       const addressMatch = html.match(/\d+\s+[\w\s]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Place|Pl|Square|Sq|Way)[^,\n<]*/i);
       
       if (addressMatch) {
-          address = addressMatch[0];
+          finalAddress = addressMatch[0];
       } else if (titleMatch) {
-          address = titleMatch[1].split('|')[0].trim();
+          finalAddress = titleMatch[1].split('|')[0].trim();
       }
 
       // Image Extraction
@@ -98,7 +98,7 @@ const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
         tier: PropertyTier.STANDARD,
         visibility_protocol: { public_fields: ['address', 'image_url', 'hero_narrative'], gated_fields: [] },
         listing_details: {
-            address,
+            address: finalAddress,
             hero_narrative: "AI LIMIT REACHED: Generated via Offline Regex Protocol. " + (html.length > 200 ? html.substring(0, 300) + "..." : html),
             image_url: finalImage,
             price,
@@ -109,7 +109,11 @@ const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
                 bathrooms: baths
             }
         },
-        amenities: { general: html.toLowerCase().includes('pool') ? ['Pool'] : [] }
+        amenities: { general: html.toLowerCase().includes('pool') ? ['Pool'] : [] },
+        seo: {
+            meta_title: `Luxury Property for Sale | ${finalAddress}`,
+            meta_description: `Discover this stunning property at ${finalAddress}. Features ${beds} beds, ${baths} baths, and premium amenities. Schedule a viewing today.`
+        }
       };
   };
 
@@ -270,7 +274,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                 console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-pro (v1.0 Stable)...");
                 result = await tryGenerate('gemini-pro', 'v1');
             } catch (e4: any) {
-                console.error("[EstateGuard-v1.1.9] ALL STAGES FAILED.");
+                console.warn("[EstateGuard-v1.1.9] ALL AI STAGES FAILED. Switching to Offline Protocol.");
                 
                 // Fallback 1: URL Metadata extraction
                 if (isUrl && lastScrapedHtml) {
@@ -327,7 +331,11 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                           motivation: "AI Services Unavailable - Manual Processing Required",
                           showing_instructions: "See raw data in description."
                         },
-                        amenities: { general: processedInput.toLowerCase().includes('pool') ? ['Pool'] : [] }
+                        amenities: { general: processedInput.toLowerCase().includes('pool') ? ['Pool'] : [] },
+                        seo: {
+                            meta_title: `Exclusive Listing | ${address}`,
+                            meta_description: `Explore this exceptional property at ${address}. Offered at $${price.toLocaleString()}. Contact us for details.`
+                        }
                       } as PropertySchema;
                 }
 
@@ -378,9 +386,17 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
       data.visibility_protocol.gated_fields = data.visibility_protocol.gated_fields || [];
     }
 
+    // Auto-SEO Fallback if AI missed it
+    if (!data.seo) {
+        data.seo = {
+            meta_title: `Premium Real Estate | ${data.listing_details.address}`,
+            meta_description: `View details for ${data.listing_details.address}. ${data.listing_details.key_stats.bedrooms} Bed, ${data.listing_details.key_stats.bathrooms} Bath. Request a private tour.`
+        };
+    }
+
     return data as PropertySchema;
   } catch (e: any) {
-    console.error("[EstateGuard-v1.1.9] Processing Error:", e);
+    // console.error("[EstateGuard-v1.1.9] Processing Error:", e); // Squelch noise
     const msg = e.message || "Unknown error";
     
     // 1. QUOTA DETECTION
