@@ -52,7 +52,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
             <span className={`text-[9px] font-black uppercase tracking-[0.3em]`} style={{ color: (property.transaction_type === 'Rent' || property.transaction_type === 'Lease' ? '' : 'var(--brand-primary)') }}>
               {property.category}
             </span>
-            <h4 className="font-luxury font-bold text-[var(--text-main)] text-lg line-clamp-1 mt-1">{property.listing_details?.address}</h4>
+            <div className="flex justify-between items-start gap-2">
+              <h4 className="font-luxury font-bold text-[var(--text-main)] text-lg line-clamp-1 mt-1">{property.listing_details?.address}</h4>
+              <p className="text-sm font-black text-slate-900 mt-1.5">
+                {property.listing_details?.price ? `$${property.listing_details.price.toLocaleString()}` : "Contact HQ"}
+              </p>
+            </div>
         </div>
         
         <div className="flex items-center gap-4 text-slate-500 text-xs font-bold mb-4">

@@ -188,7 +188,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
                       }}
                     />
                     <div className="w-6 h-6 border-2 border-slate-200 rounded-lg group-hover:border-gold transition-colors peer-checked:bg-gold peer-checked:border-gold flex items-center justify-center">
-                      <i className="fa-solid fa-check text-white text-[10px] scale-0 peer-checked:scale-100 transition-transform"></i>
+                      <i className="fa-solid fa-check text-white text-[10px] opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                     </div>
                   </div>
                   <div className="flex flex-col">
@@ -269,7 +269,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
             className="flex-1 py-5 rounded-2xl font-bold text-sm shadow-xl active:scale-95 transition-transform text-slate-950"
             style={{ backgroundColor: 'var(--brand-primary)' }}
           >
-            Sychronize Asset Cloud
+            Synchronize EstateGuard Cloud
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); setIsEditing(false); }}

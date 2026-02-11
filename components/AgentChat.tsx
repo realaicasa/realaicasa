@@ -137,7 +137,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
               <div className={`max-w-[85%] px-6 py-4 rounded-3xl text-sm leading-relaxed shadow-sm transition-all ${
                 m.role === 'user' 
                   ? 'bg-white/10 text-white rounded-tr-none border border-white/5' 
-                  : 'bg-white/5 text-white/90 border border-white/10 rounded-tl-none'
+                  : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none shadow-md'
               }`}>
                 {m.text}
               </div>

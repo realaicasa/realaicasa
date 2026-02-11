@@ -300,6 +300,10 @@ const App: React.FC = () => {
             price: p.listing_details?.price || 0,
             status: p.status || 'Active',
             data: p,
+            amenities: p.amenities || {},
+            ai_training: p.ai_training || {},
+            deep_data: p.deep_data || {},
+            seo: p.seo || {},
             updated_at: p.updated_at
           });
         if (error) throw error;
@@ -408,7 +412,12 @@ const App: React.FC = () => {
           address: p.listing_details?.address || '',
           price: p.listing_details?.price || 0,
           status: p.status || 'Active',
-          data: p
+          data: { ...p, updated_at: new Date().toISOString() },
+          amenities: p.amenities || {},
+          ai_training: p.ai_training || {},
+          deep_data: p.deep_data || {},
+          seo: p.seo || {},
+          updated_at: new Date().toISOString()
         });
 
       if (error) throw error;
@@ -741,7 +750,7 @@ const App: React.FC = () => {
       <Modal 
         isOpen={isDetailsOpen} 
         onClose={() => setIsDetailsOpen(false)} 
-        title="Property Intelligence"
+        title="Property Details"
       >
         {selectedProperty && (
           <PropertyDetails 

@@ -113,8 +113,10 @@ const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
         seo: {
             meta_title: `Luxury Property for Sale | ${finalAddress}`,
             meta_description: `Discover this stunning property at ${finalAddress}. Features ${beds} beds, ${baths} baths, and premium amenities. Schedule a viewing today.`
-        }
-      };
+        },
+        deep_data: {},
+        agent_notes: { motivation: "", showing_instructions: "" }
+      } as any;
   };
 
 export const parsePropertyData = async (input: string, manualKey?: string, fallbackImageUrl?: string): Promise<PropertySchema> => {
@@ -259,12 +261,12 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.9] Stage 1: Trying v1/gemini-2.0-flash...");
-    result = await tryGenerate('gemini-2.0-flash', 'v1');
+    console.log("[EstateGuard-v1.1.9] Stage 1: Trying gemini-1.5-flash (Stable)...");
+    result = await tryGenerate('gemini-1.5-flash', 'v1');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-1.5-flash...");
-        result = await tryGenerate('gemini-1.5-flash', 'v1beta');
+        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-2.0-flash-exp...");
+        result = await tryGenerate('gemini-2.0-flash-exp', 'v1');
     } catch (e2: any) {
         try {
             console.log("[EstateGuard-v1.1.9] Stage 3: Retry gemini-1.5-flash (Legacy)...");
@@ -335,7 +337,8 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                         seo: {
                             meta_title: `Exclusive Listing | ${address}`,
                             meta_description: `Explore this exceptional property at ${address}. Offered at $${price.toLocaleString()}. Contact us for details.`
-                        }
+                        },
+                        deep_data: {}
                       } as PropertySchema;
                 }
 

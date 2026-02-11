@@ -29,6 +29,10 @@ CREATE TABLE IF NOT EXISTS properties (
   price NUMERIC,
   status TEXT,
   data JSONB, -- Stores the full PropertySchema JSON
+  amenities JSONB DEFAULT '{}',
+  ai_training JSONB DEFAULT '{}',
+  deep_data JSONB DEFAULT '{}',
+  seo JSONB DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
