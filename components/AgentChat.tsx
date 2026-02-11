@@ -90,8 +90,8 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
 
   return (
     <div className="flex flex-col h-[650px] relative">
-      <div className="mb-4 bg-white/5 border-l-4 p-4 rounded-r-2xl" style={{ borderColor: settings.primaryColor }}>
-         <p className="text-xs font-bold text-white/70 italic">
+      <div className="mb-4 bg-slate-100 border-l-4 p-4 rounded-r-2xl" style={{ borderColor: settings.primaryColor }}>
+         <p className="text-xs font-bold text-slate-500 italic">
            "{settings.conciergeIntro || 'Ask our happy assistant about any of our properties 24/7'}"
          </p>
       </div>
@@ -136,9 +136,11 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
             <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
               <div className={`max-w-[85%] px-6 py-4 rounded-3xl text-sm leading-relaxed shadow-sm transition-all ${
                 m.role === 'user' 
-                  ? 'bg-white/10 text-white rounded-tr-none border border-white/5' 
+                  ? 'text-white rounded-tr-none border border-white/10 shadow-lg' 
                   : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none shadow-md'
-              }`}>
+              }`}
+              style={m.role === 'user' ? { backgroundColor: settings.primaryColor } : {}}
+              >
                 {m.text}
               </div>
             </div>
@@ -222,7 +224,8 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
             <button 
               onClick={handleSend}
               disabled={isGated}
-              className="w-14 h-14 bg-slate-950 text-gold rounded-2xl flex items-center justify-center hover:bg-slate-900 transition-all active:scale-95 shadow-xl shadow-gold/5 disabled:opacity-30"
+              className="w-14 h-14 rounded-2xl flex items-center justify-center hover:opacity-90 transition-all active:scale-95 shadow-xl shadow-gold/5 disabled:opacity-30 text-white"
+              style={{ backgroundColor: settings.primaryColor }}
             >
               <i className="fa-solid fa-paper-plane"></i>
             </button>

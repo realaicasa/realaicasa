@@ -429,16 +429,21 @@ export const chatWithGuard = async (
   propertyContext: PropertySchema,
   settings: AgentSettings
 ) => {
-  const client = getClient(settings.apiKey, 'v1');
-  const response = await client.models.generateContent({
-    model: 'gemini-1.5-flash',
-    contents: history,
-    config: {
-      system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
-    } as any
-  });
+  try {
+    const client = getClient(settings.apiKey, 'v1');
+    const response = await client.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: history,
+      config: {
+        system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
+      } as any
+    });
 
-  return response.text;
+    return response.text;
+  } catch (err: any) {
+    console.error("[EstateGuard] chatWithGuard Connectivity Error:", err);
+    throw err;
+  }
 };
 
 export const transcribeAudio = async (base64Audio: string, manualKey?: string): Promise<string> => {
