@@ -430,7 +430,7 @@ export const chatWithGuard = async (
   settings: AgentSettings
 ) => {
   try {
-    const client = getClient(settings.apiKey, 'v1');
+    const client = getClient(settings.apiKey, 'v1beta'); // Use v1beta for better model compatibility in this env
     const response = await client.models.generateContent({
       model: 'gemini-1.5-flash',
       contents: history,
