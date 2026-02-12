@@ -26,6 +26,7 @@
       "ingestion": "Intégration des Actifs",
       "manual": "Manuel Opérationnel"
     },
+    "search_placeholder": "Rechercher dans le portefeuille par adresse, prix ou statut...",
     "modals": {
       "manual_title": "Manuel Opérationnel de l'Agent",
       "privacy_title": "Confidentialité et Souveraineté",
@@ -77,8 +78,7 @@
       "privacy": "Nuage de Confidentialité",
       "terms": "Termes",
       "legal": "Souveraineté Juridique"
-    },
-    "search_placeholder": "Rechercher par adresse, prix ou statut..."
+    }
   },
   "dashboard": {
     "metrics": {
@@ -101,6 +101,9 @@
     "orchestration": "Orchestration des Actifs",
     "onboard_title": "Intégrez Votre Portefeuille Élite",
     "onboard_desc": "Transformez des données dispersées en schémas de propriété sécurisés et haute fidélité sans saisie manuelle.",
+    "status": {
+      "success": "ACTIF ARCHIVÉ : Propriété synchronisée avec succès dans votre cloud sécurisé."
+    },
     "modes": {
       "url": "Web Scraper",
       "text": "Saisie Directe",
@@ -147,6 +150,12 @@
     "ai_provision_title": "Approvisionnement IA Core",
     "knowledge_base_title": "Base de Connaissances",
     "knowledge_base_desc": "Formez votre agent IA sur les détails spécifiques de votre entreprise.",
+    "sections": {
+      "identity": "Identité de l'Agence",
+      "whitelabeling": "Portefeuille Protégé",
+      "deployment": "Synchro Concierge",
+      "training": "Entraînement Intelligence Continue"
+    },
     "labels": {
       "agency_name": "Nom de l'Agence",
       "brand_color": "Couleur Primaire",
@@ -159,10 +168,19 @@
       "areas": "Zones de Service",
       "commission": "Taux de Commission",
       "marketing": "Stratégie Marketing",
-      "team": "Membres de l'Équipe",
+      "team": "Membres de L'Équipe",
       "awards": "Prix et Reconnaissance",
-      "legal": "Avis Juridique"
+      "legal": "Avis Juridique",
+      "status": "Statut de l'Agence",
+      "language": "Langue de l'IU",
+      "concierge_intro": "Intro de Bienvenue Concierge"
     },
+    "themes": {
+      "title": "Mode d'Affichage",
+      "dark": "Élite (Sombre)",
+      "light": "Traditionnel (Clair)"
+    },
+    "inject_button": "Injecter un Portefeuille de Départ",
     "hints": {
       "color": "Choisit les couleurs de surbrillance",
       "intro": "Ce texte apparaît au-dessus de la bulle du chatbot sur votre site web.",

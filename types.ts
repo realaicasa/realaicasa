@@ -82,9 +82,14 @@ export interface Lead {
   email?: string;
   financing_status: 'Cash' | 'Lender' | 'Unverified';
   property_id: string;
-  property_address: string;
-  status: LeadStatus;
-  timestamp: string;
+  property_address?: string;
+  status: string; // 'new', 'contacted', 'qualified', 'hot', 'closed'
+  metadata?: {
+    intent?: string;
+    has_funds?: boolean;
+    nda_signed?: boolean;
+    qualification_log?: string[];
+  };
   created_at?: string;
   due_date?: string;
   notes: string[];

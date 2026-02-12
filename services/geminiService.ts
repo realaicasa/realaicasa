@@ -64,8 +64,14 @@ let lastScrapedHtml = ""; // Local state to avoid window reliance if possible
 
 const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
       // Regex Parsing Engine
-      const priceMatch = html.match(/\$([\d,]+)/);
-      const price = priceMatch ? parseInt(priceMatch[1].replace(/,/g, '')) : 0;
+      const priceMatch = html.match(/\$([\d,\.]+)\s*([MKk])?/);
+      let price = 0;
+      if (priceMatch) {
+          price = parseFloat(priceMatch[1].replace(/,/g, ''));
+          const suffix = priceMatch[2]?.toUpperCase();
+          if (suffix === 'M') price *= 1000000;
+          if (suffix === 'K') price *= 1000;
+      }
       
       const bedMatch = html.match(/(\d+)\s*(?:bed|bd|bedroom)/i);
       const beds = bedMatch ? parseInt(bedMatch[1]) : 0;
@@ -290,8 +296,14 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                      console.warn("[EstateGuard] Activate Offline Ingestion Mode.");
                      
                      // Regex Parsing Engine
-                     const priceMatch = processedInput.match(/\$([\d,]+)/);
-                     const price = priceMatch ? parseInt(priceMatch[1].replace(/,/g, '')) : 0;
+                     const priceMatch = processedInput.match(/\$([\d,\.]+)\s*([MKk])?/);
+                     let price = 0;
+                     if (priceMatch) {
+                         price = parseFloat(priceMatch[1].replace(/,/g, ''));
+                         const suffix = priceMatch[2]?.toUpperCase();
+                         if (suffix === 'M') price *= 1000000;
+                         if (suffix === 'K') price *= 1000;
+                     }
                      
                      const bedMatch = processedInput.match(/(\d+)\s*(?:bed|bd|bedroom)/i);
                      const beds = bedMatch ? parseInt(bedMatch[1]) : 0;
@@ -417,11 +429,20 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
   }
 };
 
+const summarizePortfolio = (props: PropertySchema[]): string => {
+  if (!props || props.length === 0) return "N/A";
+  return props.map(p => 
+    `- ${p.listing_details?.address || 'Unnamed'}: $${p.listing_details?.price?.toLocaleString() || 'N/A'} (${p.listing_details?.key_stats?.bedrooms} Bed, ${p.listing_details?.key_stats?.sq_ft} sqft) - ${p.category} ${p.transaction_type}`
+  ).join('\n');
+};
+
 export const chatWithGuard = async (
   history: { role: 'user' | 'model'; parts: { text: string }[] }[],
   propertyContext: PropertySchema,
-  settings: AgentSettings
+  settings: AgentSettings,
+  allProperties: PropertySchema[] = []
 ) => {
+  const portfolioSummary = summarizePortfolio(allProperties);
   const models = [
     { name: 'gemini-1.5-flash', api: 'v1beta' },
     { name: 'gemini-1.5-flash', api: 'v1' },
@@ -454,7 +475,7 @@ export const chatWithGuard = async (
         model: m.name,
         contents: history,
         config: {
-          system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE (STRICT GROUNDING):\n${sanitizedContext}\n\nRETIREMENT RULE: DO NOT talk about Airbnb, Hotels, or short-term dates.`
+          system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE (STRICT GROUNDING):\n${sanitizedContext}\n\nFULL AGENCY PORTFOLIO (CROSS-REFERENCE IF NEEDED):\n${portfolioSummary}\n\nRETIREMENT RULE: DO NOT talk about Airbnb, Hotels, or short-term dates.`
         } as any
       });
       return response.text;
@@ -484,4 +505,41 @@ export const transcribeAudio = async (base64Audio: string, manualKey?: string): 
   });
   
   return response.text || "";
+};
+
+/**
+ * --- COMMON SENSE VALIDATION LAYER ---
+ * High-level sanity checks to flag suspicious or missing data.
+ */
+export const validateParsing = (data: PropertySchema): string[] => {
+  const warnings: string[] = [];
+  const stats = data.listing_details?.key_stats;
+  const price = data.listing_details?.price || 0;
+
+  // 1. Price vs Area Sanity
+  if (price > 100000 && (stats?.sq_ft || 0) > 0) {
+    const ppsf = price / (stats?.sq_ft || 1);
+    if (ppsf < 10 && data.category === 'Residential') warnings.push("Price per sqft seems unusually low ($" + ppsf.toFixed(0) + "). Check for data errors.");
+    if (ppsf > 5000) warnings.push("Price per sqft is extremely high ($" + ppsf.toFixed(0) + "). Verify if this is a luxury outlier.");
+  }
+
+  // 2. Missing Key Meta
+  if (!data.listing_details?.image_url || data.listing_details.image_url.includes('unsplash')) {
+    warnings.push("Missing proprietary property images. Using stock backup.");
+  }
+  
+  if (!data.listing_details?.hero_narrative || data.listing_details.hero_narrative.length < 100) {
+    warnings.push("Hero narrative is too brief or missing. Human touch recommended.");
+  }
+
+  // 3. Category/Transaction Logic
+  if (data.transaction_type === 'Rent' && price > 50000) {
+    warnings.push("Rent price exceeds $50k. Confirm if this is monthly rent or a listing error.");
+  }
+
+  // 4. Schema Completeness
+  if (!(stats?.bedrooms) && data.category === 'Residential') warnings.push("Bedroom count missing for residential listing.");
+  if (!(stats?.bathrooms) && data.category === 'Residential') warnings.push("Bathroom count missing for residential listing.");
+
+  return warnings;
 };

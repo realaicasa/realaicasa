@@ -4,9 +4,11 @@ import { PropertySchema, PropertyTier } from '../types';
 interface PropertyCardProps {
   property: PropertySchema;
   onSelect: (p: PropertySchema) => void;
+  onShare?: (p: PropertySchema) => void;
+  onWhatsApp?: (p: PropertySchema) => void;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
+const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect, onShare, onWhatsApp }) => {
   const isEstateGuard = property.tier === PropertyTier.ESTATE_GUARD;
   const hasVideo = !!property.listing_details?.video_tour_url;
 
@@ -44,6 +46,24 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSelect }) => {
               <i className="fa-solid fa-circle-play mr-1 text-gold"></i> VIDEO TOUR
             </span>
           )}
+        </div>
+        
+        {/* Sharing Overlay */}
+        <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+            <button 
+              onClick={(e) => { e.stopPropagation(); onShare?.(property); }}
+              className="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center hover:bg-gold hover:text-white transition-all transform hover:scale-110 active:scale-90 shadow-xl"
+              title="Quick Share"
+            >
+              <i className="fa-solid fa-share-nodes"></i>
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); onWhatsApp?.(property); }}
+              className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 transition-all transform hover:scale-110 active:scale-90 shadow-xl"
+              title="WhatsApp Share"
+            >
+              <i className="fa-brands fa-whatsapp text-xl"></i>
+            </button>
         </div>
       </div>
       

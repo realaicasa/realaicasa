@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { parsePropertyData, transcribeAudio } from '../services/geminiService';
+import { parsePropertyData, transcribeAudio, validateParsing } from '../services/geminiService';
 import { PropertySchema, AgentSettings } from '../types';
 
 interface IngestionPortalProps {
@@ -24,10 +24,16 @@ const IngestionPortal: React.FC<IngestionPortalProps> = ({ onPropertyAdded, sett
     setLoading(true);
     try {
       const parsed = await parsePropertyData(inputValue, settings.apiKey, imageUrl);
+      const warnings = validateParsing(parsed);
       onPropertyAdded(parsed);
       setInputValue('');
       setImageUrl(''); 
-      alert(t('ingestion.status.success', { defaultValue: 'ASSET VAULTED: Property successfully synchronized with your secure cloud.' }));
+      
+      if (warnings.length > 0) {
+        alert(t('ingestion.status.success', { defaultValue: 'ASSET VAULTED: Property successfully synchronized.' }) + "\n\nINTELLIGENCE ADVISORY:\n• " + warnings.join('\n• '));
+      } else {
+        alert(t('ingestion.status.success', { defaultValue: 'ASSET VAULTED: Property successfully synchronized with your secure cloud.' }));
+      }
     } catch (error: any) {
       console.error("Ingestion Hub Error:", error);
       const msg = error.message || "Unknown error";

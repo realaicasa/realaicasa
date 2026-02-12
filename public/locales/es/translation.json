@@ -26,6 +26,7 @@
       "ingestion": "Incorporación de Activos",
       "manual": "Manual Operativo"
     },
+    "search_placeholder": "Busque en la cartera por dirección, precio o estado...",
     "modals": {
       "manual_title": "Manual Operativo del Agente",
       "privacy_title": "Privacidad y Soberanía",
@@ -77,8 +78,7 @@
       "privacy": "Nube de Privacidad",
       "terms": "Términos",
       "legal": "Soberanía Legal"
-    },
-    "search_placeholder": "Buscar portafolio por dirección, precio o estado..."
+    }
   },
   "dashboard": {
     "metrics": {
@@ -101,6 +101,9 @@
     "orchestration": "Orquestación de Activos",
     "onboard_title": "Incorpore su Cartera de Élite",
     "onboard_desc": "Transforme datos dispersos en esquemas de propiedad seguros y de alta fidelidad sin entrada manual.",
+    "status": {
+      "success": "ACTIVO ALMACENADO: Propiedad sincronizada con éxito con su nube segura."
+    },
     "modes": {
       "url": "Web Scraper",
       "text": "Entrada Directa",
@@ -147,6 +150,12 @@
     "ai_provision_title": "Aprovisionamiento de Núcleo IA",
     "knowledge_base_title": "Base de Conocimiento Empresarial",
     "knowledge_base_desc": "Entrene a su agente de IA en los detalles específicos de su negocio.",
+    "sections": {
+      "identity": "Identidad de la Agencia",
+      "whitelabeling": "Portafolio Protegido",
+      "deployment": "Sincronización de Conserje",
+      "training": "Entrenamiento de Inteligencia Continua"
+    },
     "labels": {
       "agency_name": "Nombre de la Agencia",
       "brand_color": "Color Primario de Marca",
@@ -161,8 +170,17 @@
       "marketing": "Estrategia de Marketing",
       "team": "Miembros del Equipo",
       "awards": "Premios y Reconocimientos",
-      "legal": "Aviso Legal"
+      "legal": "Aviso Legal",
+      "status": "Estado de la Agencia",
+      "language": "Idioma de la IU",
+      "concierge_intro": "Intro de Bienvenida Conserje"
     },
+    "themes": {
+      "title": "Modo de Visualización",
+      "dark": "Elite (Oscuro)",
+      "light": "Tradicional (Claro)"
+    },
+    "inject_button": "Inyectar Portafolio de Inicio",
     "hints": {
       "color": "Elige colores destacados",
       "intro": "Este texto aparece encima de la burbuja del chatbot en su sitio web.",

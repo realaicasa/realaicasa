@@ -13,6 +13,8 @@ import PropertyDetails from './components/PropertyDetails';
 import PropertyExhibit from './components/PropertyExhibit';
 import Auth from './components/Auth';
 import { supabase } from './services/supabaseClient';
+import { generateQRCode } from './services/qrService';
+import { getWhatsAppShareUrl } from './services/shareService';
 import { PropertySchema, Lead, PropertyTier, AgentSettings, LeadStatus } from './types';
 
 const INITIAL_SETTINGS: AgentSettings = {
@@ -59,11 +61,21 @@ const App: React.FC = () => {
   const [notifications, setNotifications] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [appQr, setAppQr] = useState<string>('');
 
   // Sync language with settings
   useEffect(() => {
     i18n.changeLanguage(settings.language === 'en' ? 'en' : settings.language === 'es' ? 'es' : 'fr');
   }, [settings.language]);
+
+  useEffect(() => {
+    const generateAppQr = async () => {
+      const qr = await generateQRCode(window.location.origin);
+      setAppQr(qr);
+    };
+    generateAppQr();
+  }, []);
 
   // Listen for Auth Changes
   useEffect(() => {
@@ -379,9 +391,10 @@ const App: React.FC = () => {
         financing_status: leadPart.financing_status || 'Unverified',
         property_id: leadPart.property_id || "General",
         property_address: leadPart.property_address || "N/A",
-        status: 'new',
-        timestamp: new Date().toISOString(),
+        status: leadPart.status || 'new',
+        created_at: new Date().toISOString(),
         notes: leadPart.notes || [],
+        metadata: leadPart.metadata || {},
         conversation_history: leadPart.conversation_history || [],
         agent_notes: leadPart.agent_notes || "",
         due_date: leadPart.due_date || null,
@@ -412,7 +425,8 @@ const App: React.FC = () => {
           property_id: newLead.property_id,
           property_address: newLead.property_address,
           status: newLead.status,
-          created_at: newLead.timestamp,
+          created_at: newLead.created_at,
+          metadata: newLead.metadata || {},
           notes: newLead.notes || [],
           agent_notes: newLead.agent_notes || "",
           due_date: newLead.due_date,
@@ -431,6 +445,53 @@ const App: React.FC = () => {
       const errorMsg = e.message || "Unknown connectivity issue";
       alert(`SECURITY ALERT: Lead capture synchronization failed.\n\n[Reason: ${errorMsg}]\n\nAction: Verify your Supabase service status and RLS policies.`);
     }
+  };
+
+  const handleShare = async (p: PropertySchema) => {
+    const url = `${window.location.origin}/?property=${p.property_id}`;
+    const qrDataUrl = await generateQRCode(url);
+    
+    setModalContent({
+      title: `Elite Share Bridge: ${p.listing_details?.address}`,
+      content: (
+        <div className="flex flex-col items-center gap-8 py-4">
+          <div className="p-6 bg-white rounded-[3rem] shadow-2xl border border-slate-100 relative group">
+            <img src={qrDataUrl} alt="QR Code" className="w-56 h-56" />
+            <div className="mt-4 text-center">
+              <p className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">Scan to Ingest / Save</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 w-full">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(url);
+                alert("Property URL copied to secure clipboard.");
+              }}
+              className="flex items-center justify-center gap-2 bg-slate-950 text-white py-4 rounded-2xl font-bold text-xs hover:bg-slate-900 transition-all shadow-xl active:scale-95"
+            >
+              <i className="fa-solid fa-link"></i> Copy URL
+            </button>
+            <button 
+              onClick={() => {
+                window.open(getWhatsAppShareUrl(p, settings.businessName, window.location.origin), '_blank');
+              }}
+              className="flex items-center justify-center gap-2 bg-emerald-500 text-white py-4 rounded-2xl font-bold text-xs hover:bg-emerald-600 transition-all shadow-xl active:scale-95"
+            >
+              <i className="fa-brands fa-whatsapp"></i> WhatsApp
+            </button>
+          </div>
+          
+          <p className="text-[10px] text-slate-400 font-medium text-center italic">
+            Sharing this bridge allows clients to install your PWA instantly on their home screen.
+          </p>
+        </div>
+      )
+    });
+  };
+
+  const handleWhatsApp = (p: PropertySchema) => {
+    window.open(getWhatsAppShareUrl(p, settings.businessName, window.location.origin), '_blank');
   };
 
   const handleIngestedProperty = async (p: PropertySchema) => {
@@ -481,19 +542,53 @@ const App: React.FC = () => {
         setModalContent({
           title: 'Agent Operating Manual',
           content: (
-            <div className="space-y-6 text-sm">
-              <section>
-                <h4 className="font-bold text-slate-900 mb-1 uppercase tracking-wider text-xs">1. Property Ingestion</h4>
-                <p>Use the <b>Ingest</b> tab to onboard new assets. Structure residential, commercial, or land listings instantly via Gemini AI.</p>
+            <div className="space-y-8 text-sm overflow-y-auto max-h-[70vh] pr-4 no-scrollbar">
+              <section className="space-y-4">
+                <h3 className="text-lg font-luxury font-bold text-gold flex items-center gap-2">
+                  <i className="fa-solid fa-wand-magic-sparkles"></i> 1. Advanced AI Skills
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p className="font-bold text-slate-900 mb-1">Semantic Reasoning</p>
+                    <p className="text-xs text-slate-500">The concierge maps synonyms instantly. If you list a "Fitness Center", the bot knows it's a "Gym". If you mention proximity to "Walmart", it understands it's a "Supermarket".</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p className="font-bold text-slate-900 mb-1">Portfolio Intelligence</p>
+                    <p className="text-xs text-slate-500">Your concierge knows your <b>entire</b> portfolio. If a user asks for something cheaper or in a different area, it will cross-reference and suggest your other active listings.</p>
+                  </div>
+                </div>
               </section>
-              <section>
-                <h4 className="font-bold text-slate-900 mb-1 uppercase tracking-wider text-xs">2. Concierge Deployment</h4>
-                <p>Navigate to the <b>Concierge</b> tab to find your unique website embed code. This places the AI chatbot on your agency site.</p>
+
+              <section className="space-y-4">
+                <h3 className="text-lg font-luxury font-bold text-gold flex items-center gap-2">
+                  <i className="fa-solid fa-shield-halved"></i> 2. Elite Qualification
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  For assets valued over <b>$5,000,000</b> (or when <b>High Security Mode</b> is active), the AI automatically performs deep qualification:
+                </p>
+                <ul className="list-disc pl-5 text-xs text-slate-500 space-y-1">
+                  <li>Asks for Proof of Funds / Lender Pre-approval.</li>
+                  <li>Requests a digital NDA agreement before revealing private data.</li>
+                  <li>Categorizes leads as <b>"HOT"</b> or <b>"QUALIFIED"</b> in your Kanban.</li>
+                </ul>
               </section>
-              <section>
-                <h4 className="font-bold text-slate-900 mb-1 uppercase tracking-wider text-xs">3. The Two-Strike Rule</h4>
-                <p>The bot is programmed to answer two specific questions about any property. Upon the third, it will pivot to secure lead capture.</p>
+
+              <section className="space-y-4">
+                <h3 className="text-lg font-luxury font-bold text-gold flex items-center gap-2">
+                  <i className="fa-solid fa-magnifying-glass"></i> 3. Portfolio Management
+                </h3>
+                <div className="space-y-2">
+                  <p className="font-bold text-slate-900">Rapid Locate:</p>
+                  <p className="text-xs text-slate-500">Use the search bar in <b>Portfolio Control</b> to filter by price, address, or asset category.</p>
+                  <p className="font-bold text-slate-900 mt-4">Manual Enrichment:</p>
+                  <p className="text-xs text-slate-500">Select any asset to add private notes, check off amenities (WiFi, Pool, etc.), and train the AI on local neighborhood vibes.</p>
+                </div>
               </section>
+
+              <div className="bg-gold/5 p-6 rounded-2xl border border-gold/20">
+                <p className="text-[10px] font-black text-gold uppercase tracking-[0.2em] mb-2">Pro-Tip</p>
+                <p className="text-xs text-slate-700 italic">"The more internal notes you add to a property, the more 'human' and persuasive the concierge becomes when talking to potential buyers."</p>
+              </div>
             </div>
           )
         });
@@ -577,8 +672,13 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-[var(--bg-main)] overflow-hidden flex-col md:flex-row text-[var(--text-main)]">
-      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} brandColor={settings.primaryColor} />
+    <div className="flex bg-[var(--bg-main)] text-[var(--text-main)] overflow-hidden h-screen font-inter selection:bg-gold/30">
+      <Navigation 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        brandColor={settings.primaryColor} 
+        qrDataUrl={appQr}
+      />
 
       <main className="flex-1 overflow-y-auto main-content no-scrollbar flex flex-col">
         {/* PWA Install Notification - Focused on Mobile Instructions */}
@@ -658,18 +758,49 @@ const App: React.FC = () => {
           <div className="pb-20">
             {activeTab === 'dashboard' && <DashboardStats properties={properties} leads={leads} />}
             {activeTab === 'properties' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                    {properties.map((p, idx) => (
-                        <div key={p.property_id} className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: `${idx * 100}ms` }}>
-                          <PropertyCard 
-                            property={p} 
-                            onSelect={(p) => { 
-                              setSelectedPropertyId(p.property_id); 
-                              setIsDetailsOpen(true); 
-                            }} 
-                          />
-                        </div>
-                    ))}
+                <div className="space-y-10">
+                    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
+                        <i className="fa-solid fa-magnifying-glass text-slate-400 ml-4"></i>
+                        <input 
+                          type="text" 
+                          placeholder={t('app.search_placeholder', { defaultValue: 'Search portfolio by address, price, or status...' })}
+                          className="flex-1 bg-transparent border-none outline-none font-medium text-slate-700 placeholder:text-slate-400"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        {searchQuery && (
+                          <button onClick={() => setSearchQuery('')} className="text-slate-400 hover:text-slate-600 px-4">
+                            <i className="fa-solid fa-xmark"></i>
+                          </button>
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                        {properties
+                          .filter(p => {
+                            if (!searchQuery) return true;
+                            const q = searchQuery.toLowerCase();
+                            return (
+                              p.listing_details?.address?.toLowerCase().includes(q) ||
+                              p.listing_details?.price?.toString().includes(q) ||
+                              p.category?.toLowerCase().includes(q) ||
+                              p.status?.toLowerCase().includes(q)
+                            );
+                          })
+                          .map((p, idx) => (
+                            <div key={p.property_id} className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: `${idx * 100}ms` }}>
+                             <PropertyCard 
+                                property={p} 
+                                onSelect={(p) => { 
+                                  setSelectedPropertyId(p.property_id); 
+                                  setIsDetailsOpen(true); 
+                                }} 
+                                onShare={handleShare}
+                                onWhatsApp={handleWhatsApp}
+                             />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
             {activeTab === 'leads' && <Kanban leads={leads} onStatusChange={handleStatusChange} onUpdateLead={handleUpdateLead} onAddLead={handleCaptureLead} />}
@@ -763,6 +894,7 @@ const App: React.FC = () => {
                            </p>
                            <AgentChat 
                                property={selectedProperty || properties[0]} 
+                               allProperties={properties}
                                onLeadCaptured={handleCaptureLead} 
                                settings={settings}
                            />

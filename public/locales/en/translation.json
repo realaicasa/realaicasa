@@ -26,6 +26,7 @@
       "ingestion": "Asset Onboarding",
       "manual": "Operating Manual"
     },
+    "search_placeholder": "Search portfolio by address, price, or status...",
     "modals": {
       "manual_title": "Agent Operating Manual",
       "privacy_title": "Privacy & Sovereignty",
@@ -77,8 +78,7 @@
       "privacy": "Privacy Cloud",
       "terms": "Terms",
       "legal": "Legal Sovereignty"
-    },
-    "search_placeholder": "Search portfolio by address, price, or status..."
+    }
   },
   "dashboard": {
     "metrics": {

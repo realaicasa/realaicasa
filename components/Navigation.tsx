@@ -6,9 +6,10 @@ interface NavigationProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   brandColor?: string;
+  qrDataUrl?: string;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandColor = '#d4af37' }) => {
+const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandColor = '#d4af37', qrDataUrl }) => {
   const { t } = useTranslation();
   const menuItems = [
     { id: 'dashboard', icon: 'fa-chart-line', label: t('sidebar.dashboard') },
@@ -70,6 +71,18 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, brandC
             <span className="text-xs uppercase tracking-[0.2em]">{t('sidebar.sign_out', { defaultValue: 'Sign Out' })}</span>
           </button>
         </div>
+
+        {qrDataUrl && (
+          <div className="px-8 mb-6">
+            <div className="bg-slate-900 rounded-[2.5rem] p-6 border border-white/5 shadow-2xl group hover:border-gold/20 transition-all">
+                <div className="bg-white p-3 rounded-[1.5rem] shadow-inner mb-4">
+                  <img src={qrDataUrl} alt="Quick Save" className="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <p className="text-[9px] font-black text-gold uppercase tracking-[0.2em] text-center">{t('sidebar.scan_to_save', { defaultValue: 'Scan to Save' })}</p>
+                <p className="text-[8px] text-slate-500 font-bold text-center mt-1">PWA AUTO-BRIDGE</p>
+            </div>
+          </div>
+        )}
 
         <div className="mt-auto p-8 border-t border-slate-900">
           <div className="flex items-center gap-3">

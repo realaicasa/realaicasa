@@ -18,6 +18,36 @@ export default defineConfig(({ mode }) => {
             cleanupOutdatedCaches: true,
             skipWaiting: true,
             clientsClaim: true,
+            runtimeCaching: [
+              {
+                urlPattern: /^https:\/\/images\.unsplash\.com\/.*/i,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'unsplash-images',
+                  expiration: {
+                    maxEntries: 50,
+                    maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200],
+                  },
+                },
+              },
+              {
+                urlPattern: /^https:\/\/picsum\.photos\/.*/i,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'picsum-images',
+                  expiration: {
+                    maxEntries: 50,
+                    maxAgeSeconds: 60 * 60 * 24 * 30,
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200],
+                  },
+                },
+              }
+            ]
           },
           includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
           manifest: {

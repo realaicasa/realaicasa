@@ -4,11 +4,12 @@ import { PropertySchema, ChatMessage, Lead, AgentSettings, PropertyTier } from '
 
 interface AgentChatProps {
   property: PropertySchema;
+  allProperties?: PropertySchema[];
   onLeadCaptured: (lead: Partial<Lead>) => void;
   settings: AgentSettings;
 }
 
-const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, settings }) => {
+const AgentChat: React.FC<AgentChatProps> = ({ property, allProperties = [], onLeadCaptured, settings }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -16,9 +17,18 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
   const [isGated, setIsGated] = useState(false);
   const [leadFormData, setLeadFormData] = useState({ name: '', phone: '', comm: 'WhatsApp', time: 'ASAP' });
   
-  // Conversational Capture State from "Perfect" version
-  const [collectionStep, setCollectionStep] = useState<'IDLE' | 'NAME' | 'MODE' | 'EMAIL' | 'TIME'>('IDLE');
-  const [tempLeadData, setTempLeadData] = useState<{name?: string; phone?: string; comm?: string; email?: string; time?: string}>({});
+  // Conversational Capture State
+  const [collectionStep, setCollectionStep] = useState<'IDLE' | 'NAME' | 'MODE' | 'EMAIL' | 'TIME' | 'FUNDS' | 'NDA'>('IDLE');
+  const [tempLeadData, setTempLeadData] = useState<{
+    name?: string; 
+    phone?: string; 
+    comm?: string; 
+    email?: string; 
+    time?: string;
+    status?: string;
+    hasFunds?: boolean;
+    ndaSigned?: boolean;
+  }>({});
   
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -54,20 +64,45 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
           
         case 'TIME':
           setTempLeadData(prev => ({ ...prev, time: userInput }));
-          botResponse = "Perfect. I have synchronized your request with our Elite Desk. An agent will reach out to you as requested. Is there anything else I can assist you with today?";
-          
-          // Finalize Capture
-          const finalData = { ...tempLeadData, time: userInput };
-          onLeadCaptured({
-            name: finalData.name || 'DIRECT ELITE LEAD',
-            phone: finalData.phone,
-            property_id: property?.property_id || "General",
-            property_address: property?.listing_details?.address || "N/A",
-            notes: [`Prefers ${finalData.comm || 'contact'} at ${userInput}`]
-          });
-          
+          const isElite = (property.listing_details?.price || 0) > 5000000 || settings.highSecurityMode;
+          if (isElite) {
+            botResponse = "Understood. For an asset of this caliber, do you currently have your acquisition funds in place or a lender pre-approval?";
+            nextStep = 'FUNDS';
+          } else {
+            finalizeLead(userInput);
+            botResponse = "Perfect. I have synchronized your request with our Elite Desk. Is there anything else I can assist you with?";
+            nextStep = 'IDLE';
+          }
+          break;
+
+        case 'FUNDS':
+          setTempLeadData(prev => ({ ...prev, hasFunds: userInput.toLowerCase().includes('yes') }));
+          botResponse = "Understood. Finally, to access the private data room for this estate, would you be prepared to sign a digital NDA?";
+          nextStep = 'NDA';
+          break;
+
+        case 'NDA':
+          const finalNda = userInput.toLowerCase().includes('yes');
+          finalizeLead(tempLeadData.time || '', tempLeadData.hasFunds, finalNda);
+          botResponse = "Excellent. Your level of qualification has been noted. Our Elite Specialist will reach out shortly with the next steps.";
           nextStep = 'IDLE';
           break;
+      }
+
+      function finalizeLead(time: string, funds = false, nda = false) {
+          onLeadCaptured({
+            name: tempLeadData.name || 'DIRECT ELITE LEAD',
+            phone: tempLeadData.phone,
+            status: tempLeadData.status || 'new',
+            property_id: property?.property_id || "General",
+            property_address: property?.listing_details?.address || "N/A",
+            notes: [`Prefers ${tempLeadData.comm || 'contact'} at ${time}`],
+            metadata: {
+              has_funds: funds,
+              nda_signed: nda,
+              intent: tempLeadData.status
+            }
+          });
       }
 
       setMessages(prev => [...prev, { role: 'model', text: botResponse }]);
@@ -140,12 +175,27 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
       const history = messages.map(m => ({ role: m.role, parts: [{ text: m.text }] }));
       history.push({ role: 'user', parts: [{ text: promptPrefix + input }] });
       
-      const responseText = await chatWithGuard(history, property, settings);
+      const responseText = await chatWithGuard(history, property, settings, allProperties);
       setMessages(prev => [...prev, { role: 'model', text: responseText || '' }]);
+
+      // Intent Detection from "Common Sense" suite
+      let detectedStatus = 'new';
+      const lowercaseInput = input.toLowerCase();
+      const lowercaseHistory = messages.map(m => m.text.toLowerCase()).join(' ');
+      
+      if (lowercaseInput.includes('buy') || lowercaseInput.includes('offer') || lowercaseInput.includes('purchase')) {
+        detectedStatus = 'hot';
+      } else if (lowercaseInput.includes('rent') || lowercaseInput.includes('lease')) {
+        detectedStatus = 'qualified';
+      } else if (lowercaseInput.includes('just looking') || lowercaseInput.includes('browser') || lowercaseInput.includes('comparing')) {
+        detectedStatus = 'contacted'; // Lower priority in Kanban
+      }
 
       // Gating intercept
       if (shouldGateNow) {
         setIsGated(true);
+        // Automatically append intent knowledge to the lead capture data
+        setTempLeadData(prev => ({ ...prev, status: detectedStatus }));
       }
     } catch (e) {
       setMessages(prev => [...prev, { role: 'model', text: "Guard connection unstable. Please try again or contact " + settings.businessName + " directly." }]);
@@ -155,16 +205,17 @@ const AgentChat: React.FC<AgentChatProps> = ({ property, onLeadCaptured, setting
   };
 
   const submitLeadForm = () => {
-    onLeadCaptured({
-      name: leadFormData.name,
-      phone: leadFormData.phone,
-      property_id: property?.property_id || "General",
-      property_address: property?.listing_details?.address || "N/A",
-      notes: [`Prefers ${leadFormData.comm} at ${leadFormData.time}`]
-    });
-    setIsGated(false);
-    setMessages(prev => [...prev, { role: 'model', text: `Thank you, ${leadFormData.name}. I've synchronized your request with our Elite Desk. An agent will reach out via ${leadFormData.comm} shortly.` }]);
-  };
+  onLeadCaptured({
+    name: leadFormData.name,
+    phone: leadFormData.phone,
+    status: (tempLeadData as any).status || 'new',
+    property_id: property?.property_id || "General",
+    property_address: property?.listing_details?.address || "N/A",
+    notes: [`Prefers ${leadFormData.comm} at ${leadFormData.time}`]
+  });
+  setIsGated(false);
+  setMessages(prev => [...prev, { role: 'model', text: `Thank you, ${leadFormData.name}. I've synchronized your request with our Elite Desk. An agent will reach out via ${leadFormData.comm} shortly.` }]);
+};
 
   return (
     <div className="flex flex-col h-[650px] relative">
