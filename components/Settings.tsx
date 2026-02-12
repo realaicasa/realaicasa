@@ -84,6 +84,44 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
               <i className="fa-solid fa-palette" style={{ color: settings.primaryColor }}></i> 
               {t('settings.sections.identity')}
             </h3>
+
+            {/* Language and Theme - Prominent Placement */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10 pb-10 border-b border-[var(--glass-border)]">
+              <div className="space-y-3 p-6 bg-gold/5 rounded-[2rem] border border-gold/10">
+                  <label className="text-[10px] font-black text-gold uppercase tracking-widest flex items-center gap-2">
+                    <i className="fa-solid fa-language"></i> {t('settings.labels.language')}
+                  </label>
+                  <select 
+                    value={settings.language}
+                    onChange={(e) => onUpdate({...settings, language: e.target.value})}
+                    className="w-full px-5 py-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl focus:ring-2 outline-none transition-all font-bold text-sm text-[var(--text-main)] cursor-pointer"
+                    style={{ '--tw-ring-color': settings.primaryColor } as any}
+                  >
+                    <option value="en">English (US)</option>
+                    <option value="es">Español (ES)</option>
+                    <option value="fr">Français (FR)</option>
+                  </select>
+               </div>
+
+               <div className="space-y-3">
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.themes.title')}</label>
+                  <div className="flex bg-[var(--glass-bg)] p-1 rounded-2xl border border-[var(--glass-border)]">
+                      <button 
+                        onClick={() => onUpdate({...settings, theme: 'dark'})}
+                        className={`flex-1 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'dark' ? 'bg-[var(--card-bg)] text-[var(--text-main)] shadow-xl border border-[var(--glass-border)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
+                      >
+                        <i className="fa-solid fa-moon mr-2"></i> {t('settings.themes.dark')}
+                      </button>
+                      <button 
+                        onClick={() => onUpdate({...settings, theme: 'light'})}
+                        className={`flex-1 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'light' ? 'bg-[var(--card-bg)] text-[var(--text-main)] shadow-xl border border-[var(--glass-border)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
+                      >
+                        <i className="fa-solid fa-sun mr-2"></i> {t('settings.themes.light')}
+                      </button>
+                  </div>
+               </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
                 <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.labels.agency_name')}</label>
@@ -110,39 +148,6 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-[var(--glass-border)] pt-8">
-              <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.labels.language')}</label>
-                  <select 
-                    value={settings.language}
-                    onChange={(e) => onUpdate({...settings, language: e.target.value})}
-                    className="w-full px-5 py-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl focus:ring-2 outline-none transition-all font-medium text-sm text-[var(--text-main)] cursor-pointer"
-                    style={{ '--tw-ring-color': settings.primaryColor } as any}
-                  >
-                    <option value="en">English</option>
-                    <option value="es">Spanish</option>
-                    <option value="fr">French</option>
-                  </select>
-               </div>
-
-               <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('settings.themes.title')}</label>
-                  <div className="flex bg-[var(--glass-bg)] p-1 rounded-2xl border border-[var(--glass-border)]">
-                      <button 
-                        onClick={() => onUpdate({...settings, theme: 'dark'})}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'dark' ? 'bg-[var(--card-bg)] text-[var(--text-main)] shadow-xl' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
-                      >
-                        {t('settings.themes.dark')}
-                      </button>
-                      <button 
-                        onClick={() => onUpdate({...settings, theme: 'light'})}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${settings.theme === 'light' ? 'bg-[var(--card-bg)] text-[var(--text-main)] shadow-xl' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
-                      >
-                        {t('settings.themes.light')}
-                      </button>
-                  </div>
-               </div>
             </div>
 
             <div className="mt-8 space-y-3">
