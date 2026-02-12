@@ -1,4 +1,16 @@
 console.log("[EstateGuard-v1.1.9] Bootstrapping...");
+
+// Force Service Worker Recovery if needed
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for (let registration of registrations) {
+      if (window.location.search.includes('force_recovery=true')) {
+        console.warn("[EstateGuard] FORCE RECOVERY: Unregistering Service Worker");
+        registration.unregister();
+      }
+    }
+  });
+}
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';

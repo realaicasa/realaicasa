@@ -48,9 +48,6 @@ const INITIAL_SETTINGS: AgentSettings = {
 
 const App: React.FC = () => {
   const { t } = useTranslation();
-  useEffect(() => {
-    console.log("[EstateGuard-v1.1.9] App Component Mounted");
-  }, []);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [settings, setSettings] = useState<AgentSettings>(INITIAL_SETTINGS);
   const [properties, setProperties] = useState<PropertySchema[]>([]);
@@ -64,31 +61,59 @@ const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [appQr, setAppQr] = useState<string>('');
 
-  // Sync language with settings
+  // --- HARDENED INITIALIZATION (v1.1.9-fix10) ---
   useEffect(() => {
-    i18n.changeLanguage(settings.language === 'en' ? 'en' : settings.language === 'es' ? 'es' : 'fr');
-  }, [settings.language]);
+    console.log("[EstateGuard-v1.1.9] BOOT SEQUENCE STARTING...");
+    
+    let isTerminated = false;
 
-  useEffect(() => {
-    const generateAppQr = async () => {
-      const qr = await generateQRCode(window.location.origin);
-      setAppQr(qr);
+    const initializeSuite = async () => {
+      // 1. Safety Hatch: Force open after 6s regardless of what happens
+      const safetyHatch = setTimeout(() => {
+        if (!isTerminated) {
+          console.warn("[EstateGuard] SAFETY HATCH TRIGGERED: Forcing UI open after 6s timeout.");
+          setLoading(false);
+        }
+      }, 6000);
+
+      try {
+        // 2. Auth Sync
+        console.log("[EstateGuard] Stage 1: Auth Sync...");
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        if (!isTerminated) {
+          console.log("[EstateGuard] Stage 1 Complete. User:", session?.user?.email || "No session");
+          setUser(session?.user ?? null);
+          
+          // 3. QR Generation
+          console.log("[EstateGuard] Stage 2: QR Core Generation...");
+          const qr = await generateQRCode(window.location.origin);
+          setAppQr(qr);
+          
+          // 4. Finalize
+          console.log("[EstateGuard] Stage 3: Initializing Lifecycle...");
+          setLoading(false);
+          clearTimeout(safetyHatch);
+        }
+      } catch (err) {
+        console.error("[EstateGuard] BOOT FAILURE:", err);
+        if (!isTerminated) setLoading(false);
+      }
     };
-    generateAppQr();
-  }, []);
 
-  // Listen for Auth Changes
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    initializeSuite();
 
+    // 5. Auth Listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("[EstateGuard] Auth Transition:", _event, session?.user?.email);
       setUser(session?.user ?? null);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isTerminated = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Sync theme and brand color to CSS Variables
@@ -107,7 +132,10 @@ const App: React.FC = () => {
       const b = parseInt(hex.substring(4, 6), 16);
       document.documentElement.style.setProperty('--brand-primary-rgb', `${r}, ${g}, ${b}`);
     }
-  }, [settings.primaryColor, settings.theme]);
+
+    // 3. i18n Sync
+    i18n.changeLanguage(settings.language === 'en' ? 'en' : settings.language === 'es' ? 'es' : 'fr');
+  }, [settings.primaryColor, settings.theme, settings.language]);
 
   // Fetch all data from Supabase whenever user changes
   useEffect(() => {
