@@ -1,16 +1,4 @@
 console.log("[EstateGuard-v1.1.9] Bootstrapping...");
-
-// Force Service Worker Recovery if needed
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(registrations => {
-    for (let registration of registrations) {
-      if (window.location.search.includes('force_recovery=true')) {
-        console.warn("[EstateGuard] FORCE RECOVERY: Unregistering Service Worker");
-        registration.unregister();
-      }
-    }
-  });
-}
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -26,17 +14,8 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <React.Suspense fallback={
-      <div className="min-h-screen bg-[#05080f] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-6 glass-panel p-12 rounded-[3rem]">
-          <i className="fa-solid fa-shield-halved text-5xl animate-spin text-[#d4af37]"></i>
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/50">Waking Intelligence...</p>
-        </div>
-      </div>
-    }>
-      <App />
-      <Analytics />
-      <SpeedInsights />
-    </React.Suspense>
+    <App />
+    <Analytics />
+    <SpeedInsights />
   </React.StrictMode>
 );

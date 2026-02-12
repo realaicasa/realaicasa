@@ -61,59 +61,24 @@ const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [appQr, setAppQr] = useState<string>('');
 
-  // --- HARDENED INITIALIZATION (v1.1.9-fix10) ---
+  // Listen for Auth Changes and Initialize QR
   useEffect(() => {
-    console.log("[EstateGuard-v1.1.9] BOOT SEQUENCE STARTING...");
-    
-    let isTerminated = false;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-    const initializeSuite = async () => {
-      // 1. Safety Hatch: Force open after 6s regardless of what happens
-      const safetyHatch = setTimeout(() => {
-        if (!isTerminated) {
-          console.warn("[EstateGuard] SAFETY HATCH TRIGGERED: Forcing UI open after 6s timeout.");
-          setLoading(false);
-        }
-      }, 6000);
-
-      try {
-        // 2. Auth Sync
-        console.log("[EstateGuard] Stage 1: Auth Sync...");
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        
-        if (!isTerminated) {
-          console.log("[EstateGuard] Stage 1 Complete. User:", session?.user?.email || "No session");
-          setUser(session?.user ?? null);
-          
-          // 3. QR Generation
-          console.log("[EstateGuard] Stage 2: QR Core Generation...");
-          const qr = await generateQRCode(window.location.origin);
-          setAppQr(qr);
-          
-          // 4. Finalize
-          console.log("[EstateGuard] Stage 3: Initializing Lifecycle...");
-          setLoading(false);
-          clearTimeout(safetyHatch);
-        }
-      } catch (err) {
-        console.error("[EstateGuard] BOOT FAILURE:", err);
-        if (!isTerminated) setLoading(false);
-      }
-    };
-
-    initializeSuite();
-
-    // 5. Auth Listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("[EstateGuard] Auth Transition:", _event, session?.user?.email);
       setUser(session?.user ?? null);
     });
 
-    return () => {
-      isTerminated = true;
-      subscription.unsubscribe();
+    const generateAppQr = async () => {
+      const qr = await generateQRCode(window.location.origin);
+      setAppQr(qr);
     };
+    generateAppQr();
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Sync theme and brand color to CSS Variables
