@@ -240,7 +240,7 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
           {columns.map((col, idx) => {
             const style = PASTEL_COLORS[idx % PASTEL_COLORS.length];
             const isEditing = editingColumn === col;
-            const columnLeads = leads.filter(l => l.status === col);
+            const columnLeads = leads.filter(l => l.status?.toLowerCase() === col.toLowerCase());
 
             return (
               <div key={col} className={`flex-shrink-0 w-[85vw] sm:w-80 snap-center transition-all`}>

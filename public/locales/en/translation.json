@@ -152,7 +152,7 @@
     "knowledge_base_desc": "Train your AI agent on your specific business details. Fill in as many as possible.",
     "sections": {
       "identity": "Agency Identity",
-      "whitelabeling": "Asset Intelligence Hub",
+      "whitelabeling": "Protected Portfolio",
       "deployment": "Concierge Sync",
       "training": "Continuous Intelligence Training"
     },
@@ -171,7 +171,9 @@
       "team": "Team Members",
       "awards": "Awards & Recognition",
       "legal": "Legal Disclaimer",
-      "status": "Agency Status"
+      "status": "Agency Status",
+      "language": "UI Language",
+      "concierge_intro": "Concierge Welcome Intro"
     },
     "themes": {
       "title": "Visual Display Mode",

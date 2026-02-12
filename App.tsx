@@ -355,7 +355,7 @@ const App: React.FC = () => {
         financing_status: leadPart.financing_status || 'Unverified',
         property_id: leadPart.property_id || "General",
         property_address: leadPart.property_address || "N/A",
-        status: 'New',
+        status: 'new',
         timestamp: new Date().toISOString(),
         notes: leadPart.notes || [],
         conversation_history: leadPart.conversation_history || [],
@@ -433,7 +433,11 @@ const App: React.FC = () => {
       console.log("[EstateGuard-v1.1.9] Ingested asset successfully vaulted in cloud.");
     } catch (e: any) {
       console.error("[EstateGuard-v1.1.9] Auto-Vault Failure:", e);
-      alert(`VAULTING FAILURE: Asset created in memory but failed to sync with the cloud. [Reason: ${e.message}]. Please save manually or check connection.`);
+      if (e.message?.includes("updated_at")) {
+         alert(`DATABASE SCHEMA MISMATCH: Your 'properties' table is missing the 'updated_at' column. \n\nPlease run the REPAIR_SCHEMA.sql script provided in the Identity tab.`);
+      } else {
+         alert(`VAULTING FAILURE: Asset created in memory but failed to sync with the cloud. [Reason: ${e.message}]. Please save manually or check connection.`);
+      }
     }
   };
 

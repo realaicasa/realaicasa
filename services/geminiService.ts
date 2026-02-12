@@ -262,20 +262,20 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.9] Stage 1: Trying gemini-1.5-flash (Stable)...");
-    result = await tryGenerate('gemini-1.5-flash', 'v1');
+    console.log("[EstateGuard-v1.1.9] Stage 1: Trying gemini-1.5-flash (v1beta Stable)...");
+    result = await tryGenerate('gemini-1.5-flash', 'v1beta');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-2.0-flash-exp...");
-        result = await tryGenerate('gemini-2.0-flash-exp', 'v1');
+        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-1.5-flash-latest (v1beta)...");
+        result = await tryGenerate('gemini-1.5-flash-latest', 'v1beta');
     } catch (e2: any) {
         try {
-            console.log("[EstateGuard-v1.1.9] Stage 3: Retry gemini-1.5-flash (Legacy)...");
-            result = await tryGenerate('gemini-1.5-flash', 'v1beta');
+            console.log("[EstateGuard-v1.1.9] Stage 3: Trying gemini-2.0-flash-exp (v1beta)...");
+            result = await tryGenerate('gemini-2.0-flash-exp', 'v1beta');
         } catch (e3: any) {
             try {
-                console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-pro (v1.0 Stable)...");
-                result = await tryGenerate('gemini-pro', 'v1');
+                console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-1.5-pro (v1beta)...");
+                result = await tryGenerate('gemini-1.5-pro', 'v1beta');
             } catch (e4: any) {
                 console.warn("[EstateGuard-v1.1.9] ALL AI STAGES FAILED. Switching to Offline Mode.");
                 
@@ -433,11 +433,10 @@ export const chatWithGuard = async (
   settings: AgentSettings
 ) => {
   const models = [
+    { name: 'gemini-1.5-flash', api: 'v1beta' },
+    { name: 'gemini-1.5-flash-latest', api: 'v1beta' },
     { name: 'gemini-2.0-flash', api: 'v1beta' },
-    { name: 'gemini-1.5-flash', api: 'v1' },
-    { name: 'gemini-flash-latest', api: 'v1beta' },
-    { name: 'gemini-1.5-pro', api: 'v1' },
-    { name: 'gemini-pro-latest', api: 'v1beta' }
+    { name: 'gemini-1.5-pro', api: 'v1beta' }
   ];
 
   let lastError: any = null;
@@ -445,11 +444,26 @@ export const chatWithGuard = async (
   for (const m of models) {
     try {
       const client = getClient(settings.apiKey, m.api as any);
+      
+      // Prevent hallucinations by sanitizing the context
+      let sanitizedContext = "NO SPECIFIC PROPERTY SELECTED. Talk about the agency expertise in general.";
+      if (propertyContext && propertyContext.listing_details?.address) {
+          sanitizedContext = JSON.stringify({
+              address: propertyContext.listing_details.address,
+              price: propertyContext.listing_details.price,
+              specs: propertyContext.listing_details.key_stats,
+              narrative: propertyContext.listing_details.hero_narrative,
+              amenities: propertyContext.amenities,
+              training: propertyContext.ai_training,
+              agent_notes: propertyContext.agent_notes
+          }, null, 2);
+      }
+
       const response = await client.models.generateContent({
         model: m.name,
         contents: history,
         config: {
-          system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE:\n${JSON.stringify(propertyContext, null, 2)}`
+          system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE (STRICT GROUNDING):\n${sanitizedContext}\n\nRETIREMENT RULE: DO NOT talk about Airbnb, Hotels, or short-term dates.`
         } as any
       });
       return response.text;

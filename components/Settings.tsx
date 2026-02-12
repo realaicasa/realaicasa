@@ -120,9 +120,9 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                     className="w-full px-5 py-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl focus:ring-2 outline-none transition-all font-medium text-sm text-[var(--text-main)] cursor-pointer"
                     style={{ '--tw-ring-color': settings.primaryColor } as any}
                   >
-                    <option value="en" className="bg-[var(--bg-main)]">English</option>
-                    <option value="es" className="bg-[var(--bg-main)]">Spanish</option>
-                    <option value="fr" className="bg-[var(--bg-main)]">French</option>
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
                   </select>
                </div>
 
@@ -244,22 +244,59 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
             </div>
           </section>
 
-          <div className="pt-10 border-t border-slate-100 flex justify-end items-center gap-6">
-             {saveSuccess && (
-                 <span className="text-emerald-600 text-sm font-bold animate-fade-in flex items-center gap-2">
-                    <i className="fa-solid fa-circle-check"></i> {t('settings.status.synced')}
-                 </span>
-             )}
-             <button 
-                onClick={handleSave}
-                disabled={isSaving}
-                className="px-12 py-4 rounded-2xl font-bold text-sm shadow-2xl flex items-center gap-3 transition-transform active:scale-95 disabled:opacity-50 text-slate-950"
-                style={{ backgroundColor: settings.primaryColor }}
-             >
-                {isSaving ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-floppy-disk"></i>}
-                {isSaving ? t('settings.buttons.saving') : t('settings.buttons.save')}
-             </button>
-          </div>
+          {/* Database Troubleshooting Section */}
+          <section className="bg-red-50/30 p-10 rounded-[3rem] border border-red-100">
+            <h3 className="font-bold text-red-900 mb-6 flex items-center gap-4 text-lg">
+              <i className="fa-solid fa-triangle-exclamation"></i> 
+              Critical Database Repair Utility
+            </h3>
+            <p className="text-sm text-red-700 mb-6 leading-relaxed">
+              If you receive "Could not find column" or "Vaulting Failure" errors, your cloud database is missing required fields. Copy the SQL below and run it in your **Supabase SQL Editor**.
+            </p>
+            <div className="bg-slate-950 p-6 rounded-2xl font-mono text-[10px] text-emerald-400 border border-white/10 overflow-x-auto max-h-56 relative group">
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(`ALTER TABLE properties ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\nALTER TABLE app_config ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\nALTER TABLE app_config ADD COLUMN IF NOT EXISTS training_enhancements TEXT;\nALTER TABLE leads ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\nALTER TABLE leads ADD COLUMN IF NOT EXISTS priority_score INTEGER DEFAULT 0;\nALTER TABLE leads ADD COLUMN IF NOT EXISTS notes_log JSONB DEFAULT '[]'::jsonb;\nALTER TABLE leads ADD COLUMN IF NOT EXISTS financing_status TEXT DEFAULT 'Unverified';\nNOTIFY pgrst, 'reload schema';`);
+                    alert("FINAL REPAIR SQL copied to clipboard.");
+                  }}
+                  className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 px-3 py-1 rounded text-[9px] font-bold text-white transition-colors"
+                >
+                  COPY REPAIR SQL
+                </button>
+                <pre>
+{`-- 1. Patch Core Tables
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE app_config ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE app_config ADD COLUMN IF NOT EXISTS training_enhancements TEXT;
+
+-- 2. Patch Pipeline Intelligence
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS priority_score INTEGER DEFAULT 0;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS notes_log JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS financing_status TEXT DEFAULT 'Unverified';
+
+-- 3. Sync Schema
+NOTIFY pgrst, 'reload schema';`}
+                </pre>
+            </div>
+          </section>
+        </div>
+
+        <div className="pt-10 border-t border-slate-100 flex justify-end items-center gap-6 p-10 bg-slate-50/50">
+           {saveSuccess && (
+               <span className="text-emerald-600 text-sm font-bold animate-fade-in flex items-center gap-2">
+                  <i className="fa-solid fa-circle-check"></i> {t('settings.status.synced')}
+               </span>
+           )}
+           <button 
+              onClick={handleSave}
+              disabled={isSaving}
+              className="px-12 py-4 rounded-2xl font-bold text-sm shadow-2xl flex items-center gap-3 transition-transform active:scale-95 disabled:opacity-50 text-slate-950"
+              style={{ backgroundColor: settings.primaryColor }}
+           >
+              {isSaving ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-floppy-disk"></i>}
+              {isSaving ? t('settings.buttons.saving') : t('settings.buttons.save')}
+           </button>
         </div>
       </div>
     </div>
