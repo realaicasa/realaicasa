@@ -268,20 +268,20 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.9] Stage 1: Trying gemini-1.5-flash (v1 stable)...");
-    result = await tryGenerate('gemini-1.5-flash', 'v1');
+    console.log("[EstateGuard-v1.1.9] Stage 1: Trying gemini-flash-latest (v1beta)...");
+    result = await tryGenerate('gemini-flash-latest', 'v1beta');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-1.5-flash-latest (v1 stable)...");
-        result = await tryGenerate('gemini-1.5-flash-latest', 'v1');
+        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-2.5-flash (v1beta)...");
+        result = await tryGenerate('gemini-2.5-flash', 'v1beta');
     } catch (e2: any) {
         try {
-            console.log("[EstateGuard-v1.1.9] Stage 3: Trying gemini-1.5-flash (v1beta)...");
-            result = await tryGenerate('gemini-1.5-flash', 'v1beta');
+            console.log("[EstateGuard-v1.1.9] Stage 3: Trying gemini-3-flash-preview (v1beta)...");
+            result = await tryGenerate('gemini-3-flash-preview', 'v1beta');
         } catch (e3: any) {
             try {
-                console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-1.5-flash-8b (v1beta)...");
-                result = await tryGenerate('gemini-1.5-flash-8b', 'v1beta');
+                console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-flash-lite-latest (v1beta)...");
+                result = await tryGenerate('gemini-flash-lite-latest', 'v1beta');
             } catch (e4: any) {
                 console.warn("[EstateGuard-v1.1.9] ALL AI STAGES FAILED. Switching to Offline Mode.");
                 
@@ -444,11 +444,11 @@ export const chatWithGuard = async (
 ) => {
   const portfolioSummary = summarizePortfolio(allProperties);
   const models = [
-    { name: 'gemini-1.5-flash', api: 'v1beta' },
-    { name: 'gemini-1.5-flash', api: 'v1' },
-    { name: 'gemini-1.5-flash-8b', api: 'v1beta' },
-    { name: 'gemini-2.0-flash', api: 'v1beta' },
-    { name: 'gemini-1.5-pro', api: 'v1beta' }
+    { name: 'gemini-flash-latest', api: 'v1beta' },
+    { name: 'gemini-2.5-flash', api: 'v1beta' },
+    { name: 'gemini-3-flash-preview', api: 'v1beta' },
+    { name: 'gemini-pro-latest', api: 'v1beta' },
+    { name: 'gemini-2.5-pro', api: 'v1beta' }
   ];
 
   let lastError: any = null;
@@ -492,7 +492,7 @@ export const chatWithGuard = async (
 export const transcribeAudio = async (base64Audio: string, manualKey?: string): Promise<string> => {
   const client = getClient(manualKey, 'v1');
   const response = await client.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-flash-latest',
     contents: [
       {
         role: 'user',
