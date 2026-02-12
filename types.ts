@@ -122,6 +122,8 @@ export interface AgentSettings {
   awards?: string;
   legalDisclaimer?: string;
   trainingEnhancements?: string;
+  leadAlertSound?: boolean;
+  leadAlertVibration?: boolean;
 }
 
 export interface ChatMessage {

@@ -262,20 +262,20 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.9] Stage 1: Trying gemini-1.5-flash (v1beta Stable)...");
+    console.log("[EstateGuard-v1.1.9] Stage 1: Trying gemini-1.5-flash (v1 beta)...");
     result = await tryGenerate('gemini-1.5-flash', 'v1beta');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-1.5-flash-latest (v1beta)...");
-        result = await tryGenerate('gemini-1.5-flash-latest', 'v1beta');
+        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-1.5-flash (v1 stable)...");
+        result = await tryGenerate('gemini-1.5-flash', 'v1');
     } catch (e2: any) {
         try {
-            console.log("[EstateGuard-v1.1.9] Stage 3: Trying gemini-2.0-flash-exp (v1beta)...");
-            result = await tryGenerate('gemini-2.0-flash-exp', 'v1beta');
+            console.log("[EstateGuard-v1.1.9] Stage 3: Trying gemini-1.5-flash-8b (v1beta)...");
+            result = await tryGenerate('gemini-1.5-flash-8b', 'v1beta');
         } catch (e3: any) {
             try {
-                console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-1.5-pro (v1beta)...");
-                result = await tryGenerate('gemini-1.5-pro', 'v1beta');
+                console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-2.0-flash-exp (v1beta)...");
+                result = await tryGenerate('gemini-2.0-flash-exp', 'v1beta');
             } catch (e4: any) {
                 console.warn("[EstateGuard-v1.1.9] ALL AI STAGES FAILED. Switching to Offline Mode.");
                 
@@ -412,17 +412,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
         throw new Error("INTELLIGENCE QUOTA EXCEEDED: The Gemini API is currently rate-limited. Please wait 60 seconds.");
     }
 
-    // 2. MODEL ACCESS DETECTION
-    if (msg.includes("404") || msg.toLowerCase().includes("not found")) {
-      throw new Error(`API CONFIG ERROR: The requested model was not found. Please ensure your API key has access to standard Flash models.`);
-    }
-
-    // 3. PARSING FALLBACK
-    if (msg.includes("JSON_PARSE_FAILURE") && isUrl && lastScrapedHtml) {
-        console.warn("[EstateGuard] Falling back to basic metadata due to malformed AI response.");
-        return extractBasicMetadata(lastScrapedHtml, fallbackImageUrl) as PropertySchema;
-    }
-    
+    //  model fallbacks...
     throw new Error(`Intelligence Sync Failed: ${msg}`);
   }
 };
@@ -434,7 +424,8 @@ export const chatWithGuard = async (
 ) => {
   const models = [
     { name: 'gemini-1.5-flash', api: 'v1beta' },
-    { name: 'gemini-1.5-flash-latest', api: 'v1beta' },
+    { name: 'gemini-1.5-flash', api: 'v1' },
+    { name: 'gemini-1.5-flash-8b', api: 'v1beta' },
     { name: 'gemini-2.0-flash', api: 'v1beta' },
     { name: 'gemini-1.5-pro', api: 'v1beta' }
   ];

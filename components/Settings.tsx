@@ -157,6 +157,32 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
               />
               <p className="text-[10px] text-[var(--text-muted)]">{t('settings.hints.intro')}</p>
             </div>
+
+            {/* Notification Preferences */}
+            <div className="mt-8 pt-8 border-t border-[var(--glass-border)]">
+              <h4 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] mb-6">Lead Real-Time Notifications</h4>
+              <div className="flex flex-wrap gap-8">
+                <label className="flex items-center gap-4 cursor-pointer group">
+                  <div 
+                    onClick={() => onUpdate({...settings, leadAlertSound: !settings.leadAlertSound})}
+                    className={`w-12 h-6 rounded-full transition-all relative ${settings.leadAlertSound ? 'bg-gold' : 'bg-slate-700'}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.leadAlertSound ? 'left-7' : 'left-1'}`}></div>
+                  </div>
+                  <span className="text-xs font-bold text-[var(--text-main)]">Audio Ping</span>
+                </label>
+                
+                <label className="flex items-center gap-4 cursor-pointer group">
+                  <div 
+                    onClick={() => onUpdate({...settings, leadAlertVibration: !settings.leadAlertVibration})}
+                    className={`w-12 h-6 rounded-full transition-all relative ${settings.leadAlertVibration ? 'bg-gold' : 'bg-slate-700'}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.leadAlertVibration ? 'left-7' : 'left-1'}`}></div>
+                  </div>
+                  <span className="text-xs font-bold text-[var(--text-main)]">Haptic Vibration</span>
+                </label>
+              </div>
+            </div>
           </section>
 
           {/* AI Provisioning Section */}
