@@ -106,7 +106,7 @@ const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
         visibility_protocol: { public_fields: ['address', 'image_url', 'hero_narrative', 'price', 'bedrooms', 'bathrooms', 'sq_ft'], gated_fields: [] },
         listing_details: {
             address: finalAddress,
-            hero_narrative: "AI LIMIT REACHED: Generated via Offline Intelligence. This asset was captured while the Gemini API was temporarily rate-limited. Review and verify all details manually. \n\nRAW SOURCE SNIPPET: " + (html.length > 200 ? html.substring(0, 300) + "..." : html),
+            hero_narrative: "OFFLINE CAPTURE: Basic metadata recovered while AI services were vaulting. Review and verify deep specs manually. \n\nRAW SOURCE SNIPPET: " + (html.length > 200 ? html.substring(0, 300) + "..." : html),
             image_url: finalImage,
             price: price || 0,
             key_stats: { 
@@ -116,7 +116,14 @@ const extractBasicMetadata = (html: string, fallbackImageUrl?: string) => {
                 bathrooms: baths || 0
             }
         },
-        amenities: { general: html.toLowerCase().includes('pool') ? ['Pool'] : [] },
+        amenities: { 
+            pool: html.toLowerCase().includes('pool'),
+            garage: html.toLowerCase().includes('garage') || html.toLowerCase().includes('parking'),
+            wifi: html.toLowerCase().includes('wifi') || html.toLowerCase().includes('internet'),
+            laundry: html.toLowerCase().includes('laundry') || html.toLowerCase().includes('washer'),
+            gym: html.toLowerCase().includes('gym') || html.toLowerCase().includes('fitness'),
+            security: html.toLowerCase().includes('security') || html.toLowerCase().includes('guarded')
+        },
         seo: {
             meta_title: `Exclusive Listing | ${finalAddress}`,
             meta_description: `Discover this property at ${finalAddress}. Features ${beds} beds, ${baths} baths. Captured via EstateGuard Offline Engine.`
@@ -340,13 +347,20 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
                               bedrooms: beds || 0, 
                               bathrooms: baths || 0 
                           },
-                          hero_narrative: "OFFLINE CAPTURE: AI services were unavailable at the time of ingestion. \n\nRAW SOURCE:\n" + processedInput 
+                          hero_narrative: "OFFLINE CAPTURE: AI sync was bypassed during high-volume ingestion. Review raw source for deep specs. \n\nRAW SOURCE:\n" + processedInput 
                         },
                         agent_notes: {
                           motivation: "AI Services Unavailable - Manual Processing Required",
                           showing_instructions: "Review raw narrative for details."
                         },
-                        amenities: { general: processedInput.toLowerCase().includes('pool') ? ['Pool'] : [] },
+                        amenities: { 
+                            pool: processedInput.toLowerCase().includes('pool'),
+                            garage: processedInput.toLowerCase().includes('garage') || processedInput.toLowerCase().includes('parking'),
+                            wifi: processedInput.toLowerCase().includes('wifi') || processedInput.toLowerCase().includes('internet'),
+                            laundry: processedInput.toLowerCase().includes('laundry') || processedInput.toLowerCase().includes('washer'),
+                            gym: processedInput.toLowerCase().includes('gym') || processedInput.toLowerCase().includes('fitness'),
+                            security: processedInput.toLowerCase().includes('security') || processedInput.toLowerCase().includes('guarded')
+                        },
                         seo: {
                             meta_title: `Exclusive Listing | ${address}`,
                             meta_description: `Explore this property at ${address}. Captured via EstateGuard Offline Engine.`

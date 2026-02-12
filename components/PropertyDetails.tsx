@@ -149,10 +149,32 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
                 rows={3}
                 className="w-full px-5 py-4 rounded-2xl border border-slate-200 mt-1 text-sm font-medium resize-none focus:ring-2 focus:ring-gold outline-none transition-all"
                 value={editedProperty.listing_details.hero_narrative}
-                onChange={e => setEditedProperty({
-                  ...editedProperty, 
-                  listing_details: { ...editedProperty.listing_details, hero_narrative: e.target.value }
-                })}
+                onChange={e => {
+                  const newNarrative = e.target.value;
+                  setEditedProperty(prev => {
+                    const updated = {
+                      ...prev, 
+                      listing_details: { ...prev.listing_details, hero_narrative: newNarrative }
+                    };
+                    
+                    // Auto-populate SEO if empty
+                    if (newNarrative.length > 20) {
+                      if (!updated.seo?.meta_title) {
+                        updated.seo = { 
+                          ...updated.seo, 
+                          meta_title: `Exclusive Detail | ${updated.listing_details.address || 'Asset'}`.slice(0, 60)
+                        };
+                      }
+                      if (!updated.seo?.meta_description) {
+                        updated.seo = { 
+                          ...updated.seo, 
+                          meta_description: newNarrative.split('\n')[0].slice(0, 155)
+                        };
+                      }
+                    }
+                    return updated;
+                  });
+                }}
               />
             </div>
           </div>
@@ -318,7 +340,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
             <h3 className="text-3xl font-luxury font-bold text-slate-900 leading-tight">{property.listing_details?.address || 'Address Unspecified'}</h3>
             <p className="text-slate-500 text-sm flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-              Secure Asset Cloud • {property.property_id}
+              Secure Asset Cloud • {property.property_id.startsWith('EG-OFFLINE') || property.property_id.startsWith('EG-QUOTA') ? 'Pending Intelligence' : property.property_id}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -342,7 +364,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property, onDelete, o
         <div>
           <h4 className="font-black text-[var(--text-muted)] text-[10px] uppercase tracking-[0.2em] mb-4">Market Narrative</h4>
           <p className="text-[var(--text-main)] text-sm leading-relaxed italic border-l-4 pl-6 py-1 opacity-80" style={{ borderColor: 'var(--brand-primary)' }}>
-            "{property.listing_details?.hero_narrative || 'Market briefing currently in production.'}"
+            "{property.listing_details?.hero_narrative?.replace("INTELLIGENCE SYNC PAUSED", "OFFLINE CAPTURE") || 'Market briefing currently in production.'}"
           </p>
         </div>
 
