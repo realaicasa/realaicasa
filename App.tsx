@@ -517,7 +517,8 @@ const App: React.FC = () => {
           ai_training: p.ai_training || {},
           deep_data: p.deep_data || {},
           seo: p.seo || {},
-          updated_at: new Date().toISOString()
+          // updated_at omitted from root to prevent crash if column is missing, 
+          // column remains available in 'data' blob and will be added to root upon script repair
         });
 
       if (error) throw error;

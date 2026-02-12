@@ -37,11 +37,11 @@ const PASTEL_COLORS = [
 ];
 
 const getPriorityColor = (score: number) => {
-  if (score >= 9) return 'bg-red-500';
-  if (score >= 7) return 'bg-orange-500';
-  if (score >= 5) return 'bg-yellow-500';
-  if (score >= 3) return 'bg-blue-500';
-  return 'bg-slate-300';
+  if (score >= 9) return 'bg-red-600 text-white';
+  if (score >= 7) return 'bg-orange-500 text-white';
+  if (score >= 5) return 'bg-yellow-500 text-slate-900';
+  if (score >= 3) return 'bg-blue-500 text-white';
+  return 'bg-slate-400 text-white';
 };
 
 const SortableLead: React.FC<{ 
@@ -69,7 +69,8 @@ const SortableLead: React.FC<{
     opacity: isDragging ? 0.5 : 1
   };
   
-  const priorityColor = getPriorityColor(lead.priority_score || 0);
+  const priorityClasses = getPriorityColor(lead.priority_score || 0);
+  const priorityColor = priorityClasses.split(' ')[0];
 
   return (
     <div 
@@ -90,11 +91,9 @@ const SortableLead: React.FC<{
              }`}>
                {lead.financing_status}
              </span>
-             {lead.priority_score && lead.priority_score > 0 ? (
-                 <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full text-white ${priorityColor}`}>
-                    {lead.priority_score}/10
-                 </span>
-             ) : null}
+             <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-sm ${priorityClasses}`}>
+                {lead.priority_score || 0}/10
+             </span>
         </div>
       </div>
       <p className="text-[10px] text-[var(--text-muted)] mb-3 truncate font-medium pointer-events-none pl-2">{lead.property_address}</p>
@@ -395,9 +394,9 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
                      <div className="bg-[var(--glass-bg)] p-6 rounded-[2rem] border border-[var(--glass-border)] shadow-2xl space-y-4">
                          <div className="flex items-center justify-between">
                             <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-tighter">{t('leads.priority_index', { defaultValue: 'Priority Index' })}</p>
-                            <span className={`text-[11px] font-black uppercase px-2 py-0.5 rounded-full text-white ${getPriorityColor(selectedLead.priority_score || 0)}`}>
-                              {selectedLead.priority_score || 0}/10
-                            </span>
+                             <span className={`text-[11px] font-black uppercase px-3 py-1 rounded-full shadow-lg ${getPriorityColor(selectedLead.priority_score || 0)}`}>
+                               {selectedLead.priority_score || 0}/10
+                             </span>
                          </div>
                          <div className="relative h-2 bg-slate-200/20 rounded-full mt-2">
                              <div 
