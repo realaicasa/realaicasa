@@ -63,6 +63,24 @@ const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [appQr, setAppQr] = useState<string>('');
 
+  // Force Recovery & Cache Busting Logic
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('force_recovery') === 'true') {
+      console.log('[EstateGuard] Force Recovery Triggered. Purging all caches...');
+      localStorage.clear();
+      sessionStorage.clear();
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          for (const reg of registrations) reg.unregister();
+        });
+      }
+      // Remove the param and reload
+      const newUrl = window.location.origin + window.location.pathname;
+      window.location.href = newUrl;
+    }
+  }, []);
+
   // Listen for Auth Changes and Initialize QR
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -900,7 +918,7 @@ const App: React.FC = () => {
               <button onClick={() => showFooterModal('terms')} className="hover:text-gold transition-colors">{t('app.footer.terms')}</button>
               <button onClick={() => showFooterModal('legal')} className="hover:text-gold transition-colors">{t('app.footer.legal')}</button>
             </div>
-            <p className="text-gold font-luxury text-base lowercase normal-case italic tracking-tight opacity-60">{t('app.footer.tagline')} [v1.2.0]</p>
+            <p className="text-gold font-luxury text-base lowercase normal-case italic tracking-tight opacity-60">{t('app.footer.tagline')} [v1.2.1]</p>
           </div>
         </footer>
       </main>

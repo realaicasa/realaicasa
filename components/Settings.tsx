@@ -178,7 +178,12 @@ interface SettingsProps {
                     >
                       <div className={`absolute top-1 w-3.5 h-3.5 bg-white rounded-full shadow-md transition-all ${settings.leadAlertSound ? 'left-7' : 'left-1'}`}></div>
                     </div>
-                    <span className="text-xs font-bold text-[var(--text-main)]">Audio Ping</span>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-[var(--text-main)]">Audio Ping</span>
+                      <span className={`text-[8px] font-black uppercase tracking-widest ${settings.leadAlertSound ? 'text-gold' : 'text-[var(--text-muted)]'}`}>
+                        {settings.leadAlertSound ? 'Active' : 'Muted'}
+                      </span>
+                    </div>
                   </label>
                   {onTestPing && (
                     <button 
@@ -198,7 +203,12 @@ interface SettingsProps {
                     >
                       <div className={`absolute top-1 w-3.5 h-3.5 bg-white rounded-full shadow-md transition-all ${settings.leadAlertVibration ? 'left-7' : 'left-1'}`}></div>
                     </div>
-                    <span className="text-xs font-bold text-[var(--text-main)]">Haptic Vibration</span>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-[var(--text-main)]">Haptic Vibration</span>
+                      <span className={`text-[8px] font-black uppercase tracking-widest ${settings.leadAlertVibration ? 'text-gold' : 'text-[var(--text-muted)]'}`}>
+                        {settings.leadAlertVibration ? 'ON' : 'OFF'}
+                      </span>
+                    </div>
                   </label>
 
                   {onTestVibration && (
@@ -300,13 +310,13 @@ interface SettingsProps {
           </section>
 
           {/* Database Troubleshooting Section */}
-          <section className={`${settings.theme === 'light' ? 'bg-red-50/30 border-red-100' : 'bg-red-950/10 border-red-900/30'} p-10 rounded-[3rem] border`}>
-            <h3 className={`font-bold ${settings.theme === 'light' ? 'text-red-900' : 'text-red-400'} mb-6 flex items-center gap-4 text-lg`}>
-              <i className="fa-solid fa-triangle-exclamation"></i> 
-              Critical Database Repair Utility
+          <section className="bg-blue-900/10 border border-blue-500/20 p-10 rounded-[3rem]">
+            <h3 className="font-bold text-blue-400 mb-6 flex items-center gap-4 text-lg">
+              <i className="fa-solid fa-screwdriver-wrench"></i> 
+              Enterprise Data Synchronizer
             </h3>
-            <p className={`text-sm ${settings.theme === 'light' ? 'text-red-700' : 'text-red-300/70'} mb-6 leading-relaxed`}>
-              If you receive "Could not find column" or "Vaulting Failure" errors, your cloud database is missing required fields. Copy the SQL below and run it in your **Supabase SQL Editor**.
+            <p className="text-sm text-blue-300/70 mb-6 leading-relaxed">
+              If you experience synchronization lags or missing property fields, execute this patch in your Supabase SQL Editor to align your cloud schema with EstateGuard v1.2.1 standards.
             </p>
             <div className="bg-slate-950 p-6 rounded-2xl font-mono text-[10px] text-emerald-400 border border-white/10 overflow-x-auto max-h-56 relative group">
                 <button 
