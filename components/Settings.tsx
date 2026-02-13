@@ -6,11 +6,14 @@ import { supabase } from '../services/supabaseClient';
 
 interface SettingsProps {
   settings: AgentSettings;
-  onUpdate: (s: AgentSettings) => void;
-  onInjectPortfolio?: () => void;
-}
+   onUpdate: (s: AgentSettings) => void;
+   onInjectPortfolio?: () => void;
+   onTestPing?: () => void;
+   onTestVibration?: () => void;
+ }
+ 
+ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfolio, onTestPing, onTestVibration }) => {
 
-const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfolio }) => {
   const { t } = useTranslation();
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -87,7 +90,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
 
             {/* Language and Theme - Prominent Placement */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10 pb-10 border-b border-[var(--glass-border)]">
-              <div className="space-y-3 p-6 bg-gold/5 rounded-[2rem] border border-gold/10">
+              <div className={`space-y-3 p-6 ${settings.theme === 'light' ? 'bg-gold/5 border-gold/10' : 'bg-gold/10 border-gold/20'} rounded-2rem border`}>
                   <label className="text-[10px] font-black text-gold uppercase tracking-widest flex items-center gap-2">
                     <i className="fa-solid fa-language"></i> {t('settings.labels.language')}
                   </label>
@@ -166,26 +169,47 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
             {/* Notification Preferences */}
             <div className="mt-8 pt-8 border-t border-[var(--glass-border)]">
               <h4 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] mb-6">Lead Real-Time Notifications</h4>
-              <div className="flex flex-wrap gap-8">
-                <label className="flex items-center gap-4 cursor-pointer group">
-                  <div 
-                    onClick={() => onUpdate({...settings, leadAlertSound: !settings.leadAlertSound})}
-                    className={`w-12 h-6 rounded-full transition-all relative ${settings.leadAlertSound ? 'bg-gold' : 'bg-slate-700'}`}
-                  >
-                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.leadAlertSound ? 'left-7' : 'left-1'}`}></div>
-                  </div>
-                  <span className="text-xs font-bold text-[var(--text-main)]">Audio Ping</span>
-                </label>
+              <div className="flex flex-col gap-6">
+                <div className="flex items-center justify-between max-w-md">
+                  <label className="flex items-center gap-4 cursor-pointer group">
+                    <div 
+                      onClick={() => onUpdate({...settings, leadAlertSound: !settings.leadAlertSound})}
+                      className={`w-12 h-6 rounded-full transition-all relative border border-[var(--glass-border)] ${settings.leadAlertSound ? 'bg-gold border-gold/50' : settings.theme === 'light' ? 'bg-slate-200' : 'bg-slate-800'}`}
+                    >
+                      <div className={`absolute top-1 w-3.5 h-3.5 bg-white rounded-full shadow-md transition-all ${settings.leadAlertSound ? 'left-7' : 'left-1'}`}></div>
+                    </div>
+                    <span className="text-xs font-bold text-[var(--text-main)]">Audio Ping</span>
+                  </label>
+                  {onTestPing && (
+                    <button 
+                      onClick={onTestPing}
+                      className="px-4 py-2 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all flex items-center gap-2"
+                    >
+                      <i className="fa-solid fa-volume-high"></i> Test Ping
+                    </button>
+                  )}
+                </div>
                 
-                <label className="flex items-center gap-4 cursor-pointer group">
-                  <div 
-                    onClick={() => onUpdate({...settings, leadAlertVibration: !settings.leadAlertVibration})}
-                    className={`w-12 h-6 rounded-full transition-all relative ${settings.leadAlertVibration ? 'bg-gold' : 'bg-slate-700'}`}
-                  >
-                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.leadAlertVibration ? 'left-7' : 'left-1'}`}></div>
-                  </div>
-                  <span className="text-xs font-bold text-[var(--text-main)]">Haptic Vibration</span>
-                </label>
+                <div className="flex items-center justify-between max-w-md">
+                  <label className="flex items-center gap-4 cursor-pointer group">
+                    <div 
+                      onClick={() => onUpdate({...settings, leadAlertVibration: !settings.leadAlertVibration})}
+                      className={`w-12 h-6 rounded-full transition-all relative border border-[var(--glass-border)] ${settings.leadAlertVibration ? 'bg-gold border-gold/50' : settings.theme === 'light' ? 'bg-slate-200' : 'bg-slate-800'}`}
+                    >
+                      <div className={`absolute top-1 w-3.5 h-3.5 bg-white rounded-full shadow-md transition-all ${settings.leadAlertVibration ? 'left-7' : 'left-1'}`}></div>
+                    </div>
+                    <span className="text-xs font-bold text-[var(--text-main)]">Haptic Vibration</span>
+                  </label>
+
+                  {onTestVibration && (
+                    <button 
+                      onClick={onTestVibration}
+                      className="px-4 py-2 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all flex items-center gap-2"
+                    >
+                      <i className="fa-solid fa-mobile-vibration"></i> Test Vibrate
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </section>
@@ -217,7 +241,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
 
             {onInjectPortfolio && (
               <div className="mt-8 pt-8 border-t border-[var(--glass-border)]">
-                <div className="flex items-center justify-between gap-6 p-6 bg-gold/5 rounded-2xl border border-gold/20">
+                <div className={`flex items-center justify-between gap-6 p-6 ${settings.theme === 'light' ? 'bg-gold/5 border-gold/20' : 'bg-gold/10 border-gold/20'} rounded-2xl border`}>
                   <div className="flex-1">
                     <p className="text-sm font-bold text-[var(--text-main)] mb-1">{t('settings.sections.whitelabeling')}</p>
                     <p className="text-xs text-[var(--text-muted)]">{t('settings.subtitle')}</p>
@@ -276,18 +300,18 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
           </section>
 
           {/* Database Troubleshooting Section */}
-          <section className="bg-red-50/30 p-10 rounded-[3rem] border border-red-100">
-            <h3 className="font-bold text-red-900 mb-6 flex items-center gap-4 text-lg">
+          <section className={`${settings.theme === 'light' ? 'bg-red-50/30 border-red-100' : 'bg-red-950/10 border-red-900/30'} p-10 rounded-[3rem] border`}>
+            <h3 className={`font-bold ${settings.theme === 'light' ? 'text-red-900' : 'text-red-400'} mb-6 flex items-center gap-4 text-lg`}>
               <i className="fa-solid fa-triangle-exclamation"></i> 
               Critical Database Repair Utility
             </h3>
-            <p className="text-sm text-red-700 mb-6 leading-relaxed">
+            <p className={`text-sm ${settings.theme === 'light' ? 'text-red-700' : 'text-red-300/70'} mb-6 leading-relaxed`}>
               If you receive "Could not find column" or "Vaulting Failure" errors, your cloud database is missing required fields. Copy the SQL below and run it in your **Supabase SQL Editor**.
             </p>
             <div className="bg-slate-950 p-6 rounded-2xl font-mono text-[10px] text-emerald-400 border border-white/10 overflow-x-auto max-h-56 relative group">
                 <button 
                   onClick={() => {
-                    navigator.clipboard.writeText(`ALTER TABLE properties ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\nALTER TABLE app_config ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\nALTER TABLE app_config ADD COLUMN IF NOT EXISTS training_enhancements TEXT;\nALTER TABLE leads ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\nALTER TABLE leads ADD COLUMN IF NOT EXISTS priority_score INTEGER DEFAULT 0;\nALTER TABLE leads ADD COLUMN IF NOT EXISTS notes_log JSONB DEFAULT '[]'::jsonb;\nALTER TABLE leads ADD COLUMN IF NOT EXISTS financing_status TEXT DEFAULT 'Unverified';\nNOTIFY pgrst, 'reload schema';`);
+                    navigator.clipboard.writeText(`ALTER TABLE properties ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\nALTER TABLE properties ADD COLUMN IF NOT EXISTS amenities JSONB DEFAULT '{}'::jsonb;\nALTER TABLE properties ADD COLUMN IF NOT EXISTS ai_training JSONB DEFAULT '{}'::jsonb;\nALTER TABLE properties ADD COLUMN IF NOT EXISTS deep_data JSONB DEFAULT '{}'::jsonb;\nALTER TABLE properties ADD COLUMN IF NOT EXISTS seo JSONB DEFAULT '{}'::jsonb;\nALTER TABLE app_config ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\nALTER TABLE app_config ADD COLUMN IF NOT EXISTS training_enhancements TEXT;\nALTER TABLE leads ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\nALTER TABLE leads ADD COLUMN IF NOT EXISTS priority_score INTEGER DEFAULT 0;\nALTER TABLE leads ADD COLUMN IF NOT EXISTS notes_log JSONB DEFAULT '[]'::jsonb;\nALTER TABLE leads ADD COLUMN IF NOT EXISTS financing_status TEXT DEFAULT 'Unverified';\nNOTIFY pgrst, 'reload schema';`);
                     alert("FINAL REPAIR SQL copied to clipboard.");
                   }}
                   className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 px-3 py-1 rounded text-[9px] font-bold text-white transition-colors"
@@ -297,6 +321,11 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onInjectPortfol
                 <pre>
 {`-- 1. Patch Core Tables
 ALTER TABLE properties ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS amenities JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS ai_training JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS deep_data JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS seo JSONB DEFAULT '{}'::jsonb;
+
 ALTER TABLE app_config ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 ALTER TABLE app_config ADD COLUMN IF NOT EXISTS training_enhancements TEXT;
 
@@ -313,9 +342,9 @@ NOTIFY pgrst, 'reload schema';`}
           </section>
         </div>
 
-        <div className="pt-10 border-t border-slate-100 flex justify-end items-center gap-6 p-10 bg-slate-50/50">
+        <div className={`pt-10 border-t border-[var(--glass-border)] flex justify-end items-center gap-6 p-10 ${settings.theme === 'light' ? 'bg-slate-50/50' : 'bg-white/5'}`}>
            {saveSuccess && (
-               <span className="text-emerald-600 text-sm font-bold animate-fade-in flex items-center gap-2">
+               <span className={`${settings.theme === 'light' ? 'text-emerald-600' : 'text-emerald-400'} text-sm font-bold animate-fade-in flex items-center gap-2`}>
                   <i className="fa-solid fa-circle-check"></i> {t('settings.status.synced')}
                </span>
            )}

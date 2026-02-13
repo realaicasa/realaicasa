@@ -16,6 +16,8 @@ import { supabase } from './services/supabaseClient';
 import { generateQRCode } from './services/qrService';
 import { getWhatsAppShareUrl } from './services/shareService';
 import { PropertySchema, Lead, PropertyTier, AgentSettings, LeadStatus } from './types';
+import * as notificationService from './services/notificationService';
+
 
 const INITIAL_SETTINGS: AgentSettings = {
   businessName: 'EstateGuard AI',
@@ -99,7 +101,9 @@ const App: React.FC = () => {
     }
 
     // 3. i18n Sync
-    i18n.changeLanguage(settings.language === 'en' ? 'en' : settings.language === 'es' ? 'es' : 'fr');
+    if (settings.language) {
+      i18n.changeLanguage(settings.language);
+    }
   }, [settings.primaryColor, settings.theme, settings.language]);
 
   // Fetch all data from Supabase whenever user changes
@@ -349,26 +353,7 @@ const App: React.FC = () => {
 
   const playLeadAlert = () => {
     if (!settings.leadAlertSound) return;
-    try {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
-      oscillator.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1); // Slide down to A4
-
-      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + 0.2);
-    } catch (e) {
-      console.warn("Audio alert failed:", e);
-    }
+    notificationService.playPing();
   };
 
   const handleCaptureLead = async (leadPart: Partial<Lead>) => {
@@ -401,8 +386,8 @@ const App: React.FC = () => {
 
       // Trigger Alerts
       playLeadAlert();
-      if (settings.leadAlertVibration && "vibrate" in navigator) {
-        navigator.vibrate([100, 50, 100]);
+      if (settings.leadAlertVibration) {
+        notificationService.playVibration();
       }
 
       // Persist to Supabase
@@ -799,7 +784,15 @@ const App: React.FC = () => {
             )}
             {activeTab === 'leads' && <Kanban leads={leads} onStatusChange={handleStatusChange} onUpdateLead={handleUpdateLead} onAddLead={handleCaptureLead} />}
             {activeTab === 'ingestion' && <IngestionPortal settings={settings} onPropertyAdded={handleIngestedProperty} />}
-            {activeTab === 'settings' && <Settings settings={settings} onUpdate={setSettings} onInjectPortfolio={handleInjectPortfolio} />}
+            {activeTab === 'settings' && (
+              <Settings 
+                settings={settings} 
+                onUpdate={setSettings} 
+                onInjectPortfolio={handleInjectPortfolio}
+                onTestPing={() => notificationService.playPing()}
+                onTestVibration={() => notificationService.playVibration()}
+              />
+            )}
             {activeTab === 'chat' && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     <div className="lg:col-span-7 space-y-12">

@@ -359,9 +359,9 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
       {selectedLead && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
            <div className="absolute inset-0 bg-[var(--bg-main)]/80 backdrop-blur-xl" onClick={() => setSelectedLead(null)}></div>
-           <div className="relative glass-panel w-full max-w-5xl rounded-[3.5rem] shadow-[0_32px_120px_-15px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh] border border-[var(--glass-border)] bg-[var(--bg-main)]">
+            <div className="relative glass-panel w-full max-w-5xl rounded-3xl md:rounded-[3.5rem] shadow-[0_32px_120px_-15px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col md:flex-row h-full max-h-[95vh] md:max-h-[90vh] border border-[var(--glass-border)] bg-[var(--bg-main)]">
               {/* Sidebar: Core Identity */}
-              <div className="w-full md:w-80 bg-[var(--glass-bg)] backdrop-blur-md border-r border-[var(--glass-border)] p-10 flex flex-col gap-8 overflow-y-auto">
+               <div className="w-full md:w-80 bg-[var(--glass-bg)] backdrop-blur-md border-b md:border-b-0 md:border-r border-[var(--glass-border)] p-6 md:p-10 flex flex-col gap-6 md:gap-8 overflow-y-auto">
                  <div>
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-2 block opacity-30 text-[var(--text-main)]">{t('leads.fingerprint', { defaultValue: 'Prospect Fingerprint' })}</span>
                     <h3 className="text-3xl font-luxury font-bold text-[var(--text-main)] tracking-tight">{selectedLead.name}</h3>
@@ -433,7 +433,7 @@ const Kanban: React.FC<KanbanProps> = ({ leads, onStatusChange, onUpdateLead, on
               </div>
 
               {/* Main Content: Logs and Intelligence */}
-              <div className="flex-1 p-10 md:p-16 overflow-y-auto space-y-16 no-scrollbar bg-[var(--bg-main)]/40 text-[var(--text-main)]">
+               <div className="flex-1 p-6 md:p-16 overflow-y-auto space-y-12 md:space-y-16 no-scrollbar bg-[var(--bg-main)]/40 text-[var(--text-main)]">
                  <section>
                     <div className="flex items-center justify-between mb-8">
                        <h4 className="text-xl font-luxury font-bold text-[var(--text-main)] flex items-center gap-4">

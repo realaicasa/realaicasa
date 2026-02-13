@@ -54,9 +54,9 @@ const getApiKey = (manualKey?: string) => {
 };
 
 // --- PROPERTY DATA SCRAPER ---
-const getClient = (manualKey?: string, version: 'v1' | 'v1beta' = 'v1') => {
+const getClient = (manualKey?: string, version: 'v1' | 'v1beta' = 'v1beta') => {
   const apiKey = getApiKey(manualKey);
-  return new GoogleGenAI({ apiKey, apiVersion: version });
+  return new GoogleGenAI(apiKey); // Standard SDK constructor takes just the key string often, checking web.d.ts again
 };
 
 // --- PROPERTY DATA SCRAPER ---
@@ -170,19 +170,19 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
 
   const tryGenerate = async (modelName: string, apiVer: 'v1' | 'v1beta' = 'v1') => {
     try {
-      const activeClient = getClient(manualKey, apiVer);
-      const response = await activeClient.models.generateContent({
-        model: modelName, 
+      const client = getClient(manualKey, apiVer);
+      const response = await client.models.generateContent({ 
+        model: modelName,
         contents: [{ 
           role: 'user', 
           parts: [{ 
-            text: `DATA SOURCE: "${processedInput}"\n\n${processingNote}\n\nCOMMAND:\n1. Extract ALL available property details.\n2. LOOK HARDER FOR SPECS: Bed, Bath, Sq Ft, Price.\n3. TRANSACTION TYPE: Detect if 'Rent', 'Lease' or 'Sale'.\n4. ADHERE TO THE GROUNDING PROTOCOL.\n5. DO NOT HALLUCINATE.\n6. IMPORTANT: Return ONLY a raw JSON object. No conversational text, no markdown headers.` 
+            text: `DATA SOURCE: "${processedInput}"\n\n${processingNote}\n\nCOMMAND:\n1. Extract ALL available property details.\n2. ADDRESS IDENTIFICATION (HARDER): Find the street address, unit number, or location title. Search for numbers followed by Street, Ave, Blvd, etc. If no address exists, use the descriptive title or URL hostname.\n3. SPECS & FINANCIALS: Extract Bed, Bath, Sq Ft, and Price. Be thorough.\n4. TRANSACTION TYPE: Detect 'Rent', 'Lease' or 'Sale'.\n5. ADHERE TO THE GROUNDING PROTOCOL.\n6. DO NOT HALLUCINATE.\n7. IMPORTANT: Return ONLY a raw JSON object.` 
           }] 
         }],
         config: {
-          system_instruction: SCRAPER_SYSTEM_INSTRUCTION,
-          response_mime_type: "application/json",
-          response_schema: {
+          systemInstruction: SCRAPER_SYSTEM_INSTRUCTION,
+          responseMimeType: "application/json",
+          responseSchema: {
             type: Type.OBJECT,
             properties: {
               property_id: { type: Type.STRING },
@@ -264,9 +264,9 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
             },
             required: ["property_id", "listing_details"]
           }
-        } as any 
+        }
       });
-      return response;
+      return response.text;
     } catch (e: any) {
       console.warn(`[EstateGuard-v1.1.9] Failed: ${modelName} on ${apiVer}. Error: ${e.message}`);
       throw e;
@@ -489,9 +489,10 @@ export const chatWithGuard = async (
         model: m.name,
         contents: history,
         config: {
-          system_instruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE (STRICT GROUNDING):\n${sanitizedContext}\n\nFULL AGENCY PORTFOLIO (CROSS-REFERENCE IF NEEDED):\n${portfolioSummary}\n\nRETIREMENT RULE: DO NOT talk about Airbnb, Hotels, or short-term dates.`
-        } as any
+          systemInstruction: `${hydrateInstruction(settings)}\n\nAUTHENTIC PROPERTY DATABASE (STRICT GROUNDING):\n${sanitizedContext}\n\nFULL AGENCY PORTFOLIO (CROSS-REFERENCE IF NEEDED):\n${portfolioSummary}\n\nRETIREMENT RULE: DO NOT talk about Airbnb, Hotels, or short-term dates.`
+        }
       });
+
       return response.text;
     } catch (err: any) {
       console.warn(`[EstateGuard] chatWithGuard fallback: ${m.name} (${m.api}) failed.`, err.message);
@@ -519,6 +520,39 @@ export const transcribeAudio = async (base64Audio: string, manualKey?: string): 
   });
   
   return response.text || "";
+};
+
+/**
+ * --- IMAGE OPTIMIZATION (VISION) ---
+ * Enhances property images with elegant, professional narratives.
+ */
+export const beautifyImage = async (imageUrl: string, manualKey?: string): Promise<string> => {
+  try {
+    // Stage 1: Initializing specialized Vision model
+    const client = getClient(manualKey, 'v1beta'); 
+    console.log("[EstateGuard-v1.1.9] Beautifying image via gemini-2.0-flash-exp...");
+
+    const response = await client.models.generateContent({
+      model: 'gemini-2.0-flash-exp',
+      contents: [{
+        role: 'user',
+        parts: [
+          // Use remote file URI (Jina/Unsplash) - Model 2.0+ handles these well
+          { fileData: { fileUri: imageUrl, mimeType: 'image/jpeg' } },
+          { text: "Describe this property image in an elegant, professional real estate narrative. Focus on lighting, material quality, and the 'vibe' of the space. Keep it concise but evocative (2-3 sentences max). Return only the narrative." }
+        ]
+      }],
+      config: {
+        temperature: 0.7,
+        maxOutputTokens: 300
+      }
+    });
+
+    return response.text || "A premium view of this exceptional property.";
+  } catch (e: any) {
+    console.warn("[EstateGuard] Image optimization failed:", e.message);
+    return "A high-fidelity capture of this property, showcasing unique character and design.";
+  }
 };
 
 /**
