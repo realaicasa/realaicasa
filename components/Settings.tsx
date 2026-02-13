@@ -204,9 +204,9 @@ interface SettingsProps {
                   {onTestVibration && (
                     <button 
                       onClick={onTestVibration}
-                      className="px-4 py-2 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all flex items-center gap-2"
+                      className="px-4 py-2 rounded-xl bg-white/10 border border-white/20 text-[9px] font-black uppercase tracking-widest text-white hover:bg-white/20 transition-all flex items-center gap-2 shadow-lg"
                     >
-                      <i className="fa-solid fa-mobile-vibration"></i> Test Vibrate
+                      <i className="fa-solid fa-mobile-vibration"></i> {t('settings.buttons.test_vibrate', { defaultValue: 'Test Vibrate' })}
                     </button>
                   )}
                 </div>
@@ -283,15 +283,15 @@ interface SettingsProps {
               ].map((item) => (
                 <div key={item.field} className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <i className={`fa-solid ${item.icon} text-[var(--gold)]/60 text-xs`}></i>
-                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{item.label}</label>
+                    <i className={`fa-solid ${item.icon} text-gold text-xs`}></i>
+                    <label className="text-[10px] font-bold text-white uppercase tracking-widest">{item.label}</label>
                   </div>
                   <textarea 
                     rows={3}
                     value={(settings as any)[item.field] || ''}
                     onChange={(e) => onUpdate({...settings, [item.field]: e.target.value})}
                     placeholder={`Define your ${item.label.toLowerCase()}...`}
-                    className="w-full px-5 py-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl focus:ring-2 outline-none transition-all font-medium text-xs leading-relaxed text-[var(--text-main)]"
+                    className="w-full px-5 py-4 bg-black/40 border border-white/20 rounded-2xl focus:ring-2 outline-none transition-all font-medium text-xs leading-relaxed text-white placeholder:text-slate-600"
                     style={{ '--tw-ring-color': settings.primaryColor } as any}
                   />
                 </div>

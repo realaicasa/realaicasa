@@ -96,16 +96,16 @@ const Auth: React.FC = () => {
                         )}
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Secure Email</label>
+                            <label className="text-[10px] font-bold text-slate-300 uppercase tracking-widest ml-1">Secure Email</label>
                             <div className="relative">
-                                <i className="fa-solid fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                                <i className="fa-solid fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                                 <input 
                                     required
                                     type="email"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                     placeholder="agent@estateguard.ai"
-                                    className="w-full bg-slate-950 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white text-sm focus:border-gold outline-none transition-all placeholder:text-slate-700"
+                                    className="w-full bg-black/60 border border-white/20 rounded-2xl py-4 pl-12 pr-6 text-white text-sm focus:border-gold outline-none transition-all placeholder:text-slate-600"
                                 />
                             </div>
                         </div>
@@ -113,26 +113,26 @@ const Auth: React.FC = () => {
                         {view !== 'forgot' && (
                             <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                                 <div className="flex justify-between items-center ml-1">
-                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Identity Password</label>
+                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Identity Password</label>
                                     {view === 'login' && (
                                         <button 
                                             type="button"
                                             onClick={() => setView('forgot')}
-                                            className="text-[9px] font-bold text-gold/60 uppercase hover:text-gold transition-colors"
+                                            className="text-[9px] font-bold text-gold hover:text-white transition-colors"
                                         >
                                             Forgot?
                                         </button>
                                     )}
                                 </div>
                                 <div className="relative">
-                                    <i className="fa-solid fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                                    <i className="fa-solid fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                                     <input 
                                         required
                                         type="password"
                                         value={password}
                                         onChange={e => setPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        className="w-full bg-slate-950 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white text-sm focus:border-gold outline-none transition-all placeholder:text-slate-700"
+                                        className="w-full bg-black/60 border border-white/20 rounded-2xl py-4 pl-12 pr-6 text-white text-sm focus:border-gold outline-none transition-all placeholder:text-slate-600"
                                     />
                                 </div>
                             </div>

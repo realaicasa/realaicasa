@@ -7,14 +7,14 @@
     --brand-primary-rgb: 212, 175, 55;
     --gold-dark: #b8860b;
     
-    /* Dark Theme (Default/Elite) */
-    --bg-main: #05080f;
-    --bg-sidebar: #05080f;
-    --text-main: #f8fafc;
-    --text-muted: rgba(255, 255, 255, 0.4);
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.05);
-    --card-bg: rgba(255, 255, 255, 0.05);
+    /* Dark Theme (Default/Elite) - HIGH CONTRAST */
+    --bg-main: #020408;
+    --bg-sidebar: #020408;
+    --text-main: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.7);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --card-bg: rgba(255, 255, 255, 0.08);
 }
 
 :root[data-theme='light'] {
@@ -41,7 +41,7 @@ body {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.4);
 }
 
 .glass-card {
