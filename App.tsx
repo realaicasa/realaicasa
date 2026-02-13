@@ -900,7 +900,7 @@ const App: React.FC = () => {
               <button onClick={() => showFooterModal('terms')} className="hover:text-gold transition-colors">{t('app.footer.terms')}</button>
               <button onClick={() => showFooterModal('legal')} className="hover:text-gold transition-colors">{t('app.footer.legal')}</button>
             </div>
-            <p className="text-gold font-luxury text-base lowercase normal-case italic tracking-tight opacity-60">{t('app.footer.tagline')}</p>
+            <p className="text-gold font-luxury text-base lowercase normal-case italic tracking-tight opacity-60">{t('app.footer.tagline')} [v1.2.0]</p>
           </div>
         </footer>
       </main>

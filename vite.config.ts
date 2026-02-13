@@ -76,6 +76,18 @@ export default defineConfig(({ mode }) => {
           }
         })
       ],
+      build: {
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'vendor-react': ['react', 'react-dom'],
+              'vendor-ui': ['recharts', '@dnd-kit/core', '@dnd-kit/sortable'],
+              'vendor-utils': ['@google/genai', '@supabase/supabase-js']
+            }
+          }
+        },
+        chunkSizeWarningLimit: 1000
+      },
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
