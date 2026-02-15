@@ -311,12 +311,20 @@ interface SettingsProps {
 
           {/* Database Troubleshooting Section */}
           <section className="bg-blue-900/10 border border-blue-500/20 p-10 rounded-[3rem]">
-            <h3 className="font-bold text-blue-400 mb-6 flex items-center gap-4 text-lg">
-              <i className="fa-solid fa-screwdriver-wrench"></i> 
-              Enterprise Data Synchronizer
-            </h3>
-            <p className="text-sm text-blue-300/70 mb-6 leading-relaxed">
-              If you experience synchronization lags or missing property fields, execute this patch in your Supabase SQL Editor to align your cloud schema with EstateGuard v1.2.1 standards.
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-blue-400 flex items-center gap-4 text-lg">
+                <i className="fa-solid fa-screwdriver-wrench"></i> 
+                Enterprise Data Synchronizer
+              </h3>
+              <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-black text-emerald-400 uppercase tracking-widest">
+                Status: v1.2.1 Verified
+              </div>
+            </div>
+            <p className="text-sm text-blue-300/70 mb-4 leading-relaxed">
+              If you experience synchronization lags or missing property fields, execute this patch in your Supabase SQL Editor.
+            </p>
+            <p className="text-[10px] text-blue-400/50 mb-6 font-bold uppercase tracking-tight italic">
+              Note: If you already applied the v1.2.1 patch (Feb 13), no further action is required.
             </p>
             <div className="bg-slate-950 p-6 rounded-2xl font-mono text-[10px] text-emerald-400 border border-white/10 overflow-x-auto max-h-56 relative group">
                 <button 

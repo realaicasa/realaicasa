@@ -176,14 +176,14 @@ const App: React.FC = () => {
           .eq('user_id', user.id);
         
         if (propData) {
-          console.log(`[EstateGuard-v1.1.9] Fetched ${propData.length} properties from cloud hub.`);
+          console.log(`[EstateGuard-v1.2.1] Fetched ${propData.length} properties from cloud hub.`);
           setProperties(propData.map((p: any) => ({
               ...(p.data || {}),
               property_id: p.property_id,
               user_id: p.user_id
           })));
         } else {
-          console.warn("[EstateGuard-v1.1.9] No property data returned from vault.");
+          console.warn("[EstateGuard-v1.2.1] No property data returned from vault.");
         }
 
         // 3. Fetch Leads
@@ -194,7 +194,7 @@ const App: React.FC = () => {
           .order('created_at', { ascending: false });
 
         if (leadData) {
-          console.log(`[EstateGuard-v1.1.9] Fetched ${leadData.length} leads from cloud pipeline.`);
+          console.log(`[EstateGuard-v1.2.1] Fetched ${leadData.length} leads from cloud pipeline.`);
           setLeads(leadData.map((l: any) => ({
               id: l.id,
               name: l.name,
@@ -213,7 +213,7 @@ const App: React.FC = () => {
               notes_log: l.notes_log || []
           })));
         } else {
-          console.warn("[EstateGuard-v1.1.9] No lead data returned from registry.");
+          console.warn("[EstateGuard-v1.2.1] No lead data returned from registry.");
         }
       } catch (error) {
         console.error('Core Sync Error:', error);
@@ -431,13 +431,13 @@ const App: React.FC = () => {
         });
 
       if (error) {
-        console.error("[EstateGuard-v1.1.9] Raw Supabase Error:", error);
+        console.error("[EstateGuard-v1.2.1] Raw Supabase Error:", error);
         throw new Error(`${error.message} (Code: ${error.code})${error.hint ? ' - Hint: ' + error.hint : ''}`);
       }
       
       console.log("Lead captured and synced to cloud hub.");
     } catch (e: any) {
-      console.error("[EstateGuard-v1.1.9] Lead Sync Error:", e);
+      console.error("[EstateGuard-v1.2.1] Lead Sync Error:", e);
       const errorMsg = e.message || "Unknown connectivity issue";
       alert(`SECURITY ALERT: Lead capture synchronization failed.\n\n[Reason: ${errorMsg}]\n\nAction: Verify your Supabase service status and RLS policies.`);
     }
@@ -518,9 +518,9 @@ const App: React.FC = () => {
         });
 
       if (error) throw error;
-      console.log("[EstateGuard-v1.1.9] Ingested asset successfully vaulted in cloud.");
+      console.log("[EstateGuard-v1.2.1] Ingested asset successfully vaulted in cloud.");
     } catch (e: any) {
-      console.error("[EstateGuard-v1.1.9] Auto-Vault Failure:", e);
+      console.error("[EstateGuard-v1.2.1] Auto-Vault Failure:", e);
       if (e.message?.includes("updated_at")) {
          alert(`DATABASE SCHEMA MISMATCH: Your 'properties' table is missing the 'updated_at' column. \n\nPlease run the REPAIR_SCHEMA.sql script provided in the Identity tab.`);
       } else {

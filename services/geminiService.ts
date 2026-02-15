@@ -39,17 +39,17 @@ const getApiKey = (manualKey?: string) => {
   const isJunk = ["null", "undefined", "[object object]", ""].includes(cleanedManual.toLowerCase());
   
   if (!isJunk && cleanedManual.length > 5 && cleanedManual.startsWith("AIza")) {
-    console.log("[EstateGuard-v1.1.9] Using VALID manual API key from Identity Settings.");
+    console.log("[EstateGuard-v1.2.1] Using VALID manual API key from Identity Settings.");
     return cleanedManual;
   }
   
   const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
   if (envKey && envKey.length > 5) {
-    console.log("[EstateGuard-v1.1.9] Using system environment VITE_GEMINI_API_KEY.");
+    console.log("[EstateGuard-v1.2.1] Using system environment VITE_GEMINI_API_KEY.");
     return envKey;
   }
   
-  console.warn("[EstateGuard-v1.1.9] NO VALID KEY DETECTED. Proceeding with Resilient Fallback.");
+  console.warn("[EstateGuard-v1.2.1] NO VALID KEY DETECTED. Proceeding with Resilient Fallback.");
   return "";
 };
 
@@ -142,13 +142,13 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
 
   if (isUrl) {
     try {
-        console.log("[EstateGuard-v1.1.9] Ingestion active. Target: URL (via Jina.ai)");
+        console.log("[EstateGuard-v1.2.1] Ingestion active. Target: URL (via Jina.ai)");
         // Use Jina.ai Reader for robust client-side scraping without a backend proxy
         const scrapeUrl = `https://r.jina.ai/${input.trim()}`;
         const response = await fetch(scrapeUrl);
         if (response.ok) {
             const scrapedText = await response.text();
-            console.log(`[EstateGuard-v1.1.9] URL scraped. Raw length: ${scrapedText.length}`);
+            console.log(`[EstateGuard-v1.2.1] URL scraped. Raw length: ${scrapedText.length}`);
             processedInput = scrapedText.slice(0, 40000); // 40k chars limit
             processingNote = `(Analysis based on Jina.ai extraction of: ${input})`;
             
@@ -162,10 +162,10 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
              throw new Error(`Jina.ai returned ${response.status}`);
         }
     } catch (e) {
-        console.warn("[EstateGuard-v1.1.9] Scraping failed, falling back to URL-only analysis.", e);
+        console.warn("[EstateGuard-v1.2.1] Scraping failed, falling back to URL-only analysis.", e);
     }
   } else {
-    console.log("[EstateGuard-v1.1.9] Ingestion active. Target: Text");
+    console.log("[EstateGuard-v1.2.1] Ingestion active. Target: Text");
   }
 
   const tryGenerate = async (modelName: string, apiVer: 'v1' | 'v1beta' = 'v1') => {
@@ -268,33 +268,33 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
       });
       return response.text;
     } catch (e: any) {
-      console.warn(`[EstateGuard-v1.1.9] Failed: ${modelName} on ${apiVer}. Error: ${e.message}`);
+      console.warn(`[EstateGuard-v1.2.1] Failed: ${modelName} on ${apiVer}. Error: ${e.message}`);
       throw e;
     }
   };
 
   let result;
   try {
-    console.log("[EstateGuard-v1.1.9] Stage 1: Trying gemini-flash-latest (v1beta)...");
+    console.log("[EstateGuard-v1.2.1] Stage 1: Trying gemini-flash-latest (v1beta)...");
     result = await tryGenerate('gemini-flash-latest', 'v1beta');
   } catch (e: any) {
     try {
-        console.log("[EstateGuard-v1.1.9] Stage 2: Trying gemini-2.5-flash (v1beta)...");
+        console.log("[EstateGuard-v1.2.1] Stage 2: Trying gemini-2.5-flash (v1beta)...");
         result = await tryGenerate('gemini-2.5-flash', 'v1beta');
     } catch (e2: any) {
         try {
-            console.log("[EstateGuard-v1.1.9] Stage 3: Trying gemini-3-flash-preview (v1beta)...");
+            console.log("[EstateGuard-v1.2.1] Stage 3: Trying gemini-3-flash-preview (v1beta)...");
             result = await tryGenerate('gemini-3-flash-preview', 'v1beta');
         } catch (e3: any) {
             try {
-                console.log("[EstateGuard-v1.1.9] Stage 4: Trying gemini-flash-lite-latest (v1beta)...");
+                console.log("[EstateGuard-v1.2.1] Stage 4: Trying gemini-flash-lite-latest (v1beta)...");
                 result = await tryGenerate('gemini-flash-lite-latest', 'v1beta');
             } catch (e4: any) {
-                console.warn("[EstateGuard-v1.1.9] ALL AI STAGES FAILED. Switching to Offline Mode.");
+                console.warn("[EstateGuard-v1.2.1] ALL AI STAGES FAILED. Switching to Offline Mode.");
                 
                 // Fallback 1: URL Metadata extraction
                 if (isUrl && lastScrapedHtml) {
-                    console.warn("[EstateGuard-v1.1.9] Falling back to basic metadata extraction due to AI failure.");
+                    console.warn("[EstateGuard-v1.2.1] Falling back to basic metadata extraction due to AI failure.");
                     return extractBasicMetadata(lastScrapedHtml, fallbackImageUrl) as PropertySchema;
                 }
                 
@@ -384,9 +384,9 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
     }
 
     // Stage 1: cleanJsonResponse handles nested curly braces extraction
-    console.log("[EstateGuard-v1.1.9] AI Response received. Parsing...");
+    console.log("[EstateGuard-v1.2.1] AI Response received. Parsing...");
     const data = cleanJsonResponse(rawText);
-    console.log("[EstateGuard-v1.1.9] Successfully parsed property:", data.listing_details?.address || "Unnamed Asset");
+    console.log("[EstateGuard-v1.2.1] Successfully parsed property:", data.listing_details?.address || "Unnamed Asset");
     
     // Stage 2: Structural Hardening (Prevent UI Crashes)
     if (!data.property_id) data.property_id = `EG-${Math.floor(Math.random() * 1000)}`;
@@ -428,7 +428,7 @@ export const parsePropertyData = async (input: string, manualKey?: string, fallb
 
     return data as PropertySchema;
   } catch (e: any) {
-    // console.error("[EstateGuard-v1.1.9] Processing Error:", e); // Squelch noise
+    // console.error("[EstateGuard-v1.2.1] Processing Error:", e); // Squelch noise
     const msg = e.message || "Unknown error";
     
     // 1. QUOTA DETECTION
@@ -530,7 +530,7 @@ export const beautifyImage = async (imageUrl: string, manualKey?: string): Promi
   try {
     // Stage 1: Initializing specialized Vision model
     const client = getClient(manualKey, 'v1beta'); 
-    console.log("[EstateGuard-v1.1.9] Beautifying image via gemini-2.0-flash-exp...");
+    console.log("[EstateGuard-v1.2.1] Beautifying image via gemini-2.0-flash-exp...");
 
     const response = await client.models.generateContent({
       model: 'gemini-2.0-flash-exp',

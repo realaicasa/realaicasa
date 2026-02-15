@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-// --- STABLE PROJECT HARD-PATCH (v1.1.9-fix11) ---
+// --- STABLE PROJECT HARD-PATCH (v1.2.1) ---
 // ENSURE qry project ID is used to bypass potential environment typos (grv)
 const CORRECT_URL = "https://qrydrfgrwzjewkjennli.supabase.co";
 const envUrl = import.meta.env.VITE_SUPABASE_URL;
